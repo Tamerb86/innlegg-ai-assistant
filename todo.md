@@ -296,3 +296,21 @@
 - [x] Dashboard pages use DashboardLayout sidebar (no GlobalNav)
 - [x] All secondary links (Blog, Om oss, FAQ, Kontakt) accessible in footer
 - [x] Test navigation on all pages
+
+## Rich Text Editor (TipTap) for Blog Admin
+- [x] Install TipTap packages (@tiptap/react, @tiptap/starter-kit, @tiptap/extension-image)
+- [x] Create RichTextEditor component with TipTap
+- [x] Add formatting toolbar (bold, italic, headings, lists, links)
+- [x] Add image insertion support
+- [x] Replace textarea in BlogAdmin with RichTextEditor
+- [x] Test rich text editing and HTML output
+
+## Image Upload to S3 for Blog Admin
+- [x] Create image upload tRPC procedure
+- [x] Add file input with drag-and-drop support
+- [x] Implement image upload to S3 using storagePut
+- [x] Add image preview after upload
+- [x] Replace "Bilde URL" text input with image upload component
+- [x] Add loading states and error handling
+- [x] Test image upload and display in blog posts
+- [x] Write comprehensive vitest tests for image upload (5 tests - all passing)

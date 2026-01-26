@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { trpc } from "@/lib/trpc";
 import { Edit, Plus, Trash2, Eye, EyeOff } from "lucide-react";
@@ -12,6 +11,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
+import { TipTapEditor } from "@/components/TipTapEditor";
+import { ImageUpload } from "@/components/ImageUpload";
 
 export default function BlogAdmin() {
   const { isAuthenticated, user, loading: authLoading } = useAuth();
@@ -189,14 +190,14 @@ export default function BlogAdmin() {
                 Ny Artikkel
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>{editingPost ? "Rediger Artikkel" : "Ny Artikkel"}</DialogTitle>
                 <DialogDescription>
                   Fyll ut skjemaet for å {editingPost ? "oppdatere" : "opprette"} en bloggartikkel
                 </DialogDescription>
               </DialogHeader>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="title">Tittel *</Label>
@@ -220,24 +221,36 @@ export default function BlogAdmin() {
 
                 <div className="space-y-2">
                   <Label htmlFor="excerpt">Sammendrag *</Label>
-                  <Textarea
+                  <Input
                     id="excerpt"
                     value={excerpt}
                     onChange={(e) => setExcerpt(e.target.value)}
                     placeholder="Kort beskrivelse av artikkelen"
-                    rows={2}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="content">Innhold *</Label>
-                  <Textarea
-                    id="content"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    placeholder="Fullt innhold av artikkelen (Markdown støttes)"
-                    rows={10}
+                  <Label>Innhold * (Rich Text Editor)</Label>
+                  <TipTapEditor
+                    content={content}
+                    onChange={setContent}
+                    placeholder="Skriv artikkelen din her... Bruk verktøylinjen for formatering."
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Tips: Bruk verktøylinjen for å formatere tekst, legge til overskrifter, lister, lenker og bilder.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Hovedbilde</Label>
+                  <ImageUpload
+                    value={imageUrl}
+                    onChange={setImageUrl}
+                    onRemove={() => setImageUrl("")}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Last opp et hovedbilde for artikkelen. Maksimal størrelse: 5MB.
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -300,17 +313,7 @@ export default function BlogAdmin() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="imageUrl">Bilde URL</Label>
-                  <Input
-                    id="imageUrl"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </div>
-
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-end gap-2 pt-4 border-t">
                   <Button variant="outline" onClick={() => {
                     setIsDialogOpen(false);
                     resetForm();

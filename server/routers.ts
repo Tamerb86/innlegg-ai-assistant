@@ -3,6 +3,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { z } from "zod";
+import { storagePut } from "./storage";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -447,6 +448,33 @@ Provide helpful, actionable advice. Be encouraging but honest. Keep responses co
         const { deleteBlogPostAdmin } = await import("./db");
         await deleteBlogPostAdmin(input.id);
         return { success: true };
+      }),
+      
+    uploadImage: protectedProcedure
+      .input(z.object({
+        fileName: z.string(),
+        fileData: z.string(), // base64 encoded
+        contentType: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Check if user is admin
+        if (ctx.user.role !== "admin") {
+          throw new Error("Unauthorized: Admin access required");
+        }
+        
+        // Generate unique file key
+        const timestamp = Date.now();
+        const randomSuffix = Math.random().toString(36).substring(7);
+        const fileKey = `blog-images/${timestamp}-${randomSuffix}-${input.fileName}`;
+        
+        // Convert base64 to buffer
+        const base64Data = input.fileData.split(',')[1] || input.fileData;
+        const buffer = Buffer.from(base64Data, 'base64');
+        
+        // Upload to S3
+        const { url } = await storagePut(fileKey, buffer, input.contentType);
+        
+        return { url, fileKey };
       }),
   }),
 });
