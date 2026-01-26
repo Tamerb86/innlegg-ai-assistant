@@ -224,3 +224,25 @@
   - [x] Add account deletion process
   - [x] Add data export rights
   - [x] Add contact information for privacy requests
+
+## Cookie Management Link in Footer
+- [x] Add "Administrer informasjonskapsler" link to footer
+- [x] Make link open Cookie Consent settings dialog
+- [x] Test cookie management from footer
+
+## Contact Us Page (Kontakt oss)
+- [x] Create Contact page with form (navn, e-post, melding)
+- [x] Add form validation
+- [x] Create tRPC procedure to handle contact form submission
+- [x] Send email notification to support when form submitted
+- [x] Add success/error messages
+- [x] Add route to App.tsx
+- [x] Add link to footer navigation
+- [x] Test contact form submission
+
+## Blog Search Feature
+- [x] Add search input field at top of Blog page
+- [x] Implement real-time search filtering by title and content
+- [x] Show search results count
+- [x] Add clear/reset search button
+- [x] Test blog search functionality

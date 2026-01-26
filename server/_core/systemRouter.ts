@@ -26,4 +26,24 @@ export const systemRouter = router({
         success: delivered,
       } as const;
     }),
+
+  sendContactMessage: publicProcedure
+    .input(
+      z.object({
+        navn: z.string().min(1, "Navn er påkrevd"),
+        epost: z.string().email("Ugyldig e-postadresse"),
+        melding: z.string().min(10, "Meldingen må være minst 10 tegn"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // Send notification to owner about new contact message
+      const delivered = await notifyOwner({
+        title: `Ny kontaktmelding fra ${input.navn}`,
+        content: `**Fra:** ${input.navn} (${input.epost})\n\n**Melding:**\n${input.melding}`,
+      });
+      
+      return {
+        success: delivered,
+      } as const;
+    }),
 });

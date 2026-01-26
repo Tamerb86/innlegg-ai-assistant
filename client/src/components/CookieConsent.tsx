@@ -4,6 +4,14 @@ import { Card } from "@/components/ui/card";
 import { X, Cookie, Settings } from "lucide-react";
 import { Link } from "wouter";
 
+// Export function to reopen cookie settings
+export function reopenCookieSettings() {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('cookie-consent');
+    window.dispatchEvent(new Event('cookieConsentReset'));
+  }
+}
+
 export default function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -21,6 +29,19 @@ export default function CookieConsent() {
       const saved = JSON.parse(consent);
       setPreferences(saved);
     }
+
+    // Listen for reset event
+    const handleReset = () => {
+      setShowBanner(true);
+      setShowSettings(false);
+      setPreferences({
+        necessary: true,
+        analytics: false,
+        marketing: false,
+      });
+    };
+    window.addEventListener('cookieConsentReset', handleReset);
+    return () => window.removeEventListener('cookieConsentReset', handleReset);
   }, []);
 
   const handleAcceptAll = () => {

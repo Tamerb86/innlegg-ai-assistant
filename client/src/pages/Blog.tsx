@@ -2,11 +2,27 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { Helmet } from 'react-helmet-async';
-import { BookOpen, Clock, Eye, Tag } from "lucide-react";
+import { BookOpen, Clock, Eye, Tag, Search, X } from "lucide-react";
 import { Link } from "wouter";
+import { useState, useMemo } from "react";
 
 export default function Blog() {
   const { data: posts, isLoading } = trpc.blog.list.useQuery();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Filter posts based on search query
+  const filteredPosts = useMemo(() => {
+    if (!posts) return [];
+    if (!searchQuery.trim()) return posts;
+
+    const query = searchQuery.toLowerCase();
+    return posts.filter(
+      (post) =>
+        post.title.toLowerCase().includes(query) ||
+        post.excerpt.toLowerCase().includes(query) ||
+        post.content.toLowerCase().includes(query)
+    );
+  }, [posts, searchQuery]);
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
@@ -56,7 +72,52 @@ export default function Blog() {
         </div>
       </header>
 
-      <main className="container py-12">
+      {/* Search Bar */}
+      <div className="container py-8">
+        <div className="max-w-2xl mx-auto relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Søk i artikler..."
+            className="w-full pl-12 pr-12 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          )}
+        </div>
+
+        {/* Results Count */}
+        {searchQuery && (
+          <p className="text-sm text-muted-foreground mt-4 text-center">
+            {filteredPosts.length === 0
+              ? "Ingen artikler funnet"
+              : `${filteredPosts.length} ${filteredPosts.length === 1 ? "artikkel" : "artikler"} funnet`}
+          </p>
+        )}
+      </div>
+
+      <main className="container pb-12">
+        {/* No Results Message */}
+        {!isLoading && filteredPosts.length === 0 && searchQuery && (
+          <div className="text-center py-12">
+            <Search className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50" />
+            <h3 className="text-xl font-semibold mb-2">Ingen artikler funnet</h3>
+            <p className="text-muted-foreground mb-6">
+              Prøv å søke med andre søkeord eller se alle artikler
+            </p>
+            <Button onClick={() => setSearchQuery("")} variant="outline">
+              Vis alle artikler
+            </Button>
+          </div>
+        )}
+
         {isLoading ? (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -71,9 +132,9 @@ export default function Blog() {
               </Card>
             ))}
           </div>
-        ) : posts && posts.length > 0 ? (
+        ) : filteredPosts.length > 0 ? (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
+            {filteredPosts.map((post) => (
               <Link key={post.id} href={`/blog/${post.slug}`}>
                 <Card className="h-full cursor-pointer hover:shadow-xl transition-all hover:scale-105">
                   {post.coverImage && (

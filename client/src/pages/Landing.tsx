@@ -595,6 +595,17 @@ export default function Landing() {
                 <li><a href="/privacy-policy" className="hover:text-white transition-colors">Personvernerklæring</a></li>
                 <li><a href="/terms-of-service" className="hover:text-white transition-colors">Vilkår for bruk</a></li>
                 <li><a href="/cookie-policy" className="hover:text-white transition-colors">Informasjonskapsler</a></li>
+                <li>
+                  <button
+                    onClick={() => {
+                      const { reopenCookieSettings } = require('@/components/CookieConsent');
+                      reopenCookieSettings();
+                    }}
+                    className="hover:text-white transition-colors text-left"
+                  >
+                    Administrer informasjonskapsler
+                  </button>
+                </li>
               </ul>
             </div>
             <div>
@@ -602,7 +613,7 @@ export default function Landing() {
               <ul className="space-y-2 text-sm text-gray-400">
                 <li><a href="/blog" className="hover:text-white transition-colors">Blog</a></li>
                 <li><a href="/faq" className="hover:text-white transition-colors">Ofte stilte spørsmål (FAQ)</a></li>
-                <li><a href="mailto:support@nexify.no" className="hover:text-white transition-colors">Kontakt oss</a></li>
+                <li><a href="/contact" className="hover:text-white transition-colors">Kontakt oss</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Hjelp</a></li>
               </ul>
             </div>
