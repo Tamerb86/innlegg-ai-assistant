@@ -11,6 +11,9 @@ import Generate from "./pages/Generate";
 import Posts from "./pages/Posts";
 import Settings from "./pages/Settings";
 import Coach from "./pages/Coach";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import CookiePolicy from "./pages/CookiePolicy";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -23,6 +26,9 @@ function Router() {
       <Route path={"/posts"} component={Posts} />
       <Route path={"/coach"} component={Coach} />
       <Route path={"/settings"} component={Settings} />
+      <Route path={"/privacy-policy"} component={PrivacyPolicy} />
+      <Route path={"/terms-of-service"} component={TermsOfService} />
+      <Route path={"/cookie-policy"} component={CookiePolicy} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

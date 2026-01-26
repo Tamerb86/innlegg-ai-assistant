@@ -97,3 +97,12 @@
 - [x] Implement FOMO (Fear of Missing Out) elements
 - [x] Add comparison table (vs competitors/manual work)
 - [ ] Include video demo or animated showcase
+
+## Company Information & Legal Pages
+- [x] Add Nexify CRM Systems AS company information to footer
+- [x] Create Privacy Policy page (GDPR compliant)
+- [x] Create Terms of Service page
+- [x] Create Cookie Policy page
+- [x] Add legal page links to footer
+- [x] Add company contact information
+- [x] Test all legal page links

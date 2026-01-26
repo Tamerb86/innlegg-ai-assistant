@@ -571,37 +571,43 @@ export default function Landing() {
                 <Zap className="h-6 w-6" />
                 <span className="text-xl font-bold">Innlegg</span>
               </div>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-gray-400 mb-4">
                 Din AI-assistent for profesjonelt innhold på sosiale medier.
               </p>
+              <div className="text-sm text-gray-400">
+                <p className="font-semibold text-white mb-2">Nexify CRM Systems AS</p>
+                <p>E-post: support@nexify.no</p>
+                <p>Nettside: www.nexify.no</p>
+              </div>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Produkt</h4>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li><a href="#features" className="hover:text-white transition-colors">Funksjoner</a></li>
                 <li><a href="#pricing" className="hover:text-white transition-colors">Priser</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Hvordan det virker</a></li>
+                <li><a href="#demo" className="hover:text-white transition-colors">Hvordan det virker</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Selskap</h4>
+              <h4 className="font-semibold mb-4">Juridisk</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Om oss</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Kontakt</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Personvern</a></li>
+                <li><a href="/privacy-policy" className="hover:text-white transition-colors">Personvernerklæring</a></li>
+                <li><a href="/terms-of-service" className="hover:text-white transition-colors">Vilkår for bruk</a></li>
+                <li><a href="/cookie-policy" className="hover:text-white transition-colors">Informasjonskapsler</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Støtte</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Hjelp</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Vilkår</a></li>
+                <li><a href="mailto:support@nexify.no" className="hover:text-white transition-colors">Kontakt oss</a></li>
+                <li><a href="mailto:support@nexify.no" className="hover:text-white transition-colors">Hjelp</a></li>
+                <li><a href="mailto:support@nexify.no" className="hover:text-white transition-colors">FAQ</a></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2026 Innlegg. Alle rettigheter reservert.</p>
+            <p>&copy; {new Date().getFullYear()} Nexify CRM Systems AS. Alle rettigheter reservert.</p>
+            <p className="mt-2">Innlegg - AI-drevet innholdsgenerator for sosiale medier</p>
           </div>
         </div>
       </footer>
