@@ -156,3 +156,27 @@
 - [ ] Create admin panel for subscription management
 
 **Note**: Direct Vipps integration requires Norwegian business registration. Alternative: Use Stripe with Vipps payment method support.
+
+## Dashboard Improvements
+- [x] Add statistics cards (total posts, remaining quota, time saved)
+- [ ] Add chart/graph for post activity over time
+- [ ] Add "Most used content types" section
+- [x] Improve card design with gradients and icons
+- [x] Add quick actions section (Generate new, View history, Settings)
+- [x] Add welcome message for new users
+- [x] Add empty state for users with no posts
+- [x] Test dashboard with mock data
+
+## Blog System
+- [x] Design blog database schema (posts, categories, tags)
+- [x] Create blog tables in drizzle/schema.ts
+- [x] Push database migrations (pnpm db:push)
+- [x] Create blog query helpers in server/db.ts
+- [x] Create blog tRPC procedures (list, getBySlug, getByCategory)
+- [x] Create Blog listing page (/blog)
+- [x] Create BlogPost detail page (/blog/:slug)
+- [x] Add blog navigation link to footer
+- [x] Write 3-5 initial blog posts (content writing tips, AI content best practices)
+- [ ] Add SEO meta tags for blog pages
+- [ ] Add social sharing buttons for blog posts
+- [x] Test blog pages and navigation

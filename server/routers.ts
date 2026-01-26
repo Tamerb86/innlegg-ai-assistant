@@ -326,6 +326,27 @@ Provide helpful, actionable advice. Be encouraging but honest. Keep responses co
         };
       }),
   }),
+  
+  blog: router({
+    list: publicProcedure.query(async () => {
+      const { getAllBlogPosts } = await import("./db");
+      return await getAllBlogPosts();
+    }),
+    
+    getBySlug: publicProcedure
+      .input(z.object({ slug: z.string() }))
+      .query(async ({ input }) => {
+        const { getBlogPostBySlug } = await import("./db");
+        return await getBlogPostBySlug(input.slug);
+      }),
+    
+    getByCategory: publicProcedure
+      .input(z.object({ category: z.string() }))
+      .query(async ({ input }) => {
+        const { getBlogPostsByCategory } = await import("./db");
+        return await getBlogPostsByCategory(input.category);
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

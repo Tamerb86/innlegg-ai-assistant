@@ -146,3 +146,26 @@ export const savedExamples = mysqlTable("saved_examples", {
 
 export type SavedExample = typeof savedExamples.$inferSelect;
 export type InsertSavedExample = typeof savedExamples.$inferInsert;
+/**
+ * Blog Posts table - stores blog articles for content marketing and SEO
+ */
+export const blogPosts = mysqlTable("blog_posts", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  excerpt: text("excerpt").notNull(),
+  content: text("content").notNull(),
+  coverImage: varchar("cover_image", { length: 500 }),
+  category: mysqlEnum("category", ["tips", "guides", "news", "case-studies"]).notNull(),
+  tags: text("tags"), // JSON array of tags
+  authorName: varchar("author_name", { length: 100 }).notNull(),
+  authorRole: varchar("author_role", { length: 100 }),
+  readingTime: int("reading_time").notNull(), // in minutes
+  published: int("published").notNull().default(1), // boolean as int
+  viewCount: int("view_count").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertBlogPost = typeof blogPosts.$inferInsert;

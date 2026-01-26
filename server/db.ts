@@ -20,7 +20,10 @@ import {
   InsertContentAnalysis,
   savedExamples,
   SavedExample,
-  InsertSavedExample
+  InsertSavedExample,
+  blogPosts,
+  BlogPost,
+  InsertBlogPost
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -321,4 +324,87 @@ export async function deleteSavedExample(exampleId: number): Promise<void> {
   if (!db) throw new Error("Database not available");
 
   await db.delete(savedExamples).where(eq(savedExamples.id, exampleId));
+}
+
+// ============================
+// Blog Post Helpers
+// ============================
+
+export async function getAllBlogPosts(): Promise<BlogPost[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  try {
+    return await db
+      .select()
+      .from(blogPosts)
+      .where(eq(blogPosts.published, 1))
+      .orderBy(desc(blogPosts.createdAt));
+  } catch (error) {
+    console.error("[Database] Error fetching blog posts:", error);
+    return [];
+  }
+}
+
+export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  try {
+    const results = await db
+      .select()
+      .from(blogPosts)
+      .where(eq(blogPosts.slug, slug))
+      .limit(1);
+    
+    // Increment view count
+    if (results[0]) {
+      await db
+        .update(blogPosts)
+        .set({ viewCount: results[0].viewCount + 1 })
+        .where(eq(blogPosts.id, results[0].id));
+    }
+    
+    return results[0] || null;
+  } catch (error) {
+    console.error("[Database] Error fetching blog post by slug:", error);
+    return null;
+  }
+}
+
+export async function getBlogPostsByCategory(category: string): Promise<BlogPost[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  try {
+    return await db
+      .select()
+      .from(blogPosts)
+      .where(eq(blogPosts.category, category as any))
+      .orderBy(desc(blogPosts.createdAt));
+  } catch (error) {
+    console.error("[Database] Error fetching blog posts by category:", error);
+    return [];
+  }
+}
+
+export async function createBlogPost(post: InsertBlogPost): Promise<BlogPost | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  try {
+    const result = await db.insert(blogPosts).values(post);
+    const insertedId = result[0].insertId;
+    
+    const inserted = await db
+      .select()
+      .from(blogPosts)
+      .where(eq(blogPosts.id, insertedId))
+      .limit(1);
+    
+    return inserted[0] || null;
+  } catch (error) {
+    console.error("[Database] Error creating blog post:", error);
+    return null;
+  }
 }

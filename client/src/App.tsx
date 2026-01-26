@@ -15,7 +15,9 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
 import AboutUs from "./pages/AboutUs";
-import FAQ from "./pages/FAQ";
+import FAQ from "@/pages/FAQ";
+import Blog from "@/pages/Blog";
+import BlogPost from "@/pages/BlogPost";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -33,6 +35,8 @@ function Router() {
       <Route path={"/cookie-policy"} component={CookiePolicy} />
       <Route path={"/about-us"} component={AboutUs} />
       <Route path={"/faq"} component={FAQ} />
+      <Route path={"/blog"} component={Blog} />
+      <Route path={"/blog/:slug"} component={BlogPost} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

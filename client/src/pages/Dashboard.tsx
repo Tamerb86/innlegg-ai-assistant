@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { FileText, Zap } from "lucide-react";
+import { FileText, Zap, TrendingUp, Clock, Target, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 
@@ -73,80 +73,137 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid gap-6 md:grid-cols-3 mb-8">
-          <Card>
+        {/* Enhanced Stats Cards */}
+        <div className="grid gap-6 md:grid-cols-4 mb-8">
+          <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-200 dark:border-blue-900">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {t("postsGenerated")}
               </CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
+              <div className="p-2 bg-blue-500/10 rounded-lg">
+                <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                 {subLoading ? "..." : subscription?.postsGenerated || 0}
               </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {language === "no" ? "Totalt generert" : "Total generated"}
+              </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border-purple-200 dark:border-purple-900">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {t("postsRemaining")}
               </CardTitle>
-              <Zap className="h-4 w-4 text-muted-foreground" />
+              <div className="p-2 bg-purple-500/10 rounded-lg">
+                <Zap className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
                 {subLoading ? "..." : postsRemaining}
               </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {language === "no" ? "Gjenstående denne måneden" : "Remaining this month"}
+              </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-green-200 dark:border-green-900">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {language === "no" ? "Tid spart" : "Time Saved"}
+              </CardTitle>
+              <div className="p-2 bg-green-500/10 rounded-lg">
+                <Clock className="h-5 w-5 text-green-600 dark:text-green-400" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+                {subLoading ? "..." : Math.round((subscription?.postsGenerated || 0) * 15)} min
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {language === "no" ? "≈15 min per innlegg" : "≈15 min per post"}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 border-orange-200 dark:border-orange-900">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {t("subscriptionTitle")}
               </CardTitle>
-              <Zap className="h-4 w-4 text-muted-foreground" />
+              <div className="p-2 bg-orange-500/10 rounded-lg">
+                <Target className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
                 {subscription?.status === "trial" ? t("trialStatus") : t("activeStatus")}
               </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {subscription?.status === "trial" 
+                  ? (language === "no" ? "14 dagers prøveperiode" : "14-day trial period")
+                  : (language === "no" ? "Aktiv abonnement" : "Active subscription")}
+              </p>
             </CardContent>
           </Card>
         </div>
 
         {/* Quick Actions */}
-        <div className="grid gap-6 md:grid-cols-2 mb-8">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation("/generate")}>
+        <div className="grid gap-6 md:grid-cols-3 mb-8">
+          <Card className="cursor-pointer hover:shadow-xl transition-all hover:scale-105 bg-gradient-to-br from-blue-600 to-purple-600 text-white border-0" onClick={() => setLocation("/generate")}>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="h-5 w-5 text-primary" />
-                {t("generateTitle")}
-              </CardTitle>
-              <CardDescription>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-3 bg-white/20 rounded-lg">
+                  <Sparkles className="h-6 w-6" />
+                </div>
+                <CardTitle className="text-white">{t("generateTitle")}</CardTitle>
+              </div>
+              <CardDescription className="text-blue-100">
                 {t("rawIdea")}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full">{t("generateButton")}</Button>
+              <Button className="w-full bg-white text-blue-600 hover:bg-blue-50">{t("generateButton")}</Button>
             </CardContent>
           </Card>
 
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation("/posts")}>
+          <Card className="cursor-pointer hover:shadow-xl transition-all hover:scale-105" onClick={() => setLocation("/posts")}>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-primary" />
-                {t("myPosts")}
-              </CardTitle>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-3 bg-blue-500/10 rounded-lg">
+                  <FileText className="h-6 w-6 text-blue-600" />
+                </div>
+                <CardTitle>{t("myPosts")}</CardTitle>
+              </div>
               <CardDescription>
                 {postsLoading ? t("loading") : `${posts?.length || 0} ${t("postsGenerated").toLowerCase()}`}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button variant="outline" className="w-full">{t("myPosts")}</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-xl transition-all hover:scale-105" onClick={() => setLocation("/coach")}>
+            <CardHeader>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-3 bg-purple-500/10 rounded-lg">
+                  <TrendingUp className="h-6 w-6 text-purple-600" />
+                </div>
+                <CardTitle>{language === "no" ? "AI Coach" : "AI Coach"}</CardTitle>
+              </div>
+              <CardDescription>
+                {language === "no" ? "Få personlig veiledning" : "Get personal guidance"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full">{language === "no" ? "Start coaching" : "Start coaching"}</Button>
             </CardContent>
           </Card>
         </div>
