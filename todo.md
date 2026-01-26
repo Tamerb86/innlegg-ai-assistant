@@ -117,3 +117,15 @@
 - [x] Add route to App.tsx
 - [x] Add link to footer navigation
 - [x] Test Om oss page
+
+## FAQ Page (Frequently Asked Questions)
+- [x] Create FAQ page with accordion design
+- [x] Add "Getting Started" questions
+- [x] Add "Payment Methods" questions (Vipps, cards)
+- [x] Add "Features & Usage" questions
+- [x] Add "Technical Support" questions
+- [x] Add "Account & Subscription" questions
+- [x] Add "Privacy & Security" questions
+- [x] Add route to App.tsx
+- [x] Add link to footer and navigation
+- [x] Test accordion interactions

@@ -600,9 +600,9 @@ export default function Landing() {
             <div>
               <h4 className="font-semibold mb-4">Støtte</h4>
               <ul className="space-y-2 text-sm text-gray-400">
+                <li><a href="/faq" className="hover:text-white transition-colors">Ofte stilte spørsmål (FAQ)</a></li>
                 <li><a href="mailto:support@nexify.no" className="hover:text-white transition-colors">Kontakt oss</a></li>
-                <li><a href="mailto:support@nexify.no" className="hover:text-white transition-colors">Hjelp</a></li>
-                <li><a href="mailto:support@nexify.no" className="hover:text-white transition-colors">FAQ</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Hjelp</a></li>
               </ul>
             </div>
           </div>
