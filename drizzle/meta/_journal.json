@@ -15,6 +15,20 @@
       "when": 1769382627952,
       "tag": "0001_certain_nova",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1769387775392,
+      "tag": "0002_careless_kylun",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1769388700641,
+      "tag": "0003_flowery_blizzard",
+      "breakpoints": true
     }
   ]
 }

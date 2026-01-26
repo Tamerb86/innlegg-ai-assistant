@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Generate from "./pages/Generate";
 import Posts from "./pages/Posts";
 import Settings from "./pages/Settings";
+import Coach from "./pages/Coach";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -18,6 +19,7 @@ function Router() {
       <Route path={"/dashboard"} component={Dashboard} />
       <Route path={"/generate"} component={Generate} />
       <Route path={"/posts"} component={Posts} />
+      <Route path={"/coach"} component={Coach} />
       <Route path={"/settings"} component={Settings} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}

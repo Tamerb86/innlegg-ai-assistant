@@ -3,7 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Copy, Zap, Trash2 } from "lucide-react";
+import { Copy, Zap, Trash2, Star } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
@@ -12,6 +16,9 @@ export default function Posts() {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const { t, language } = useLanguage();
   const [, setLocation] = useLocation();
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+  const [exampleTitle, setExampleTitle] = useState("");
 
   const utils = trpc.useUtils();
   const { data: posts, isLoading } = trpc.content.list.useQuery(undefined, {
@@ -22,6 +29,18 @@ export default function Posts() {
     onSuccess: () => {
       utils.content.list.invalidate();
       toast.success(t("postDeleted"));
+    },
+    onError: (error) => {
+      toast.error(error.message || t("errorGeneral"));
+    },
+  });
+  
+  const saveExampleMutation = trpc.examples.save.useMutation({
+    onSuccess: () => {
+      toast.success(language === "no" ? "Eksempel lagret!" : "Example saved!");
+      setSaveDialogOpen(false);
+      setExampleTitle("");
+      setSelectedPostId(null);
     },
     onError: (error) => {
       toast.error(error.message || t("errorGeneral"));
@@ -43,6 +62,16 @@ export default function Posts() {
   const handleCopy = (content: string) => {
     navigator.clipboard.writeText(content);
     toast.success(t("copiedSuccess"));
+  };
+
+  const handleSaveAsExample = (postId: number) => {
+    setSelectedPostId(postId);
+    setSaveDialogOpen(true);
+  };
+  
+  const handleSaveExample = () => {
+    if (!selectedPostId || !exampleTitle.trim()) return;
+    saveExampleMutation.mutate({ postId: selectedPostId, title: exampleTitle });
   };
 
   const handleDelete = (postId: number) => {
@@ -140,14 +169,24 @@ export default function Posts() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleCopy(post.generatedContent)}
+                        title={language === "no" ? "Kopier" : "Copy"}
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
+                        onClick={() => handleSaveAsExample(post.id)}
+                        title={language === "no" ? "Lagre som eksempel" : "Save as example"}
+                      >
+                        <Star className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => handleDelete(post.id)}
                         disabled={deleteMutation.isPending}
+                        title={language === "no" ? "Slett" : "Delete"}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -195,6 +234,53 @@ export default function Posts() {
           </Card>
         )}
       </main>
+      
+      {/* Save as Example Dialog */}
+      <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {language === "no" ? "Lagre som eksempel" : "Save as Example"}
+            </DialogTitle>
+            <DialogDescription>
+              {language === "no"
+                ? "Gi eksempelet et navn slik at du enkelt kan finne det igjen senere."
+                : "Give the example a name so you can easily find it later."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">
+                {language === "no" ? "Eksempelnavn" : "Example Name"}
+              </Label>
+              <Input
+                id="title"
+                placeholder={language === "no" ? "F.eks: Produktlansering" : "e.g: Product Launch"}
+                value={exampleTitle}
+                onChange={(e) => setExampleTitle(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && exampleTitle.trim()) {
+                    handleSaveExample();
+                  }
+                }}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSaveDialogOpen(false)}>
+              {language === "no" ? "Avbryt" : "Cancel"}
+            </Button>
+            <Button 
+              onClick={handleSaveExample}
+              disabled={!exampleTitle.trim() || saveExampleMutation.isPending}
+            >
+              {saveExampleMutation.isPending
+                ? (language === "no" ? "Lagrer..." : "Saving...")
+                : (language === "no" ? "Lagre" : "Save")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

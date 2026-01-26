@@ -87,3 +87,62 @@ export const userPreferences = mysqlTable("user_preferences", {
 
 export type UserPreference = typeof userPreferences.$inferSelect;
 export type InsertUserPreference = typeof userPreferences.$inferInsert;
+
+/**
+ * Content Analysis table - AI Content Coach feature
+ * Stores analysis and scoring for each generated post
+ */
+export const contentAnalysis = mysqlTable("content_analysis", {
+  id: int("id").autoincrement().primaryKey(),
+  postId: int("post_id").notNull(),
+  userId: int("user_id").notNull(),
+  
+  // Analysis metrics
+  wordCount: int("word_count").notNull(),
+  sentenceCount: int("sentence_count").notNull(),
+  questionCount: int("question_count").notNull(),
+  emojiCount: int("emoji_count").notNull(),
+  hashtagCount: int("hashtag_count").notNull(),
+  hasNumbers: int("has_numbers").notNull().default(0), // boolean as int
+  hasCallToAction: int("has_call_to_action").notNull().default(0),
+  
+  // Scores (0-100 for precision)
+  lengthScore: int("length_score").notNull(),
+  engagementScore: int("engagement_score").notNull(),
+  readabilityScore: int("readability_score").notNull(),
+  overallScore: int("overall_score").notNull(),
+  
+  // Feedback (JSON strings)
+  strengths: text("strengths"), // JSON array of strength points
+  improvements: text("improvements"), // JSON array of improvement suggestions
+  tips: text("tips"), // JSON array of tips
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type ContentAnalysis = typeof contentAnalysis.$inferSelect;
+export type InsertContentAnalysis = typeof contentAnalysis.$inferInsert;
+
+/**
+ * Saved Examples table - User's favorite posts saved as templates
+ * Allows users to reuse successful content patterns
+ */
+export const savedExamples = mysqlTable("saved_examples", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  postId: int("post_id").notNull(), // Reference to original post
+  
+  title: varchar("title", { length: 200 }).notNull(),
+  platform: mysqlEnum("platform", ["linkedin", "twitter", "instagram", "facebook"]).notNull(),
+  tone: varchar("tone", { length: 50 }).notNull(),
+  rawInput: text("raw_input").notNull(),
+  generatedContent: text("generated_content").notNull(),
+  
+  usageCount: int("usage_count").notNull().default(0),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SavedExample = typeof savedExamples.$inferSelect;
+export type InsertSavedExample = typeof savedExamples.$inferInsert;

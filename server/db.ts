@@ -14,7 +14,13 @@ import {
   InsertSubscription,
   userPreferences,
   UserPreference,
-  InsertUserPreference
+  InsertUserPreference,
+  contentAnalysis,
+  ContentAnalysis,
+  InsertContentAnalysis,
+  savedExamples,
+  SavedExample,
+  InsertSavedExample
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -231,4 +237,88 @@ export async function updateUserPreference(userId: number, language: "no" | "en"
   if (!db) throw new Error("Database not available");
   
   await db.update(userPreferences).set({ language, updatedAt: new Date() }).where(eq(userPreferences.userId, userId));
+}
+
+// ============ Content Analysis Queries ============
+
+export async function saveContentAnalysis(analysis: InsertContentAnalysis): Promise<ContentAnalysis> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const [result] = await db.insert(contentAnalysis).values(analysis).$returningId();
+  const [newAnalysis] = await db.select().from(contentAnalysis).where(eq(contentAnalysis.id, result.id));
+  return newAnalysis!;
+}
+
+export async function getContentAnalysisByPostId(postId: number): Promise<ContentAnalysis | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const [analysis] = await db.select().from(contentAnalysis).where(eq(contentAnalysis.postId, postId)).limit(1);
+  return analysis;
+}
+
+export async function getUserAnalysisHistory(userId: number, limit: number = 30): Promise<ContentAnalysis[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db
+    .select()
+    .from(contentAnalysis)
+    .where(eq(contentAnalysis.userId, userId))
+    .orderBy(desc(contentAnalysis.createdAt))
+    .limit(limit);
+}
+
+export async function getUserContentAnalyses(userId: number): Promise<ContentAnalysis[]> {
+  return getUserAnalysisHistory(userId, 50);
+}
+
+// ============ Saved Examples Queries ============
+
+export async function createSavedExample(example: InsertSavedExample): Promise<SavedExample> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const [result] = await db.insert(savedExamples).values(example).$returningId();
+  const [newExample] = await db.select().from(savedExamples).where(eq(savedExamples.id, result.id));
+  return newExample!;
+}
+
+export async function getUserSavedExamples(userId: number): Promise<SavedExample[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db
+    .select()
+    .from(savedExamples)
+    .where(eq(savedExamples.userId, userId))
+    .orderBy(desc(savedExamples.createdAt));
+}
+
+export async function getSavedExampleById(exampleId: number): Promise<SavedExample | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const [example] = await db.select().from(savedExamples).where(eq(savedExamples.id, exampleId)).limit(1);
+  return example;
+}
+
+export async function incrementExampleUsage(exampleId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const example = await getSavedExampleById(exampleId);
+  if (example) {
+    await db.update(savedExamples)
+      .set({ usageCount: example.usageCount + 1, updatedAt: new Date() })
+      .where(eq(savedExamples.id, exampleId));
+  }
+}
+
+export async function deleteSavedExample(exampleId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(savedExamples).where(eq(savedExamples.id, exampleId));
 }

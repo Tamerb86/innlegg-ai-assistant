@@ -1,11 +1,12 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { SavedExamplesSection } from "@/components/SavedExamplesSection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { Copy, Loader2, Zap } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
@@ -21,10 +22,12 @@ export default function Generate() {
   const [platform, setPlatform] = useState<"linkedin" | "twitter" | "instagram" | "facebook">("linkedin");
   const [tone, setTone] = useState<"professional" | "friendly" | "motivational" | "educational">("professional");
   const [generatedContent, setGeneratedContent] = useState("");
+  const [analysis, setAnalysis] = useState<any>(null);
 
   const generateMutation = trpc.content.generate.useMutation({
     onSuccess: (data) => {
-      setGeneratedContent(data.generatedContent);
+      setGeneratedContent(data.post.generatedContent);
+      setAnalysis(data.analysis);
       toast.success(t("postGenerated"));
     },
     onError: (error) => {
@@ -101,6 +104,17 @@ export default function Generate() {
               : "Enter your idea, select platform and tone, and let AI do the rest."}
           </p>
         </div>
+        
+        {/* Saved Examples Section */}
+        <SavedExamplesSection 
+          language={language} 
+          onUseExample={(example: any) => {
+            setRawInput(example.rawInput);
+            setPlatform(example.platform as any);
+            setTone(example.tone as any);
+            toast.success(language === "no" ? "Eksempel lastet!" : "Example loaded!");
+          }}
+        />
 
         <div className="grid gap-6">
           {/* Input Card */}
@@ -266,10 +280,124 @@ export default function Generate() {
                     onClick={() => {
                       setRawInput("");
                       setGeneratedContent("");
+                      setAnalysis(null);
                     }}
                   >
                     {language === "no" ? "Generer ny" : "Generate new"}
                   </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* AI Content Coach Analysis */}
+          {analysis && (
+            <Card className="border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-primary" />
+                  {language === "no" ? "AI Innholdscoach Analyse" : "AI Content Coach Analysis"}
+                </CardTitle>
+                <CardDescription>
+                  {language === "no"
+                    ? "Lær hvordan du kan forbedre innholdet ditt"
+                    : "Learn how to improve your content"}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Overall Score */}
+                <div className="flex items-center justify-between p-4 bg-primary/5 rounded-lg">
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      {language === "no" ? "Samlet poengsum" : "Overall Score"}
+                    </p>
+                    <p className="text-3xl font-bold text-primary">{analysis.overallScore}/100</p>
+                  </div>
+                  <div className="text-right space-y-1">
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-muted-foreground">{language === "no" ? "Lengde" : "Length"}:</span>
+                      <span className="font-medium">{analysis.lengthScore}/100</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-muted-foreground">{language === "no" ? "Engasjement" : "Engagement"}:</span>
+                      <span className="font-medium">{analysis.engagementScore}/100</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-muted-foreground">{language === "no" ? "Lesbarhet" : "Readability"}:</span>
+                      <span className="font-medium">{analysis.readabilityScore}/100</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Strengths */}
+                {analysis.strengths && analysis.strengths.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold flex items-center gap-2">
+                      <span className="text-green-600">✅</span>
+                      {language === "no" ? "Styrker" : "Strengths"}
+                    </h4>
+                    <ul className="space-y-1">
+                      {analysis.strengths.map((strength: string, i: number) => (
+                        <li key={i} className="text-sm text-muted-foreground pl-6">
+                          • {strength}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Improvements */}
+                {analysis.improvements && analysis.improvements.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold flex items-center gap-2">
+                      <span className="text-orange-600">⚠️</span>
+                      {language === "no" ? "Forbedringsområder" : "Areas for Improvement"}
+                    </h4>
+                    <ul className="space-y-1">
+                      {analysis.improvements.map((improvement: string, i: number) => (
+                        <li key={i} className="text-sm text-muted-foreground pl-6">
+                          • {improvement}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Tips */}
+                {analysis.tips && analysis.tips.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold flex items-center gap-2">
+                      <span className="text-blue-600">💡</span>
+                      {language === "no" ? "Pro-tips" : "Pro Tips"}
+                    </h4>
+                    <ul className="space-y-1">
+                      {analysis.tips.map((tip: string, i: number) => (
+                        <li key={i} className="text-sm text-muted-foreground pl-6">
+                          • {tip}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Metrics */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold">{analysis.wordCount}</p>
+                    <p className="text-xs text-muted-foreground">{language === "no" ? "Ord" : "Words"}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold">{analysis.emojiCount}</p>
+                    <p className="text-xs text-muted-foreground">{language === "no" ? "Emojier" : "Emojis"}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold">{analysis.hashtagCount}</p>
+                    <p className="text-xs text-muted-foreground">Hashtags</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold">{analysis.questionCount}</p>
+                    <p className="text-xs text-muted-foreground">{language === "no" ? "Spørsmål" : "Questions"}</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>

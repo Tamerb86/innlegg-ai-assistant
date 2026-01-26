@@ -53,6 +53,9 @@ export default function Dashboard() {
             <Button variant="ghost" onClick={() => setLocation("/posts")}>
               {t("myPosts")}
             </Button>
+            <Button variant="ghost" onClick={() => setLocation("/coach")}>
+              {language === "no" ? "Coach" : "Coach"}
+            </Button>
             <Button variant="ghost" onClick={() => setLocation("/settings")}>
               {t("settings")}
             </Button>

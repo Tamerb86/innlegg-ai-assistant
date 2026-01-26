@@ -55,3 +55,35 @@
 - [ ] Add onboarding tooltips for first-time users
 - [x] Improve user guidance throughout the app
 - [x] Add inspiring example prompts on Generate page as quick starters
+
+## AI Content Coach Feature (Unique & Innovative)
+- [x] Create content_analysis table in database
+- [x] Build content analysis engine (NLP-based scoring)
+- [x] Add analysis card after content generation
+- [ ] Create "My Progress" page with charts
+- [x] Build AI Coach Chat interface (Clawdbot-inspired)
+- [x] Add personalized recommendations system
+- [ ] Implement progress tracking over time
+
+## Saved Examples Feature
+- [x] Create saved_examples table in database
+- [x] Add "Save as Example" button in Posts page
+- [x] Create "My Examples" section in Generate page
+- [x] Build examples management interface
+
+## Telegram Bot + Social Media Integration
+- [ ] Set up Telegram Bot API
+- [ ] Build bot command handlers
+- [ ] Integrate Facebook Graph API for auto-posting
+- [ ] Add interactive buttons (Copy, Post, Edit)
+- [ ] Test end-to-end flow
+
+## Professional Landing Page
+- [x] Design hero section with compelling headline
+- [x] Add features showcase section
+- [x] Create pricing section (199 NOK/month)
+- [x] Add testimonials/social proof section
+- [x] Implement call-to-action buttons
+- [ ] Add FAQ section
+- [x] Optimize for mobile responsiveness
+- [x] Add Norwegian language content
