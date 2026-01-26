@@ -9,7 +9,7 @@ import { getLoginUrl } from "@/const";
 
 export default function Dashboard() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [, setLocation] = useLocation();
 
   const { data: subscription, isLoading: subLoading } = trpc.user.getSubscription.useQuery(undefined, {
@@ -177,9 +177,49 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground mb-4">{t("noPostsYet")}</p>
-                <Button onClick={() => setLocation("/generate")}>{t("createFirstPost")}</Button>
+              <div className="text-center py-12">
+                <Zap className="h-16 w-16 text-primary mx-auto mb-4 opacity-50" />
+                <h3 className="text-xl font-semibold mb-2">{t("noPostsYet")}</h3>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                  {language === "no" 
+                    ? "Begynn å lage profesjonelt innhold på sekunder! Skriv bare en idé, velg plattform og tone, og la AI gjøre resten."
+                    : "Start creating professional content in seconds! Just write an idea, choose platform and tone, and let AI do the rest."}
+                </p>
+                <div className="grid gap-4 md:grid-cols-3 max-w-2xl mx-auto mb-6 text-left">
+                  <div className="p-4 border rounded-lg">
+                    <Zap className="h-8 w-8 text-primary mb-2" />
+                    <h4 className="font-medium mb-1">
+                      {language === "no" ? "Rask generering" : "Fast generation"}
+                    </h4>
+                    <p className="text-sm text-muted-foreground">
+                      {language === "no" 
+                        ? "Fra idé til ferdig innlegg på 30 sekunder"
+                        : "From idea to finished post in 30 seconds"}
+                    </p>
+                  </div>
+                  <div className="p-4 border rounded-lg">
+                    <FileText className="h-8 w-8 text-primary mb-2" />
+                    <h4 className="font-medium mb-1">
+                      {language === "no" ? "4 plattformer" : "4 platforms"}
+                    </h4>
+                    <p className="text-sm text-muted-foreground">
+                      {language === "no" 
+                        ? "LinkedIn, Twitter, Instagram, Facebook"
+                        : "LinkedIn, Twitter, Instagram, Facebook"}
+                    </p>
+                  </div>
+                  <div className="p-4 border rounded-lg">
+                    <Zap className="h-8 w-8 text-primary mb-2" />
+                    <h4 className="font-medium mb-1">
+                      {language === "no" ? "Din stemme" : "Your voice"}
+                    </h4>
+                    <p className="text-sm text-muted-foreground">
+                      {language === "no" 
+                        ? "AI lærer din unike skrivest" : "AI learns your unique writing style"}
+                    </p>
+                  </div>
+                </div>
+                <Button size="lg" onClick={() => setLocation("/generate")}>{t("createFirstPost")}</Button>
               </div>
             )}
           </CardContent>

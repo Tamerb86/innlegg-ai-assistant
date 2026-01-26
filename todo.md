@@ -49,3 +49,8 @@
 - [ ] Prepare Railway deployment setup
 - [ ] Document deployment process
 - [ ] Create checkpoint and deliver project
+
+## UI/UX Improvements
+- [x] Add informative empty states with features explanation
+- [ ] Add onboarding tooltips for first-time users
+- [x] Improve user guidance throughout the app

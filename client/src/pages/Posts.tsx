@@ -159,20 +159,38 @@ export default function Posts() {
           </div>
         ) : (
           <Card>
-            <CardContent className="py-12">
-              <div className="text-center">
-                <Zap className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">{t("noPostsYet")}</h3>
-                <p className="text-muted-foreground mb-6">
-                  {language === "no"
-                    ? "Opprett ditt første innlegg ved å klikke på knappen nedenfor."
-                    : "Create your first post by clicking the button below."}
-                </p>
-                <Button onClick={() => setLocation("/generate")}>
-                  <Zap className="mr-2 h-4 w-4" />
-                  {t("createFirstPost")}
-                </Button>
+            <CardContent className="py-12 text-center">
+              <Zap className="h-16 w-16 text-primary mx-auto mb-4 opacity-50" />
+              <h3 className="text-xl font-semibold mb-2">{t("noPostsYet")}</h3>
+              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                {language === "no" 
+                  ? "Du har ikke generert noe innhold ennå. Klikk på knappen nedenfor for å lage ditt første profesjonelle innlegg!"
+                  : "You haven't generated any content yet. Click the button below to create your first professional post!"}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+                <div className="flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-primary" />
+                  <span className="text-sm">
+                    {language === "no" ? "30 sekunder" : "30 seconds"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Copy className="h-5 w-5 text-primary" />
+                  <span className="text-sm">
+                    {language === "no" ? "4 plattformer" : "4 platforms"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-primary" />
+                  <span className="text-sm">
+                    {language === "no" ? "Din stemme" : "Your voice"}
+                  </span>
+                </div>
               </div>
+              <Button size="lg" onClick={() => setLocation("/generate")}>
+                <Zap className="mr-2 h-4 w-4" />
+                {t("createFirstPost")}
+              </Button>
             </CardContent>
           </Card>
         )}
