@@ -408,3 +408,20 @@ export async function createBlogPost(post: InsertBlogPost): Promise<BlogPost | n
     return null;
   }
 }
+
+// Delete user and all related data (GDPR right to be forgotten)
+export async function deleteUser(userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Delete all user-related data
+  await db.delete(userPreferences).where(eq(userPreferences.userId, userId));
+  await db.delete(subscriptions).where(eq(subscriptions.userId, userId));
+  await db.delete(contentAnalysis).where(eq(contentAnalysis.userId, userId));
+  await db.delete(savedExamples).where(eq(savedExamples.userId, userId));
+  await db.delete(voiceSamples).where(eq(voiceSamples.userId, userId));
+  await db.delete(posts).where(eq(posts.userId, userId));
+  
+  // Finally, delete the user account
+  await db.delete(users).where(eq(users.id, userId));
+}

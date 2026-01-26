@@ -68,6 +68,49 @@ export const appRouter = router({
       
       return subscription;
     }),
+
+    // Export user data (GDPR right to data portability)
+    exportData: protectedProcedure.mutation(async ({ ctx }) => {
+      const { getUserPreference } = await import("./db");
+      
+      // Get user data (already in ctx.user)
+      const preferenceData = await getUserPreference(ctx.user.id);
+      
+      // TODO: Add other user-related data (posts, etc.) when those features are implemented
+      
+      return {
+        user: ctx.user,
+        preferences: preferenceData,
+        exportedAt: new Date().toISOString(),
+      };
+    }),
+
+    // Delete account (GDPR right to be forgotten)
+    deleteAccount: protectedProcedure
+      .input(z.object({ 
+        confirmation: z.literal("DELETE"),
+        reason: z.string().optional()
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { deleteUser } = await import("./db");
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        
+        // Delete user account and all related data
+        await deleteUser(ctx.user.id);
+        
+        // Clear session cookie
+        ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+        
+        // Log deletion reason if provided (for analytics)
+        if (input.reason) {
+          console.log(`Account deleted - User ID: ${ctx.user.id}, Reason: ${input.reason}`);
+        }
+        
+        return {
+          success: true,
+          message: "Din konto og alle data har blitt permanent slettet.",
+        };
+      }),
   }),
   
   content: router({

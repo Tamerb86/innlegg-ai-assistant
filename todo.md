@@ -201,3 +201,26 @@
 - [x] Add copy link button
 - [x] Integrate SocialShare component in BlogPost page
 - [x] Test social sharing functionality
+
+## Privacy Enhancements for Norwegian Users
+- [x] Add Cookie Consent Banner (GDPR compliant)
+  - [x] Create CookieConsent component with categorization (necessary, analytics, marketing)
+  - [x] Store user consent preferences in localStorage
+  - [x] Block non-essential cookies until consent given
+  - [ ] Add "Manage Cookies" link in footer
+- [x] Account Deletion & Right to be Forgotten
+  - [x] Add "Delete Account" button in Settings
+  - [x] Create account deletion tRPC procedure
+  - [x] Implement data export (JSON format) before deletion
+  - [x] Add confirmation dialog with warnings
+  - [x] Delete all user data (posts, profile, sessions)
+- [x] Data Encryption
+  - [x] Document that HTTPS/TLS is enforced (already active)
+  - [x] Add note about database encryption at rest (Railway feature)
+  - [ ] Consider client-side encryption for sensitive content (future enhancement)
+- [x] Update Privacy Policy
+  - [x] Add cookie usage details
+  - [x] Add data retention policy
+  - [x] Add account deletion process
+  - [x] Add data export rights
+  - [x] Add contact information for privacy requests

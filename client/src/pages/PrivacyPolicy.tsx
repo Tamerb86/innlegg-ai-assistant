@@ -48,6 +48,7 @@ export default function PrivacyPolicy() {
               <h3 className="font-semibold mb-2">2.1 Informasjon du gir oss</h3>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground">
                 <li>Navn og e-postadresse (ved registrering)</li>
+                <li>Informasjonskapselpreferanser (cookie consent)</li>
                 <li>Profilinformasjon (språkpreferanser, stemmeprøver)</li>
                 <li>Innhold du genererer gjennom tjenesten</li>
                 <li>Betalingsinformasjon (behandles av Vipps)</li>
@@ -188,12 +189,31 @@ export default function PrivacyPolicy() {
               </div>
             </div>
             <div className="bg-primary/10 p-4 rounded-lg border border-primary/20">
-              <p className="text-sm">
-                <strong>Utøv dine rettigheter:</strong> Kontakt oss på{" "}
-                <a href="mailto:privacy@nexify.no" className="text-primary hover:underline">
-                  privacy@nexify.no
-                </a>
+              <p className="text-sm mb-3">
+                <strong>Utøv dine rettigheter:</strong>
               </p>
+              <div className="space-y-2 text-sm">
+                <p>
+                  • <strong>Eksporter dataene dine:</strong> Gå til{" "}
+                  <a href="/account-settings" className="text-primary hover:underline font-medium">
+                    Kontoinnstillinger
+                  </a>{" "}
+                  for å laste ned alle dine data
+                </p>
+                <p>
+                  • <strong>Slett kontoen din:</strong> Gå til{" "}
+                  <a href="/account-settings" className="text-primary hover:underline font-medium">
+                    Kontoinnstillinger
+                  </a>{" "}
+                  for å slette kontoen permanent
+                </p>
+                <p>
+                  • <strong>Andre forespørsler:</strong> Kontakt oss på{" "}
+                  <a href="mailto:privacy@nexify.no" className="text-primary hover:underline">
+                    privacy@nexify.no
+                  </a>
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -201,8 +221,49 @@ export default function PrivacyPolicy() {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
+              <Database className="h-5 w-5" />
+              7. Informasjonskapsler (Cookies)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p>
+              Vi bruker informasjonskapsler for å forbedre din opplevelse på nettstedet vårt. Du kan administrere dine informasjonskapselpreferanser når som helst.
+            </p>
+            <div className="space-y-3">
+              <div className="bg-muted p-4 rounded-lg">
+                <h4 className="font-semibold mb-2">Nødvendige informasjonskapsler</h4>
+                <p className="text-sm text-muted-foreground">
+                  Disse er nødvendige for at nettstedet skal fungere og kan ikke deaktiveres. De brukes til autentisering og grunnleggende funksjonalitet.
+                </p>
+              </div>
+              <div className="bg-muted p-4 rounded-lg">
+                <h4 className="font-semibold mb-2">Analyse-informasjonskapsler (valgfritt)</h4>
+                <p className="text-sm text-muted-foreground">
+                  Hjelper oss å forstå hvordan besøkende bruker nettstedet, slik at vi kan forbedre brukeropplevelsen.
+                </p>
+              </div>
+              <div className="bg-muted p-4 rounded-lg">
+                <h4 className="font-semibold mb-2">Markedsførings-informasjonskapsler (valgfritt)</h4>
+                <p className="text-sm text-muted-foreground">
+                  Brukes til å vise deg relevante annonser basert på dine interesser.
+                </p>
+              </div>
+            </div>
+            <p className="text-sm">
+              Les mer i vår{" "}
+              <a href="/cookie-policy" className="text-primary hover:underline">
+                informasjonskapselretningslinjer
+              </a>
+              .
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
               <Lock className="h-5 w-5" />
-              7. Sikkerhet
+              8. Sikkerhet
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -223,7 +284,7 @@ export default function PrivacyPolicy() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Database className="h-5 w-5" />
-              8. Lagringstid
+              9. Lagringstid
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -241,7 +302,7 @@ export default function PrivacyPolicy() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Mail className="h-5 w-5" />
-              9. Kontakt oss
+              10. Kontakt oss
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -261,7 +322,7 @@ export default function PrivacyPolicy() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5" />
-              10. Endringer i personvernerklæringen
+              11. Endringer i personvernerklæringen
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
