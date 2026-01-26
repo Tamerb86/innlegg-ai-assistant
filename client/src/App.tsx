@@ -22,7 +22,8 @@ import CookieConsent from "@/components/CookieConsent";
 import AccountSettings from "@/pages/AccountSettings";
 import Contact from "@/pages/Contact";
 import BlogAdmin from "@/pages/BlogAdmin";
-import GlobalNav from "@/components/GlobalNav";
+import PageLayout from "@/components/PageLayout";
+
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -67,8 +68,9 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <CookieConsent />
-          <GlobalNav />
-          <Router />
+          <PageLayout>
+            <Router />
+          </PageLayout>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

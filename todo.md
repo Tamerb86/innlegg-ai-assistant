@@ -288,3 +288,11 @@
 - [x] Add publish/unpublish toggle
 - [x] Restrict access to admin users only
 - [ ] Test all CRUD operations
+
+## Simplify Global Navigation
+- [x] Create PageLayout component to conditionally show GlobalNav
+- [x] GlobalNav appears only on public pages (Blog, FAQ, Contact, Om oss)
+- [x] Landing page uses its own integrated navigation
+- [x] Dashboard pages use DashboardLayout sidebar (no GlobalNav)
+- [x] All secondary links (Blog, Om oss, FAQ, Kontakt) accessible in footer
+- [x] Test navigation on all pages
