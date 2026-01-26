@@ -192,3 +192,84 @@ export const invoices = mysqlTable("invoices", {
 
 export type Invoice = typeof invoices.$inferSelect;
 export type InsertInvoice = typeof invoices.$inferInsert;
+
+
+/**
+ * User Interests table - stores user's industry and content interests
+ * Used to personalize trending topics suggestions
+ */
+export const userInterests = mysqlTable("user_interests", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull().unique(),
+  industry: varchar("industry", { length: 100 }), // e.g., "tech", "marketing", "finance"
+  topics: text("topics"), // JSON array of interested topics
+  platforms: text("platforms"), // JSON array of preferred platforms
+  contentTypes: text("content_types"), // JSON array: "tips", "news", "thought-leadership", etc.
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type UserInterest = typeof userInterests.$inferSelect;
+export type InsertUserInterest = typeof userInterests.$inferInsert;
+
+/**
+ * Trending Topics table - stores curated trending topics
+ * Populated by admin or automated aggregation
+ */
+export const trendingTopics = mysqlTable("trending_topics", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  category: varchar("category", { length: 100 }).notNull(), // "tech", "marketing", "business", etc.
+  source: varchar("source", { length: 100 }), // "google_trends", "reddit", "linkedin", "manual"
+  sourceUrl: varchar("source_url", { length: 500 }),
+  trendScore: int("trend_score").default(50).notNull(), // 0-100 popularity score
+  region: varchar("region", { length: 10 }).default("NO").notNull(), // Country code
+  suggestedPlatforms: text("suggested_platforms"), // JSON array of best platforms for this topic
+  expiresAt: timestamp("expires_at"), // When this trend becomes stale
+  active: int("active").default(1).notNull(), // boolean as int
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type TrendingTopic = typeof trendingTopics.$inferSelect;
+export type InsertTrendingTopic = typeof trendingTopics.$inferInsert;
+
+/**
+ * Voice Profiles table - stores analyzed writing style for each user
+ * AI extracts patterns from user's writing samples
+ */
+export const voiceProfiles = mysqlTable("voice_profiles", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull().unique(),
+  
+  // Writing style characteristics (JSON)
+  toneProfile: text("tone_profile"), // {"formal": 0.7, "friendly": 0.3, ...}
+  vocabularyLevel: varchar("vocabulary_level", { length: 50 }), // "simple", "professional", "technical"
+  sentenceStyle: varchar("sentence_style", { length: 50 }), // "short", "medium", "long", "varied"
+  
+  // Common patterns
+  favoriteWords: text("favorite_words"), // JSON array of frequently used words
+  avoidWords: text("avoid_words"), // JSON array of words user never uses
+  signaturePhrases: text("signature_phrases"), // JSON array of user's unique expressions
+  
+  // Formatting preferences
+  usesEmojis: int("uses_emojis").default(0).notNull(), // boolean as int
+  usesHashtags: int("uses_hashtags").default(0).notNull(),
+  usesQuestions: int("uses_questions").default(0).notNull(),
+  usesBulletPoints: int("uses_bullet_points").default(0).notNull(),
+  
+  // Training status
+  samplesCount: int("samples_count").default(0).notNull(),
+  trainingStatus: mysqlEnum("training_status", ["not_started", "in_progress", "trained", "needs_update"]).default("not_started").notNull(),
+  lastTrainedAt: timestamp("last_trained_at"),
+  
+  // Full profile summary (AI-generated description)
+  profileSummary: text("profile_summary"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type VoiceProfile = typeof voiceProfiles.$inferSelect;
+export type InsertVoiceProfile = typeof voiceProfiles.$inferInsert;

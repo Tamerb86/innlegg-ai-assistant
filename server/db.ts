@@ -23,7 +23,16 @@ import {
   InsertSavedExample,
   blogPosts,
   BlogPost,
-  InsertBlogPost
+  InsertBlogPost,
+  voiceProfiles,
+  VoiceProfile,
+  InsertVoiceProfile,
+  userInterests,
+  UserInterest,
+  InsertUserInterest,
+  trendingTopics,
+  TrendingTopic,
+  InsertTrendingTopic
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -465,4 +474,193 @@ export async function getAllBlogPostsAdmin(): Promise<BlogPost[]> {
   if (!db) return [];
 
   return await db.select().from(blogPosts).orderBy(desc(blogPosts.createdAt));
+}
+
+
+// ============================================
+// Voice Training Functions
+// ============================================
+
+export async function getVoiceProfile(userId: number): Promise<VoiceProfile | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  try {
+    const results = await db
+      .select()
+      .from(voiceProfiles)
+      .where(eq(voiceProfiles.userId, userId))
+      .limit(1);
+    return results[0] || null;
+  } catch (error) {
+    console.error("[Database] Error fetching voice profile:", error);
+    return null;
+  }
+}
+
+
+
+export async function createOrUpdateVoiceProfile(
+  userId: number, 
+  profile: Partial<Omit<VoiceProfile, "id" | "userId" | "createdAt" | "updatedAt">>
+): Promise<VoiceProfile | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  try {
+    // Check if profile exists
+    const existing = await db
+      .select()
+      .from(voiceProfiles)
+      .where(eq(voiceProfiles.userId, userId))
+      .limit(1);
+    
+    if (existing[0]) {
+      // Update existing profile
+      await db.update(voiceProfiles)
+        .set({
+          ...profile,
+          updatedAt: new Date(),
+        })
+        .where(eq(voiceProfiles.userId, userId));
+      
+      const updated = await db
+        .select()
+        .from(voiceProfiles)
+        .where(eq(voiceProfiles.userId, userId))
+        .limit(1);
+      return updated[0] || null;
+    } else {
+      // Create new profile
+      const result = await db.insert(voiceProfiles).values({
+        userId,
+        ...profile,
+      } as InsertVoiceProfile);
+      
+      const insertedId = result[0].insertId;
+      const inserted = await db
+        .select()
+        .from(voiceProfiles)
+        .where(eq(voiceProfiles.id, insertedId))
+        .limit(1);
+      
+      return inserted[0] || null;
+    }
+  } catch (error) {
+    console.error("[Database] Error creating/updating voice profile:", error);
+    return null;
+  }
+}
+
+// ============================================
+// User Interests Functions
+// ============================================
+
+export async function getUserInterests(userId: number): Promise<UserInterest | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  try {
+    const results = await db
+      .select()
+      .from(userInterests)
+      .where(eq(userInterests.userId, userId))
+      .limit(1);
+    return results[0] || null;
+  } catch (error) {
+    console.error("[Database] Error fetching user interests:", error);
+    return null;
+  }
+}
+
+export async function createOrUpdateUserInterests(
+  userId: number,
+  interests: Partial<Omit<UserInterest, "id" | "userId" | "createdAt" | "updatedAt">>
+): Promise<UserInterest | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  try {
+    const existing = await db
+      .select()
+      .from(userInterests)
+      .where(eq(userInterests.userId, userId))
+      .limit(1);
+    
+    if (existing[0]) {
+      await db.update(userInterests)
+        .set({
+          ...interests,
+          updatedAt: new Date(),
+        })
+        .where(eq(userInterests.userId, userId));
+      
+      const updated = await db
+        .select()
+        .from(userInterests)
+        .where(eq(userInterests.userId, userId))
+        .limit(1);
+      return updated[0] || null;
+    } else {
+      const result = await db.insert(userInterests).values({
+        userId,
+        ...interests,
+      } as InsertUserInterest);
+      
+      const insertedId = result[0].insertId;
+      const inserted = await db
+        .select()
+        .from(userInterests)
+        .where(eq(userInterests.id, insertedId))
+        .limit(1);
+      
+      return inserted[0] || null;
+    }
+  } catch (error) {
+    console.error("[Database] Error creating/updating user interests:", error);
+    return null;
+  }
+}
+
+// ============================================
+// Trending Topics Functions
+// ============================================
+
+export async function getTrendingTopics(category?: string): Promise<TrendingTopic[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  try {
+    let query = db
+      .select()
+      .from(trendingTopics)
+      .where(eq(trendingTopics.active, 1))
+      .orderBy(desc(trendingTopics.trendScore));
+    
+    return await query;
+  } catch (error) {
+    console.error("[Database] Error fetching trending topics:", error);
+    return [];
+  }
+}
+
+export async function createTrendingTopic(topic: InsertTrendingTopic): Promise<TrendingTopic | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  try {
+    const result = await db.insert(trendingTopics).values(topic);
+    const insertedId = result[0].insertId;
+    
+    const inserted = await db
+      .select()
+      .from(trendingTopics)
+      .where(eq(trendingTopics.id, insertedId))
+      .limit(1);
+    
+    return inserted[0] || null;
+  } catch (error) {
+    console.error("[Database] Error creating trending topic:", error);
+    return null;
+  }
 }

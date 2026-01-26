@@ -26,6 +26,8 @@ import AccountSettings from "@/pages/AccountSettings";
 import Contact from "@/pages/Contact";
 import BlogAdmin from "@/pages/BlogAdmin";
 import PageLayout from "@/components/PageLayout";
+import Trends from "@/pages/Trends";
+import VoiceTraining from "@/pages/VoiceTraining";
 
 
 function Router() {
@@ -51,6 +53,8 @@ function Router() {
       <Route path={"/account-settings"} component={AccountSettings} />
       <Route path={"/contact"} component={Contact} />
       <Route path={"/admin/blog"} component={BlogAdmin} />
+      <Route path={"/trends"} component={Trends} />
+      <Route path={"/voice-training"} component={VoiceTraining} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

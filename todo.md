@@ -961,3 +961,40 @@
 - [x] Show upgrade prompt when trial users try to generate AI images
 - [x] Remove "GRATIS" label from Nano Banana (now PRO only)
 - [x] Both AI image models (Nano Banana & DALL-E 3) require Pro subscription
+
+
+## Phase 1 Implementation: Trend og Inspirasjon + Stemmetrening
+
+### Trend og Inspirasjon (Trending Topics)
+- [ ] Create trends database table (user_interests, trending_topics)
+- [ ] Create Trends page UI with category filters
+- [ ] Implement trending topics aggregation (simulated for MVP)
+- [ ] Add user interests selection in onboarding/settings
+- [ ] Connect trending topics to Generate page
+- [ ] Add "Use this topic" button on each trend
+- [ ] Filter trends by user's industry/interests
+
+### Stemmetrening (Voice Training)
+- [ ] Create voice_profiles database table
+- [ ] Create Voice Training page UI
+- [ ] Implement writing sample submission form
+- [ ] Build AI analysis to extract writing style
+- [ ] Store user voice profile (tone, vocabulary, patterns)
+- [ ] Apply learned style to content generation
+- [ ] Add voice profile status indicator in dashboard
+
+
+## Phase 1 Implementation: Trends & Voice Training (Jan 27, 2026)
+- [x] Create Trend og Inspirasjon page with curated trends
+- [x] Add trend categories (Teknologi, Business, Arbeidsliv, Markedsføring, etc.)
+- [x] Add trend sources (LinkedIn, Google Trends, Reddit, Twitter, etc.)
+- [x] Add trend score and popularity indicators
+- [x] Add "Bruk dette" button to use trends in content generation
+- [x] Create Stemmetrening (Voice Training) page
+- [x] Add voice sample collection interface
+- [x] Create voice profile analysis with LLM
+- [x] Store voice profile data (vocabulary, sentence style, emojis, hashtags, etc.)
+- [x] Add database tables (voiceProfiles, userInterests, trendingTopics)
+- [x] Add navigation links in DashboardNav (Trender, Stemme)
+- [x] Integrate voice profile toggle in Generate page
+- [x] Add "Use your voice" option for Pro subscribers

@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc";
-import { Copy, Loader2, Sparkles, Wand2, Upload, X, Image as ImageIcon } from "lucide-react";
+import { Copy, Loader2, Sparkles, Wand2, Upload, X, Image as ImageIcon, Mic, Flame } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
@@ -31,6 +31,8 @@ export default function Generate() {
   const [generatedImagePrompt, setGeneratedImagePrompt] = useState<string | null>(null);
 
   const { data: subscription } = trpc.user.getSubscription.useQuery();
+  const { data: voiceProfile } = trpc.voice.getProfile.useQuery();
+  const [useVoiceProfile, setUseVoiceProfile] = useState(false);
 
   const uploadImageMutation = trpc.blog.uploadImage.useMutation({
     onSuccess: (data) => {
@@ -326,6 +328,47 @@ export default function Generate() {
                     Legg til nøkkelord du vil inkludere i innholdet, skill med komma
                   </p>
                 </div>
+
+                {/* Voice Profile Toggle */}
+                {voiceProfile?.trainingStatus === "trained" && (
+                  <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        id="use-voice-profile"
+                        checked={useVoiceProfile}
+                        onChange={(e) => setUseVoiceProfile(e.target.checked)}
+                        className="h-4 w-4 rounded border-purple-300"
+                      />
+                      <div className="flex-1">
+                        <Label htmlFor="use-voice-profile" className="cursor-pointer font-medium flex items-center gap-2">
+                          <Mic className="h-4 w-4 text-purple-600" />
+                          Bruk din stemme
+                        </Label>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          AI vil skrive i din personlige stil basert på stemmetrening
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {!voiceProfile?.trainingStatus && subscription?.status === "active" && (
+                  <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Mic className="h-5 w-5 text-gray-400" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">Tren din stemme</p>
+                        <p className="text-xs text-muted-foreground">
+                          Lær AI å skrive som deg for mer personlig innhold
+                        </p>
+                      </div>
+                      <Button variant="outline" size="sm" onClick={() => setLocation("/voice-training")}>
+                        Start trening
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
                 {/* AI Image Generation */}
                 <div className="space-y-3">
