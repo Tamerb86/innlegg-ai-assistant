@@ -5,11 +5,19 @@ import { getLoginUrl } from "@/const";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Check, Globe, Sparkles, Zap } from "lucide-react";
 import { useLocation } from "wouter";
+import { useEffect } from "react";
 
 export default function Home() {
   const { isAuthenticated, loading } = useAuth();
   const { t, language, setLanguage } = useLanguage();
   const [, setLocation] = useLocation();
+
+  // Redirect authenticated users to dashboard
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      setLocation("/dashboard");
+    }
+  }, [loading, isAuthenticated, setLocation]);
 
   if (loading) {
     return (
@@ -20,8 +28,11 @@ export default function Home() {
   }
 
   if (isAuthenticated) {
-    setLocation("/dashboard");
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   return (
