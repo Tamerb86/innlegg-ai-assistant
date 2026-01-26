@@ -246,3 +246,45 @@
 - [x] Show search results count
 - [x] Add clear/reset search button
 - [x] Test blog search functionality
+
+## Project Rebranding (Nexify AI)
+- [x] Update project name from "Innlegg" to "Nexify AI"
+- [ ] Update logo and branding colors
+- [x] Update all page titles and meta tags
+- [x] Update footer company information
+- [x] Update navigation branding
+- [ ] Update VITE_APP_TITLE in Settings → General (requires manual update via Management UI)
+
+## Global Navigation Bar
+- [x] Create global navigation component
+- [x] Add navigation to all pages (Landing, Blog, Contact, etc.)
+- [x] Include Dashboard link for authenticated users
+- [x] Make navigation sticky on scroll
+- [x] Add mobile responsive menu
+- [x] Fix nested anchor tags error
+
+## AI Content Generator Feature (OpenAI Integration)
+- [x] Install openai package
+- [x] Request OPENAI_API_KEY from user
+- [x] Create openaiService.ts for OpenAI API calls
+- [x] Design content generator UI (platform selection, tone, length)
+- [x] Create database schema for generated posts
+- [x] Implement AI content generation using OpenAI GPT-4
+- [x] Add platform-specific formatting (LinkedIn, Twitter, Instagram, Facebook)
+- [x] Add content history and favorites
+- [x] Add edit and regenerate options
+- [ ] Test content generation for all platforms
+
+## Blog Admin Panel
+- [x] Add admin procedures to blog router (create, update, delete)
+- [x] Add admin query helpers in server/db.ts
+- [x] Create admin-only blog management page (/admin/blog)
+- [x] Add create new blog post form
+- [x] Add edit existing blog post functionality
+- [x] Add delete blog post with confirmation
+- [x] Add image URL input for cover images
+- [x] Add textarea for content (Markdown supported)
+- [x] Add category and tags management
+- [x] Add publish/unpublish toggle
+- [x] Restrict access to admin users only
+- [ ] Test all CRUD operations

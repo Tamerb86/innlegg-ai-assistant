@@ -116,15 +116,15 @@ export const appRouter = router({
   content: router({
     generate: protectedProcedure
       .input(z.object({
-        rawInput: z.string().min(1),
+        topic: z.string().min(1),
         platform: z.enum(["linkedin", "twitter", "instagram", "facebook"]),
-        tone: z.enum(["professional", "friendly", "motivational", "educational"]),
-        language: z.enum(["no", "en"]).optional(),
+        tone: z.enum(["professional", "casual", "friendly", "formal", "humorous"]).optional(),
+        length: z.enum(["short", "medium", "long"]).optional(),
+        keywords: z.array(z.string()).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { getUserSubscription, getUserVoiceSamples, createPost, incrementPostsGenerated, saveContentAnalysis, getUserPreference } = await import("./db");
-        const { generateContent } = await import("./contentGenerator");
-        const { analyzeContent } = await import("./contentAnalyzer");
+        const { getUserSubscription, incrementPostsGenerated } = await import("./db");
+        const { generateContent } = await import("./openaiService");
         
         // Check subscription limits
         const subscription = await getUserSubscription(ctx.user.id);
@@ -137,59 +137,46 @@ export const appRouter = router({
           throw new Error("Trial limit reached. Please upgrade to continue.");
         }
         
-        // Get user's voice samples for personalization
-        const voiceSamples = await getUserVoiceSamples(ctx.user.id);
-        const sampleTexts = voiceSamples.map(s => s.sampleText);
-        
-        // Get user language preference
-        const preference = await getUserPreference(ctx.user.id);
-        const userLanguage = preference?.language || "no";
-        
-        // Generate content
-        const result = await generateContent({
-          rawInput: input.rawInput,
+        // Generate content using OpenAI
+        const content = await generateContent({
           platform: input.platform,
+          topic: input.topic,
           tone: input.tone,
-          voiceSamples: sampleTexts,
-          language: input.language || userLanguage,
-        });
-        
-        // Save post to database
-        const post = await createPost({
-          userId: ctx.user.id,
-          platform: input.platform,
-          tone: input.tone,
-          rawInput: input.rawInput,
-          generatedContent: result.content,
-        });
-        
-        // Analyze content with AI Content Coach
-        const analysis = analyzeContent(result.content, input.platform, userLanguage);
-        
-        // Save analysis to database
-        await saveContentAnalysis({
-          postId: post.id,
-          userId: ctx.user.id,
-          wordCount: analysis.wordCount,
-          sentenceCount: analysis.sentenceCount,
-          questionCount: analysis.questionCount,
-          emojiCount: analysis.emojiCount,
-          hashtagCount: analysis.hashtagCount,
-          hasNumbers: analysis.hasNumbers ? 1 : 0,
-          hasCallToAction: analysis.hasCallToAction ? 1 : 0,
-          lengthScore: analysis.lengthScore,
-          engagementScore: analysis.engagementScore,
-          readabilityScore: analysis.readabilityScore,
-          overallScore: analysis.overallScore,
-          strengths: JSON.stringify(analysis.strengths),
-          improvements: JSON.stringify(analysis.improvements),
-          tips: JSON.stringify(analysis.tips),
+          length: input.length,
+          keywords: input.keywords,
         });
         
         // Increment posts generated count
         await incrementPostsGenerated(ctx.user.id);
         
-        return { post, analysis };
+        // Get updated subscription
+        const updatedSubscription = await getUserSubscription(ctx.user.id);
+        
+        return { 
+          content,
+          postsGenerated: updatedSubscription?.postsGenerated || 0,
+          postsRemaining: updatedSubscription?.status === "trial" 
+            ? (updatedSubscription.trialPostsLimit - updatedSubscription.postsGenerated)
+            : null,
+        };
+      }),
+      
+    improve: protectedProcedure
+      .input(z.object({
+        content: z.string().min(1),
+        platform: z.enum(["linkedin", "twitter", "instagram", "facebook"]),
+        improvementType: z.enum(["grammar", "engagement", "clarity", "tone"]),
+      }))
+      .mutation(async ({ input }) => {
+        const { improveContent } = await import("./openaiService");
+        
+        const improvedContent = await improveContent(
+          input.content,
+          input.platform,
+          input.improvementType
+        );
+        
+        return { content: improvedContent };
       }),
       
     list: protectedProcedure.query(async ({ ctx }) => {
@@ -388,6 +375,78 @@ Provide helpful, actionable advice. Be encouraging but honest. Keep responses co
       .query(async ({ input }) => {
         const { getBlogPostsByCategory } = await import("./db");
         return await getBlogPostsByCategory(input.category);
+      }),
+      
+    // Admin procedures
+    adminList: protectedProcedure.query(async ({ ctx }) => {
+      // Check if user is admin
+      if (ctx.user.role !== "admin") {
+        throw new Error("Unauthorized: Admin access required");
+      }
+      
+      const { getAllBlogPostsAdmin } = await import("./db");
+      return await getAllBlogPostsAdmin();
+    }),
+    
+    create: protectedProcedure
+      .input(z.object({
+        title: z.string().min(1),
+        slug: z.string().min(1),
+        excerpt: z.string().min(1),
+        content: z.string().min(1),
+        category: z.enum(["tips", "guides", "news", "case-studies"]),
+        tags: z.string().optional(),
+        authorName: z.string().min(1),
+        readingTime: z.number().min(1),
+        imageUrl: z.string().optional(),
+        published: z.number().min(0).max(1),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Check if user is admin
+        if (ctx.user.role !== "admin") {
+          throw new Error("Unauthorized: Admin access required");
+        }
+        
+        const { createBlogPost } = await import("./db");
+        return await createBlogPost(input as any);
+      }),
+      
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        title: z.string().min(1).optional(),
+        slug: z.string().min(1).optional(),
+        excerpt: z.string().min(1).optional(),
+        content: z.string().min(1).optional(),
+        category: z.enum(["tips", "guides", "news", "case-studies"]).optional(),
+        tags: z.string().optional(),
+        author: z.string().min(1).optional(),
+        imageUrl: z.string().optional(),
+        published: z.number().min(0).max(1).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Check if user is admin
+        if (ctx.user.role !== "admin") {
+          throw new Error("Unauthorized: Admin access required");
+        }
+        
+        const { id, ...updates } = input;
+        const { updateBlogPostAdmin } = await import("./db");
+        await updateBlogPostAdmin(id, updates as any);
+        return { success: true };
+      }),
+      
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        // Check if user is admin
+        if (ctx.user.role !== "admin") {
+          throw new Error("Unauthorized: Admin access required");
+        }
+        
+        const { deleteBlogPostAdmin } = await import("./db");
+        await deleteBlogPostAdmin(input.id);
+        return { success: true };
       }),
   }),
 });

@@ -425,3 +425,33 @@ export async function deleteUser(userId: number): Promise<void> {
   // Finally, delete the user account
   await db.delete(users).where(eq(users.id, userId));
 }
+
+// ============================================
+// Blog Management Functions (Admin)
+// ============================================
+
+export async function updateBlogPostAdmin(id: number, updates: Partial<Omit<BlogPost, "id" | "createdAt">>): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(blogPosts)
+    .set({
+      ...updates,
+      updatedAt: new Date(),
+    })
+    .where(eq(blogPosts.id, id));
+}
+
+export async function deleteBlogPostAdmin(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(blogPosts).where(eq(blogPosts.id, id));
+}
+
+export async function getAllBlogPostsAdmin(): Promise<BlogPost[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(blogPosts).orderBy(desc(blogPosts.createdAt));
+}

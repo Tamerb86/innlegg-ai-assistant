@@ -30,7 +30,7 @@ export default function CookiePolicy() {
             <div className="bg-muted p-4 rounded-lg">
               <p className="text-sm font-semibold mb-2">Hvorfor bruker vi informasjonskapsler?</p>
               <p className="text-sm text-muted-foreground">
-                Vi bruker informasjonskapsler for å gjøre Innlegg-tjenesten bedre, sikrere og mer personlig tilpasset for deg.
+                Vi bruker informasjonskapsler for å gjøre Nexify AI-tjenesten bedre, sikrere og mer personlig tilpasset for deg.
               </p>
             </div>
           </CardContent>
@@ -185,7 +185,7 @@ export default function CookiePolicy() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p>
-              Ved å bruke Innlegg-tjenesten samtykker du til bruk av informasjonskapsler som beskrevet i denne policyen.
+              Ved å bruke Nexify AI-tjenesten samtykker du til bruk av informasjonskapsler som beskrevet i denne policyen.
             </p>
             <div className="bg-muted p-4 rounded-lg">
               <p className="text-sm font-semibold mb-2">Trekke tilbake samtykke</p>

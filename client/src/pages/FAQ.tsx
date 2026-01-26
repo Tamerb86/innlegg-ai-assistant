@@ -23,20 +23,20 @@ export default function FAQ() {
       bgColor: "bg-blue-100 dark:bg-blue-900/20",
       questions: [
         {
-          q: "Hvordan starter jeg med Innlegg?",
+          q: "Hvordan starter jeg med Nexify AI?",
           a: "Det er enkelt! Registrer deg med din e-postadresse, velg en abonnementsplan (eller start med gratis prøveperiode), og du er klar til å generere ditt første innlegg på under 30 sekunder. Ingen kredittkort kreves for prøveperioden."
         },
         {
-          q: "Trenger jeg teknisk kunnskap for å bruke Innlegg?",
-          a: "Absolutt ikke! Innlegg er designet for å være intuitivt og brukervennlig. Du trenger bare å skrive inn ideen eller emnet ditt, og AI-en tar seg av resten. Ingen kodekunnskap eller teknisk erfaring er nødvendig."
+          q: "Trenger jeg teknisk kunnskap for å bruke Nexify AI?",
+          a: "Absolutt ikke! Nexify AI er designet for å være intuitivt og brukervennlig. Du trenger bare å skrive inn ideen eller emnet ditt, og AI-en tar seg av resten. Ingen kodekunnskap eller teknisk erfaring er nødvendig."
         },
         {
           q: "Hvor lang tid tar det å lage et innlegg?",
-          a: "Med Innlegg kan du generere profesjonelt innhold på kun 30 sekunder! Skriv inn emnet ditt, velg tone og stil, og AI-en leverer et ferdig innlegg klar til publisering eller videre redigering."
+          a: "Med Nexify AI kan du generere profesjonelt innhold på kun 30 sekunder! Skriv inn emnet ditt, velg tone og stil, og AI-en leverer et ferdig innlegg klar til publisering eller videre redigering."
         },
         {
-          q: "Kan jeg prøve Innlegg gratis?",
-          a: "Ja! Vi tilbyr en gratis prøveperiode på 14 dager med full tilgang til alle funksjoner. Du kan generere opptil 5 innlegg uten å oppgi betalingsinformasjon. Perfekt for å teste om Innlegg passer for deg."
+          q: "Kan jeg prøve Nexify AI gratis?",
+          a: "Ja! Vi tilbyr en gratis prøveperiode på 14 dager med full tilgang til alle funksjoner. Du kan generere opptil 5 innlegg uten å oppgi betalingsinformasjon. Perfekt for å teste om Nexify AI passer for deg."
         }
       ]
     },
@@ -51,8 +51,8 @@ export default function FAQ() {
           a: "Vi aksepterer alle vanlige betalingskort (Visa, Mastercard, American Express) og Vipps – Norges mest populære betalingsløsning. Alle betalinger er sikre og krypterte."
         },
         {
-          q: "Hva koster Innlegg?",
-          a: "Innlegg koster 199 NOK per måned for ubegrenset tilgang til alle funksjoner, inkludert AI Content Generator og personlig AI Content Coach. Vi tilbyr også årlig abonnement med 20% rabatt (1 910 NOK/år)."
+          q: "Hva koster Nexify AI?",
+          a: "Nexify AI koster 199 NOK per måned for ubegrenset tilgang til alle funksjoner, inkludert AI Content Generator og personlig AI Content Coach. Vi tilbyr også årlig abonnement med 20% rabatt (1 910 NOK/år)."
         },
         {
           q: "Kan jeg kansellere abonnementet mitt når som helst?",
@@ -60,7 +60,7 @@ export default function FAQ() {
         },
         {
           q: "Tilbyr dere refusjon?",
-          a: "Ja! Vi tilbyr 30 dagers pengene-tilbake-garanti hvis du ikke er fornøyd med Innlegg. Ingen spørsmål stilt – bare kontakt support@nexify.no for full refusjon."
+          a: "Ja! Vi tilbyr 30 dagers pengene-tilbake-garanti hvis du ikke er fornøyd med Nexify AI. Ingen spørsmål stilt – bare kontakt support@nexify.no for full refusjon."
         },
         {
           q: "Hva skjer hvis jeg overskrider innlegg-kvoten min?",
@@ -76,7 +76,7 @@ export default function FAQ() {
       questions: [
         {
           q: "Hvilke typer innhold kan jeg generere?",
-          a: "Innlegg støtter alle typer innhold for sosiale medier: Facebook-innlegg, Instagram-tekster, LinkedIn-artikler, Twitter/X-tråder, blogginnlegg, produktbeskrivelser, og mer. AI-en tilpasser tonen og stilen basert på plattformen."
+          a: "Nexify AI støtter alle typer innhold for sosiale medier: Facebook-innlegg, Instagram-tekster, LinkedIn-artikler, Twitter/X-tråder, blogginnlegg, produktbeskrivelser, og mer. AI-en tilpasser tonen og stilen basert på plattformen."
         },
         {
           q: "Kan jeg redigere innholdet etter generering?",
@@ -87,8 +87,8 @@ export default function FAQ() {
           a: "AI Content Coach er din personlige skriveassistent som gir deg tilbakemeldinger på innholdet ditt, foreslår forbedringer, og hjelper deg å utvikle bedre skriveferdigheter over tid. Det er som å ha en profesjonell copywriter ved din side."
         },
         {
-          q: "Støtter Innlegg flere språk?",
-          a: "Ja! Innlegg støtter norsk, engelsk, svensk, dansk, og mange andre språk. Du kan generere innhold på hvilket som helst språk, og AI-en vil tilpasse seg kulturelle nyanser og lokale uttrykk."
+          q: "Støtter Nexify AI flere språk?",
+          a: "Ja! Nexify AI støtter norsk, engelsk, svensk, dansk, og mange andre språk. Du kan generere innhold på hvilket som helst språk, og AI-en vil tilpasse seg kulturelle nyanser og lokale uttrykk."
         },
         {
           q: "Kan jeg lagre og gjenbruke innlegg?",
@@ -107,8 +107,8 @@ export default function FAQ() {
           a: "Gå til 'Innstillinger' → 'Abonnement' i dashboardet ditt. Der kan du oppgradere, nedgradere, eller kansellere abonnementet ditt. Endringer trer i kraft umiddelbart eller ved neste faktureringsperiode."
         },
         {
-          q: "Kan jeg bruke Innlegg på flere enheter?",
-          a: "Ja! Innlegg er en nettbasert tjeneste som fungerer på alle enheter – PC, Mac, nettbrett, og mobil. Logg inn med samme konto på alle enhetene dine, og innholdet ditt synkroniseres automatisk."
+          q: "Kan jeg bruke Nexify AI på flere enheter?",
+          a: "Ja! Nexify AI er en nettbasert tjeneste som fungerer på alle enheter – PC, Mac, nettbrett, og mobil. Logg inn med samme konto på alle enhetene dine, og innholdet ditt synkroniseres automatisk."
         },
         {
           q: "Hvordan endrer jeg e-postadressen min?",
@@ -135,8 +135,8 @@ export default function FAQ() {
           a: "Kun du har tilgang til ditt innhold. Vi deler aldri, selger, eller bruker innholdet ditt til treningsformål uten ditt eksplisitte samtykke. Dine data er dine."
         },
         {
-          q: "Er Innlegg GDPR-kompatibel?",
-          a: "Ja, Innlegg er fullt GDPR-kompatibel. Vi respekterer dine rettigheter til datainnsyn, sletting, og portabilitet. Les vår personvernerklæring for fullstendige detaljer."
+          q: "Er Nexify AI GDPR-kompatibel?",
+          a: "Ja, Nexify AI er fullt GDPR-kompatibel. Vi respekterer dine rettigheter til datainnsyn, sletting, og portabilitet. Les vår personvernerklæring for fullstendige detaljer."
         },
         {
           q: "Bruker dere innholdet mitt til å trene AI-modellen?",
@@ -204,7 +204,7 @@ export default function FAQ() {
           <HelpCircle className="h-20 w-20 mx-auto mb-6" />
           <h1 className="text-5xl font-bold mb-6">Ofte stilte spørsmål (FAQ)</h1>
           <p className="text-xl max-w-3xl mx-auto leading-relaxed">
-            Finn svar på de vanligste spørsmålene om Innlegg. Finner du ikke det du leter etter? 
+            Finn svar på de vanligste spørsmålene om Nexify AI. Finner du ikke det du leter etter? 
             Kontakt oss på <a href="mailto:support@nexify.no" className="underline hover:text-blue-200">support@nexify.no</a>
           </p>
         </div>

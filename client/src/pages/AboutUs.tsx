@@ -39,7 +39,7 @@ export default function AboutUs() {
               Samtidig var AI-teknologien i ferd med å revolusjonere måten vi jobber på.
             </p>
             <p>
-              Resultatet ble <strong>Innlegg</strong> – vår første AI-drevne løsning som kombinerer 
+              Resultatet ble <strong>Nexify AI</strong> – vår første AI-drevne løsning som kombinerer 
               kraftig innholdsgenerering med personlig coaching. Vi tror ikke bare på å gi deg verktøyene, 
               men også på å hjelpe deg å bli bedre i det du gjør.
             </p>
@@ -170,7 +170,7 @@ export default function AboutUs() {
                     <span className="text-2xl">⚡</span>
                   </div>
                   <div>
-                    <h5 className="font-semibold mb-1">Innlegg - AI Content Generator</h5>
+                    <h5 className="font-semibold mb-1">Nexify AI - AI Content Generator</h5>
                     <p className="text-muted-foreground">
                       Lag profesjonelt innhold for sosiale medier på 30 sekunder. Med AI Content Coach 
                       som gir deg personlig tilbakemelding og hjelper deg å forbedre ferdighetene dine.

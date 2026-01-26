@@ -69,7 +69,7 @@ export default function BlogPost() {
   return (
     <>
       <Helmet>
-        <title>{post.title} - Innlegg Blog</title>
+        <title>{post.title} - Nexify AI Blog</title>
         <meta name="description" content={post.excerpt} />
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.excerpt} />
@@ -185,7 +185,7 @@ export default function BlogPost() {
           <div className="mt-12 p-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg text-center">
             <h2 className="text-2xl font-bold mb-4">Klar til å lage profesjonelt innhold?</h2>
             <p className="mb-6 text-blue-100">
-              Prøv Innlegg gratis i 14 dager og oppdag hvor enkelt det er å lage engasjerende innhold.
+              Prøv Nexify AI gratis i 14 dager og oppdag hvor enkelt det er å lage engasjerende innhold.
             </p>
             <Link href="/landing">
               <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">

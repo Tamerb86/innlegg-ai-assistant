@@ -30,7 +30,7 @@ export default function Landing() {
           <div className="flex items-center gap-2">
             <Zap className="h-8 w-8 text-primary animate-pulse" />
             <span className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-              Innlegg
+              Nexify AI
             </span>
           </div>
           <div className="flex items-center gap-4">
@@ -161,7 +161,7 @@ export default function Landing() {
             <div className="grid md:grid-cols-2 gap-8 mb-16">
               <Card className="border-red-200 bg-red-50/50">
                 <CardContent className="pt-6">
-                  <h3 className="text-xl font-bold mb-4 text-red-700">Uten Innlegg:</h3>
+                  <h3 className="text-xl font-bold mb-4 text-red-700">Uten Nexify AI:</h3>
                   <ul className="space-y-3">
                     <li className="flex items-start gap-2">
                       <span className="text-red-500 mt-1">❌</span>
@@ -185,7 +185,7 @@ export default function Landing() {
 
               <Card className="border-green-200 bg-green-50/50">
                 <CardContent className="pt-6">
-                  <h3 className="text-xl font-bold mb-4 text-green-700">Med Innlegg:</h3>
+                  <h3 className="text-xl font-bold mb-4 text-green-700">Med Nexify AI:</h3>
                   <ul className="space-y-3">
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
@@ -219,7 +219,7 @@ export default function Landing() {
               Unike funksjoner
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Hvorfor Innlegg er <span className="text-primary">annerledes</span>
+              Hvorfor Nexify AI er <span className="text-primary">annerledes</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Ikke bare en AI-generator. En komplett løsning for innholdsskaping.
@@ -328,7 +328,7 @@ export default function Landing() {
                   ChatGPT, Jasper, Copy.ai - ingen tilbyr AI Coach, lagrede eksempler, og personlig chat i ett verktøy.
                 </p>
                 <Badge className="bg-gradient-to-r from-primary to-purple-600 text-white">
-                  Innlegg = Generator + Trener + Bibliotek
+                  Nexify AI = Generator + Trener + Bibliotek
                 </Badge>
               </CardContent>
             </Card>
@@ -472,7 +472,7 @@ export default function Landing() {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-4">
-                  "Innlegg har spart meg 10 timer hver uke. AI Coach gir meg tips jeg aldri ville tenkt på selv!"
+                  "Nexify AI har spart meg 10 timer hver uke. AI Coach gir meg tips jeg aldri ville tenkt på selv!"
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold">
@@ -516,7 +516,7 @@ export default function Landing() {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-4">
-                  "Engasjementet mitt på LinkedIn har økt med 300% siden jeg begynte å bruke Innlegg!"
+                  "Engasjementet mitt på LinkedIn har økt med 300% siden jeg begynte å bruke Nexify AI!"
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-white font-bold">
@@ -569,7 +569,7 @@ export default function Landing() {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <Zap className="h-6 w-6" />
-                <span className="text-xl font-bold">Innlegg</span>
+                <span className="text-xl font-bold">Nexify AI</span>
               </div>
               <p className="text-sm text-gray-400 mb-4">
                 Din AI-assistent for profesjonelt innhold på sosiale medier.
@@ -620,7 +620,7 @@ export default function Landing() {
           </div>
           <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
             <p>&copy; {new Date().getFullYear()} Nexify CRM Systems AS. Alle rettigheter reservert.</p>
-            <p className="mt-2">Innlegg - AI-drevet innholdsgenerator for sosiale medier</p>
+            <p className="mt-2">Nexify AI - AI-drevet innholdsgenerator for sosiale medier</p>
           </div>
         </div>
       </footer>

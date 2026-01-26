@@ -21,6 +21,8 @@ import BlogPost from "@/pages/BlogPost";
 import CookieConsent from "@/components/CookieConsent";
 import AccountSettings from "@/pages/AccountSettings";
 import Contact from "@/pages/Contact";
+import BlogAdmin from "@/pages/BlogAdmin";
+import GlobalNav from "@/components/GlobalNav";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -42,6 +44,7 @@ function Router() {
       <Route path={"/blog/:slug"} component={BlogPost} />
       <Route path={"/account-settings"} component={AccountSettings} />
       <Route path={"/contact"} component={Contact} />
+      <Route path={"/admin/blog"} component={BlogAdmin} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
@@ -64,6 +67,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <CookieConsent />
+          <GlobalNav />
           <Router />
         </TooltipProvider>
       </ThemeProvider>

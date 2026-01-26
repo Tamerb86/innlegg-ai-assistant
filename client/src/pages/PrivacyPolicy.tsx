@@ -25,7 +25,7 @@ export default function PrivacyPolicy() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p>
-              Nexify CRM Systems AS er behandlingsansvarlig for personopplysninger som samles inn og behandles gjennom Innlegg-tjenesten.
+              Nexify CRM Systems AS er behandlingsansvarlig for personopplysninger som samles inn og behandles gjennom Nexify AI-tjenesten.
             </p>
             <div className="bg-muted p-4 rounded-lg">
               <p className="font-semibold mb-2">Kontaktinformasjon:</p>
@@ -291,7 +291,7 @@ export default function PrivacyPolicy() {
             <p>Vi lagrer personopplysninger så lenge det er nødvendig for formålene de ble samlet inn for:</p>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground">
               <li><strong>Kontodata:</strong> Så lenge kontoen er aktiv + 3 måneder etter sletting</li>
-              <li><strong>Innlegg og innhold:</strong> Så lenge kontoen er aktiv</li>
+              <li><strong>Nexify AI og innhold:</strong> Så lenge kontoen er aktiv</li>
               <li><strong>Betalingshistorikk:</strong> 5 år (bokføringsloven)</li>
               <li><strong>Loggdata:</strong> 12 måneder</li>
             </ul>
@@ -330,7 +330,7 @@ export default function PrivacyPolicy() {
               Vi kan oppdatere denne personvernerklæringen fra tid til annen. Vesentlige endringer vil bli kommunisert via e-post eller ved innlogging på tjenesten. Vi oppfordrer deg til å gjennomgå denne erklæringen regelmessig.
             </p>
             <p className="text-sm text-muted-foreground italic">
-              Ved å fortsette å bruke Innlegg etter endringer er publisert, aksepterer du den oppdaterte personvernerklæringen.
+              Ved å fortsette å bruke Nexify AI etter endringer er publisert, aksepterer du den oppdaterte personvernerklæringen.
             </p>
           </CardContent>
         </Card>

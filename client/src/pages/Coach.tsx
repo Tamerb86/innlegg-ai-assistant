@@ -114,7 +114,7 @@ export default function Coach() {
         <div className="container flex items-center justify-between h-16">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => setLocation("/dashboard")}>
             <Zap className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">Innlegg</span>
+            <span className="text-xl font-bold">Nexify AI</span>
           </div>
           
           <div className="flex items-center gap-4">
