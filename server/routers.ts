@@ -199,6 +199,73 @@ export const appRouter = router({
         return { content: improvedContent };
       }),
       
+    generateImageDallE: protectedProcedure
+      .input(z.object({
+        topic: z.string().min(1),
+        platform: z.enum(["linkedin", "twitter", "instagram", "facebook"]),
+        tone: z.enum(["professional", "casual", "friendly", "formal", "humorous"]),
+        keywords: z.array(z.string()).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { getUserSubscription } = await import("./db");
+        const { generateOptimizedImagePrompt } = await import("./imagePromptOptimizer");
+        const { generateImageWithDallE } = await import("./openaiService");
+        
+        // Check subscription - DALL-E 3 is Pro only
+        const subscription = await getUserSubscription(ctx.user.id);
+        if (!subscription || subscription.status === "trial") {
+          throw new Error("DALL-E 3 image generation requires a Pro subscription. Please upgrade or use Nano Banana (free).");
+        }
+        
+        // Generate optimized prompt
+        const optimizedPrompt = generateOptimizedImagePrompt({
+          topic: input.topic,
+          platform: input.platform,
+          tone: input.tone,
+          keywords: input.keywords,
+        });
+        
+        // Generate image with DALL-E 3
+        const imageUrl = await generateImageWithDallE(optimizedPrompt.prompt);
+        
+        return { 
+          url: imageUrl,
+          prompt: optimizedPrompt.prompt,
+        };
+      }),
+      
+    generateImageNanoBanana: protectedProcedure
+      .input(z.object({
+        topic: z.string().min(1),
+        platform: z.enum(["linkedin", "twitter", "instagram", "facebook"]),
+        tone: z.enum(["professional", "casual", "friendly", "formal", "humorous"]),
+        keywords: z.array(z.string()).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { generateSimplifiedPrompt } = await import("./imagePromptOptimizer");
+        const { generateImage } = await import("./_core/imageGeneration");
+        
+        // Generate simplified prompt for Nano Banana/Gemini
+        const prompt = generateSimplifiedPrompt({
+          topic: input.topic,
+          platform: input.platform,
+          tone: input.tone,
+          keywords: input.keywords,
+        });
+        
+        // Generate image with Manus built-in image generation (Gemini)
+        const result = await generateImage({ prompt });
+        
+        if (!result.url) {
+          throw new Error("Failed to generate image");
+        }
+        
+        return { 
+          url: result.url,
+          prompt,
+        };
+      }),
+      
     list: protectedProcedure.query(async ({ ctx }) => {
       const { getUserPosts } = await import("./db");
       return getUserPosts(ctx.user.id);

@@ -138,3 +138,53 @@ Return ONLY the improved content, no explanations or meta-commentary.`,
     throw new Error("Failed to improve content. Please try again.");
   }
 }
+
+/**
+ * Generate image using DALL-E 3
+ * @param prompt - Detailed image generation prompt
+ * @returns URL of the generated image stored in S3
+ */
+export async function generateImageWithDallE(prompt: string): Promise<string> {
+  try {
+    const response = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: prompt,
+      n: 1,
+      size: "1024x1024",
+      quality: "standard", // or "hd" for higher quality (costs more)
+      response_format: "url",
+    });
+
+    if (!response.data || response.data.length === 0) {
+      throw new Error("No image data returned from DALL-E 3");
+    }
+    
+    const imageUrl = response.data[0]?.url;
+    if (!imageUrl) {
+      throw new Error("No image URL returned from DALL-E 3");
+    }
+
+    // Download the image and upload to S3
+    const imageResponse = await fetch(imageUrl);
+    if (!imageResponse.ok) {
+      throw new Error(`Failed to download image from DALL-E: ${imageResponse.statusText}`);
+    }
+
+    const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+    
+    // Upload to S3
+    const { storagePut } = await import("./storage");
+    const timestamp = Date.now();
+    const randomSuffix = Math.random().toString(36).substring(7);
+    const { url } = await storagePut(
+      `generated/dalle-${timestamp}-${randomSuffix}.png`,
+      imageBuffer,
+      "image/png"
+    );
+
+    return url;
+  } catch (error) {
+    console.error("Error generating image with DALL-E 3:", error);
+    throw new Error(`Failed to generate image with DALL-E 3: ${error instanceof Error ? error.message : "Unknown error"}`);
+  }
+}

@@ -360,3 +360,27 @@
 - [x] Add drag-and-drop style upload UI
 - [x] Add file validation (type and 5MB size limit)
 - [x] Test image upload functionality
+
+## AI Image Generation Feature
+- [x] Create JSON prompt optimizer function for high-quality image prompts
+- [x] Create imagePromptOptimizer.ts with generateOptimizedImagePrompt() and generateSimplifiedPrompt()
+- [x] Add platform-specific styles (LinkedIn, Twitter, Instagram, Facebook)
+- [x] Add tone-specific modifiers (professional, casual, friendly, formal, humorous)
+- [x] Add tRPC procedure for DALL-E 3 image generation (Pro subscribers only)
+- [x] Add tRPC procedure for Nano Banana/Gemini image generation (Free for all)
+- [x] Add generateImageWithDallE() function in openaiService.ts
+- [x] Add subscription check for DALL-E 3 (Pro only)
+- [x] Add UI checkbox "Generate Image with AI" in Generate page
+- [x] Add radio buttons to choose between DALL-E 3 (Pro) and Nano Banana (Free)
+- [x] Show subscription requirement message for DALL-E 3 if user is on free trial
+- [x] Disable DALL-E 3 option for trial users
+- [x] Generate optimized image prompt based on post content
+- [x] Display generated image with regenerate option
+- [x] Store generated image URL with post (uploadedImage state)
+- [x] Add loading states for image generation (isGeneratingImage)
+- [x] Add error handling for image generation failures
+- [x] Add "Generer bilde" button with loading spinner
+- [x] Add visual badges (GRATIS for Nano Banana, PRO for DALL-E 3)
+- [x] Test UI implementation in browser - Working perfectly
+- [ ] Update OpenAI API key to test DALL-E 3 generation
+- [ ] Write vitest tests for image generation procedures

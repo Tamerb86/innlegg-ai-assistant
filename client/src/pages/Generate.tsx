@@ -25,6 +25,12 @@ export default function Generate() {
   const [postsRemaining, setPostsRemaining] = useState<number | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [generateAIImage, setGenerateAIImage] = useState(false);
+  const [imageGenerationType, setImageGenerationType] = useState<"dalle" | "nanoBanana">("nanoBanana");
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [generatedImagePrompt, setGeneratedImagePrompt] = useState<string | null>(null);
+
+  const { data: subscription } = trpc.user.getSubscription.useQuery();
 
   const uploadImageMutation = trpc.blog.uploadImage.useMutation({
     onSuccess: (data) => {
@@ -35,6 +41,32 @@ export default function Generate() {
     onError: (error) => {
       setIsUploadingImage(false);
       toast.error(error.message || "Kunne ikke laste opp bilde");
+    },
+  });
+
+  const generateImageDallEMutation = trpc.content.generateImageDallE.useMutation({
+    onSuccess: (data) => {
+      setUploadedImage(data.url);
+      setGeneratedImagePrompt(data.prompt);
+      setIsGeneratingImage(false);
+      toast.success("Bilde generert med DALL-E 3!");
+    },
+    onError: (error) => {
+      setIsGeneratingImage(false);
+      toast.error(error.message || "Kunne ikke generere bilde");
+    },
+  });
+
+  const generateImageNanoBananaMutation = trpc.content.generateImageNanoBanana.useMutation({
+    onSuccess: (data) => {
+      setUploadedImage(data.url);
+      setGeneratedImagePrompt(data.prompt);
+      setIsGeneratingImage(false);
+      toast.success("Bilde generert med Nano Banana!");
+    },
+    onError: (error) => {
+      setIsGeneratingImage(false);
+      toast.error(error.message || "Kunne ikke generere bilde");
     },
   });
 
@@ -150,7 +182,35 @@ export default function Generate() {
 
   const handleRemoveImage = () => {
     setUploadedImage(null);
+    setGeneratedImagePrompt(null);
     toast.success("Bilde fjernet");
+  };
+
+  const handleGenerateAIImage = () => {
+    if (!topic.trim()) {
+      toast.error("Vennligst skriv inn et emne først");
+      return;
+    }
+
+    const keywordsArray = keywords
+      .split(",")
+      .map((k) => k.trim())
+      .filter((k) => k.length > 0);
+
+    setIsGeneratingImage(true);
+
+    const imageInput = {
+      topic,
+      platform,
+      tone,
+      keywords: keywordsArray.length > 0 ? keywordsArray : undefined,
+    };
+
+    if (imageGenerationType === "dalle") {
+      generateImageDallEMutation.mutate(imageInput);
+    } else {
+      generateImageNanoBananaMutation.mutate(imageInput);
+    }
   };
 
   const platformInfo = {
@@ -267,41 +327,154 @@ export default function Generate() {
                   </p>
                 </div>
 
-                {/* Image Upload */}
-                <div className="space-y-2">
-                  <Label htmlFor="image">Bilde (valgfritt)</Label>
-                  {!uploadedImage ? (
-                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
-                      <input
-                        type="file"
-                        id="image-upload"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="hidden"
-                        disabled={isUploadingImage}
-                      />
-                      <label htmlFor="image-upload" className="cursor-pointer">
-                        <div className="flex flex-col items-center gap-2">
-                          {isUploadingImage ? (
-                            <>
-                              <Loader2 className="h-8 w-8 text-primary animate-spin" />
-                              <p className="text-sm text-muted-foreground">Laster opp...</p>
-                            </>
-                          ) : (
-                            <>
-                              <Upload className="h-8 w-8 text-muted-foreground" />
-                              <p className="text-sm font-medium">Klikk for å laste opp bilde</p>
-                              <p className="text-xs text-muted-foreground">PNG, JPG, GIF opptil 5MB</p>
-                            </>
-                          )}
+                {/* AI Image Generation */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="generate-ai-image"
+                      checked={generateAIImage}
+                      onChange={(e) => setGenerateAIImage(e.target.checked)}
+                      className="h-4 w-4 rounded border-gray-300"
+                    />
+                    <Label htmlFor="generate-ai-image" className="cursor-pointer font-medium">
+                      🎨 Generer bilde med AI
+                    </Label>
+                  </div>
+
+                  {generateAIImage && (
+                    <div className="space-y-3 pl-6 border-l-2 border-primary/30">
+                      <div className="space-y-2">
+                        <Label>Velg AI-modell</Label>
+                        <div className="space-y-2">
+                          <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-accent transition-colors">
+                            <input
+                              type="radio"
+                              name="image-type"
+                              value="nanoBanana"
+                              checked={imageGenerationType === "nanoBanana"}
+                              onChange={(e) => setImageGenerationType(e.target.value as "dalle" | "nanoBanana")}
+                              className="h-4 w-4"
+                            />
+                            <div className="flex-1">
+                              <div className="font-medium flex items-center gap-2">
+                                🍌 Nano Banana (Gemini)
+                                <span className="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">GRATIS</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground">God kvalitet, rask generering</p>
+                            </div>
+                          </label>
+
+                          <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-accent transition-colors">
+                            <input
+                              type="radio"
+                              name="image-type"
+                              value="dalle"
+                              checked={imageGenerationType === "dalle"}
+                              onChange={(e) => setImageGenerationType(e.target.value as "dalle" | "nanoBanana")}
+                              className="h-4 w-4"
+                              disabled={subscription?.status === "trial"}
+                            />
+                            <div className="flex-1">
+                              <div className="font-medium flex items-center gap-2">
+                                ✨ DALL-E 3
+                                <span className="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full">PRO</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground">
+                                {subscription?.status === "trial" 
+                                  ? "Krever Pro-abonnement" 
+                                  : "Høyeste kvalitet, profesjonell"}
+                              </p>
+                            </div>
+                          </label>
                         </div>
-                      </label>
+                      </div>
+
+                      <Button
+                        onClick={handleGenerateAIImage}
+                        disabled={isGeneratingImage || !topic.trim()}
+                        variant="outline"
+                        className="w-full"
+                      >
+                        {isGeneratingImage ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Genererer bilde...
+                          </>
+                        ) : (
+                          <>
+                            <ImageIcon className="mr-2 h-4 w-4" />
+                            Generer bilde
+                          </>
+                        )}
+                      </Button>
                     </div>
-                  ) : (
+                  )}
+                </div>
+
+                {/* Image Upload or Display */}
+                {!generateAIImage && (
+                  <div className="space-y-2">
+                    <Label htmlFor="image">Eller last opp bilde manuelt</Label>
+                    {!uploadedImage ? (
+                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+                        <input
+                          type="file"
+                          id="image-upload"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                          disabled={isUploadingImage}
+                        />
+                        <label htmlFor="image-upload" className="cursor-pointer">
+                          <div className="flex flex-col items-center gap-2">
+                            {isUploadingImage ? (
+                              <>
+                                <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                                <p className="text-sm text-muted-foreground">Laster opp...</p>
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="h-8 w-8 text-muted-foreground" />
+                                <p className="text-sm font-medium">Klikk for å laste opp bilde</p>
+                                <p className="text-xs text-muted-foreground">PNG, JPG, GIF opptil 5MB</p>
+                              </>
+                            )}
+                          </div>
+                        </label>
+                      </div>
+                    ) : (
+                      <div className="relative border rounded-lg overflow-hidden">
+                        <img
+                          src={uploadedImage}
+                          alt="Uploaded"
+                          className="w-full h-48 object-cover"
+                        />
+                        <button
+                          onClick={handleRemoveImage}
+                          className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
+                          aria-label="Fjern bilde"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                        {generatedImagePrompt && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 text-xs">
+                            🤖 AI-generert
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Show uploaded/generated image when AI generation is enabled */}
+                {generateAIImage && uploadedImage && (
+                  <div className="space-y-2">
+                    <Label>Generert bilde</Label>
                     <div className="relative border rounded-lg overflow-hidden">
                       <img
                         src={uploadedImage}
-                        alt="Uploaded"
+                        alt="AI Generated"
                         className="w-full h-48 object-cover"
                       />
                       <button
@@ -311,12 +484,23 @@ export default function Generate() {
                       >
                         <X className="h-4 w-4" />
                       </button>
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent text-white p-3">
+                        <p className="text-xs font-medium">
+                          🤖 Generert med {imageGenerationType === "dalle" ? "DALL-E 3" : "Nano Banana"}
+                        </p>
+                      </div>
                     </div>
-                  )}
-                  <p className="text-xs text-muted-foreground">
-                    Last opp et bilde som skal følge med innlegget ditt
-                  </p>
-                </div>
+                    <Button
+                      onClick={handleGenerateAIImage}
+                      disabled={isGeneratingImage}
+                      variant="ghost"
+                      size="sm"
+                      className="w-full"
+                    >
+                      🔄 Regenerer bilde
+                    </Button>
+                  </div>
+                )}
 
                 {/* Generate Button */}
                 <Button
