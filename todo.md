@@ -54,3 +54,4 @@
 - [x] Add informative empty states with features explanation
 - [ ] Add onboarding tooltips for first-time users
 - [x] Improve user guidance throughout the app
+- [x] Add inspiring example prompts on Generate page as quick starters

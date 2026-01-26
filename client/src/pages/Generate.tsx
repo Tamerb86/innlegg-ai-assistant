@@ -121,6 +121,71 @@ export default function Generate() {
                 rows={6}
                 className="resize-none"
               />
+              
+              {/* Example Prompts */}
+              {!rawInput && (
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    {language === "no" ? "Trenger du inspirasjon? Prøv disse:" : "Need inspiration? Try these:"}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setRawInput(language === "no" 
+                        ? "Vi har nettopp lansert vårt nye produkt som hjelper bedrifter med digital transformasjon"
+                        : "We just launched our new product that helps businesses with digital transformation")}
+                    >
+                      {language === "no" ? "🚀 Produktlansering" : "🚀 Product launch"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setRawInput(language === "no" 
+                        ? "5 tips for å øke produktiviteten i teamet ditt"
+                        : "5 tips to increase your team's productivity")}
+                    >
+                      {language === "no" ? "💡 Tips og råd" : "💡 Tips & advice"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setRawInput(language === "no" 
+                        ? "Vi søker etter en dyktig utvikler til vårt team i Oslo"
+                        : "We're looking for a talented developer to join our team in Oslo")}
+                    >
+                      {language === "no" ? "👥 Jobbmulighet" : "👥 Job opportunity"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setRawInput(language === "no" 
+                        ? "Takk til alle som deltok på vårt webinar i dag! Her er hovedpunktene"
+                        : "Thanks to everyone who attended our webinar today! Here are the key takeaways")}
+                    >
+                      {language === "no" ? "🎯 Event oppsummering" : "🎯 Event recap"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setRawInput(language === "no" 
+                        ? "Hvordan kunstig intelligens endrer måten vi jobber på"
+                        : "How artificial intelligence is changing the way we work")}
+                    >
+                      {language === "no" ? "🤖 Teknologi trend" : "🤖 Tech trend"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setRawInput(language === "no" 
+                        ? "Feirer 5 år i business! Takk til alle våre kunder og partnere"
+                        : "Celebrating 5 years in business! Thanks to all our customers and partners")}
+                    >
+                      {language === "no" ? "🎉 Milepæl" : "🎉 Milestone"}
+                    </Button>
+                  </div>
+                </div>
+              )}
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
