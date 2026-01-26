@@ -242,6 +242,17 @@ export async function updateUserPreference(userId: number, language: "no" | "en"
   await db.update(userPreferences).set({ language, updatedAt: new Date() }).where(eq(userPreferences.userId, userId));
 }
 
+export async function updateUserOpenAIConsent(userId: number, consent: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(userPreferences).set({ 
+    openaiConsent: consent, 
+    consentDate: new Date(),
+    updatedAt: new Date() 
+  }).where(eq(userPreferences.userId, userId));
+}
+
 // ============ Content Analysis Queries ============
 
 export async function saveContentAnalysis(analysis: InsertContentAnalysis): Promise<ContentAnalysis> {

@@ -53,6 +53,25 @@ export const appRouter = router({
         return { success: true };
       }),
       
+    updateOpenAIConsent: protectedProcedure
+      .input(z.object({ consent: z.number().min(0).max(2) })) // 0 = not asked, 1 = accepted, 2 = declined
+      .mutation(async ({ ctx, input }) => {
+        const { updateUserOpenAIConsent, getUserPreference, createUserPreference } = await import("./db");
+        
+        const existing = await getUserPreference(ctx.user.id);
+        if (existing) {
+          await updateUserOpenAIConsent(ctx.user.id, input.consent);
+        } else {
+          await createUserPreference({
+            userId: ctx.user.id,
+            language: "no",
+            openaiConsent: input.consent,
+          });
+        }
+        
+        return { success: true };
+      }),
+      
     getSubscription: protectedProcedure.query(async ({ ctx }) => {
       const { getUserSubscription, createSubscription } = await import("./db");
       let subscription = await getUserSubscription(ctx.user.id);

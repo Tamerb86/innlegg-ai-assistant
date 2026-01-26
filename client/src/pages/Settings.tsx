@@ -5,10 +5,98 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Zap } from "lucide-react";
+import { Zap, AlertTriangle } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
+
+function DeleteAccountDialog({ language }: { language: "no" | "en" }) {
+  const [open, setOpen] = useState(false);
+  const [confirmation, setConfirmation] = useState("");
+  const deleteAccountMutation = trpc.user.deleteAccount.useMutation({
+    onSuccess: () => {
+      toast.success(language === "no" ? "Kontoen din er slettet" : "Your account has been deleted");
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
+    },
+    onError: (error) => {
+      toast.error(error.message || (language === "no" ? "Kunne ikke slette konto" : "Could not delete account"));
+    },
+  });
+
+  const handleDelete = () => {
+    if (confirmation === "DELETE") {
+      deleteAccountMutation.mutate({ confirmation: "DELETE" });
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="destructive">
+          {language === "no" ? "Slett konto" : "Delete Account"}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle className="text-red-600 dark:text-red-400 flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5" />
+            {language === "no" ? "Bekreft sletting av konto" : "Confirm Account Deletion"}
+          </DialogTitle>
+          <DialogDescription className="space-y-3 pt-4">
+            <p className="font-semibold text-foreground">
+              {language === "no"
+                ? "Dette vil permanent slette:"
+                : "This will permanently delete:"}
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-sm">
+              <li>{language === "no" ? "All kontoinformasjon" : "All account information"}</li>
+              <li>{language === "no" ? "Alle genererte innlegg" : "All generated posts"}</li>
+              <li>{language === "no" ? "Alle opplastede bilder" : "All uploaded images"}</li>
+              <li>{language === "no" ? "Abonnementshistorikk" : "Subscription history"}</li>
+            </ul>
+            <p className="text-red-600 dark:text-red-400 font-semibold pt-2">
+              {language === "no"
+                ? "⚠️ Denne handlingen kan IKKE angres!"
+                : "⚠️ This action CANNOT be undone!"}
+            </p>
+            <div className="pt-4 space-y-2">
+              <Label>
+                {language === "no"
+                  ? 'Skriv "DELETE" for å bekrefte:'
+                  : 'Type "DELETE" to confirm:'}
+              </Label>
+              <Input
+                value={confirmation}
+                onChange={(e) => setConfirmation(e.target.value)}
+                placeholder="DELETE"
+                className="font-mono"
+              />
+            </div>
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="gap-2 sm:gap-0">
+          <Button variant="outline" onClick={() => setOpen(false)} disabled={deleteAccountMutation.isPending}>
+            {language === "no" ? "Avbryt" : "Cancel"}
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={confirmation !== "DELETE" || deleteAccountMutation.isPending}
+          >
+            {deleteAccountMutation.isPending
+              ? (language === "no" ? "Sletter..." : "Deleting...")
+              : (language === "no" ? "Slett konto permanent" : "Delete Account Permanently")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export default function Settings() {
   const { user, isAuthenticated, loading: authLoading, logout } = useAuth();
@@ -125,6 +213,24 @@ export default function Settings() {
               <Button onClick={() => setLocation("/subscription")}>
                 {t("manageSubscription")}
               </Button>
+            </CardContent>
+          </Card>
+
+          {/* Delete Account */}
+          <Card className="border-red-200 dark:border-red-900">
+            <CardHeader>
+              <CardTitle className="text-red-600 dark:text-red-400 flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5" />
+                {language === "no" ? "Slett konto" : "Delete Account"}
+              </CardTitle>
+              <CardDescription>
+                {language === "no"
+                  ? "Slett kontoen din permanent. Denne handlingen kan ikke angres."
+                  : "Permanently delete your account. This action cannot be undone."}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <DeleteAccountDialog language={language} />
             </CardContent>
           </Card>
 

@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc";
-import { Copy, Loader2, Sparkles, Wand2 } from "lucide-react";
+import { Copy, Loader2, Sparkles, Wand2, Upload, X, Image as ImageIcon } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
@@ -23,6 +23,20 @@ export default function Generate() {
   const [keywords, setKeywords] = useState("");
   const [generatedContent, setGeneratedContent] = useState("");
   const [postsRemaining, setPostsRemaining] = useState<number | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
+  const uploadImageMutation = trpc.blog.uploadImage.useMutation({
+    onSuccess: (data) => {
+      setUploadedImage(data.url);
+      setIsUploadingImage(false);
+      toast.success("Bilde lastet opp!");
+    },
+    onError: (error) => {
+      setIsUploadingImage(false);
+      toast.error(error.message || "Kunne ikke laste opp bilde");
+    },
+  });
 
   const generateMutation = trpc.content.generate.useMutation({
     onSuccess: (data) => {
@@ -97,6 +111,46 @@ export default function Generate() {
   const handleCopy = () => {
     navigator.clipboard.writeText(generatedContent);
     toast.success("Kopiert til utklippstavlen!");
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Vennligst last opp et bilde");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Bildet er for stort. Maks 5MB.");
+      return;
+    }
+
+    setIsUploadingImage(true);
+
+    try {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        uploadImageMutation.mutate({
+          fileData: base64String,
+          fileName: file.name,
+          contentType: file.type,
+        });
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      setIsUploadingImage(false);
+      toast.error("Kunne ikke laste opp bilde");
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setUploadedImage(null);
+    toast.success("Bilde fjernet");
   };
 
   const platformInfo = {
@@ -210,6 +264,57 @@ export default function Generate() {
                   />
                   <p className="text-xs text-muted-foreground">
                     Legg til nøkkelord du vil inkludere i innholdet, skill med komma
+                  </p>
+                </div>
+
+                {/* Image Upload */}
+                <div className="space-y-2">
+                  <Label htmlFor="image">Bilde (valgfritt)</Label>
+                  {!uploadedImage ? (
+                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+                      <input
+                        type="file"
+                        id="image-upload"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                        disabled={isUploadingImage}
+                      />
+                      <label htmlFor="image-upload" className="cursor-pointer">
+                        <div className="flex flex-col items-center gap-2">
+                          {isUploadingImage ? (
+                            <>
+                              <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                              <p className="text-sm text-muted-foreground">Laster opp...</p>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="h-8 w-8 text-muted-foreground" />
+                              <p className="text-sm font-medium">Klikk for å laste opp bilde</p>
+                              <p className="text-xs text-muted-foreground">PNG, JPG, GIF opptil 5MB</p>
+                            </>
+                          )}
+                        </div>
+                      </label>
+                    </div>
+                  ) : (
+                    <div className="relative border rounded-lg overflow-hidden">
+                      <img
+                        src={uploadedImage}
+                        alt="Uploaded"
+                        className="w-full h-48 object-cover"
+                      />
+                      <button
+                        onClick={handleRemoveImage}
+                        className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
+                        aria-label="Fjern bilde"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Last opp et bilde som skal følge med innlegget ditt
                   </p>
                 </div>
 

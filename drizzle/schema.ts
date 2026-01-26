@@ -81,6 +81,8 @@ export const userPreferences = mysqlTable("user_preferences", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("user_id").notNull().unique(),
   language: mysqlEnum("language", ["no", "en"]).default("no").notNull(),
+  openaiConsent: int("openai_consent").default(0).notNull(), // boolean as int: 0 = not asked, 1 = accepted, 2 = declined
+  consentDate: timestamp("consent_date"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });

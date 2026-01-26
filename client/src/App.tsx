@@ -13,12 +13,15 @@ import Settings from "./pages/Settings";
 import Coach from "./pages/Coach";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import CookiePolicy from "./pages/CookiePolicy";
 import AboutUs from "./pages/AboutUs";
 import FAQ from "@/pages/FAQ";
 import Blog from "@/pages/Blog";
 import BlogPost from "@/pages/BlogPost";
 import CookieConsent from "@/components/CookieConsent";
+import OpenAIConsentBanner from "@/components/OpenAIConsentBanner";
 import AccountSettings from "@/pages/AccountSettings";
 import Contact from "@/pages/Contact";
 import BlogAdmin from "@/pages/BlogAdmin";
@@ -38,6 +41,8 @@ function Router() {
       <Route path={"/settings"} component={Settings} />
       <Route path={"/privacy-policy"} component={PrivacyPolicy} />
       <Route path={"/terms-of-service"} component={TermsOfService} />
+      <Route path={"/privacy"} component={Privacy} />
+      <Route path={"/terms"} component={Terms} />
       <Route path={"/cookie-policy"} component={CookiePolicy} />
       <Route path={"/about-us"} component={AboutUs} />
       <Route path={"/faq"} component={FAQ} />
@@ -68,6 +73,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <CookieConsent />
+          <OpenAIConsentBanner />
           <PageLayout>
             <Router />
           </PageLayout>

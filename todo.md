@@ -336,3 +336,27 @@
 - [x] Improve empty state with helpful guidance
 - [x] Test quick start examples functionality in browser
 - [x] Keep existing Quick Actions cards (Compare, Tips, Challenge) below
+
+## GDPR Compliance & Privacy Features
+- [x] Create Privacy Policy page (/privacy) with Norwegian + English content
+- [x] Create Terms of Service page (/terms) with Norwegian + English content
+- [x] Add routes for Privacy and Terms pages
+- [x] Create Consent Banner component for OpenAI data processing
+- [x] Store user consent in database (userPreferences table: openaiConsent field)
+- [x] Show consent banner on first login (openaiConsent === 0)
+- [x] Add tRPC procedure updateOpenAIConsent for storing consent
+- [x] Add database migration for openaiConsent and consentDate fields
+- [x] Add "Delete Account" option in Settings page
+- [x] Create DeleteAccountDialog component with confirmation
+- [x] Require typing "DELETE" to confirm account deletion
+- [x] Use existing tRPC user.deleteAccount procedure
+- [x] Test GDPR compliance features
+
+## Manual Image Upload in Generate Page
+- [x] Add image upload component to Generate page
+- [x] Use existing blog.uploadImage tRPC procedure for S3 upload
+- [x] Add image preview after upload with remove button
+- [x] Store uploaded image URL in state
+- [x] Add drag-and-drop style upload UI
+- [x] Add file validation (type and 5MB size limit)
+- [x] Test image upload functionality
