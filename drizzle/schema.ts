@@ -25,4 +25,65 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Posts table - stores generated social media content
+ */
+export const posts = mysqlTable("posts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  platform: mysqlEnum("platform", ["linkedin", "twitter", "instagram", "facebook"]).notNull(),
+  tone: varchar("tone", { length: 50 }).notNull(), // professional, friendly, motivational, educational
+  rawInput: text("raw_input").notNull(),
+  generatedContent: text("generated_content").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Post = typeof posts.$inferSelect;
+export type InsertPost = typeof posts.$inferInsert;
+
+/**
+ * Voice samples table - stores user's writing examples for tone training
+ */
+export const voiceSamples = mysqlTable("voice_samples", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  sampleText: text("sample_text").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type VoiceSample = typeof voiceSamples.$inferSelect;
+export type InsertVoiceSample = typeof voiceSamples.$inferInsert;
+
+/**
+ * Subscriptions table - tracks user subscription status
+ */
+export const subscriptions = mysqlTable("subscriptions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull().unique(),
+  status: mysqlEnum("status", ["trial", "active", "cancelled", "expired"]).default("trial").notNull(),
+  postsGenerated: int("posts_generated").default(0).notNull(),
+  trialPostsLimit: int("trial_posts_limit").default(5).notNull(),
+  vippsOrderId: varchar("vipps_order_id", { length: 255 }),
+  subscriptionStartDate: timestamp("subscription_start_date"),
+  subscriptionEndDate: timestamp("subscription_end_date"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Subscription = typeof subscriptions.$inferSelect;
+export type InsertSubscription = typeof subscriptions.$inferInsert;
+
+/**
+ * User preferences table - stores language and other settings
+ */
+export const userPreferences = mysqlTable("user_preferences", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull().unique(),
+  language: mysqlEnum("language", ["no", "en"]).default("no").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type UserPreference = typeof userPreferences.$inferSelect;
+export type InsertUserPreference = typeof userPreferences.$inferInsert;

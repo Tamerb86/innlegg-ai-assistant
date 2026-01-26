@@ -43,8 +43,9 @@
 }
 
 :root {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
+  /* Norwegian blue as primary color */
+  --primary: oklch(0.48 0.18 250);
+  --primary-foreground: oklch(0.98 0 0);
   --sidebar-primary: var(--color-blue-600);
   --sidebar-primary-foreground: var(--color-blue-50);
   --chart-1: var(--color-blue-300);
