@@ -129,3 +129,30 @@
 - [x] Add route to App.tsx
 - [x] Add link to footer and navigation
 - [x] Test accordion interactions
+
+## FAQ Search Feature
+- [x] Add search input field at top of FAQ page
+- [x] Implement real-time search filtering
+- [ ] Highlight matching text in results
+- [x] Show "No results found" message when no matches
+- [x] Test search functionality with various keywords
+- [x] Ensure search is case-insensitive
+- [x] Add clear/reset search button
+
+## Vipps Payment Integration (On Hold - Awaiting Decision)
+- [x] Research Vipps API documentation and requirements
+- [ ] Obtain Vipps API credentials (test and production) - Requires Norwegian business registration
+- [ ] Design subscription database schema (plans, subscriptions, payments)
+- [ ] Create subscription plans (Free trial, Monthly 199 NOK, Yearly 1910 NOK)
+- [ ] Implement Vipps payment flow (initiate, callback, verification)
+- [ ] Create subscription management UI (upgrade, downgrade, cancel)
+- [ ] Add payment history page
+- [ ] Implement subscription status checks in protected routes
+- [ ] Add webhook handling for Vipps payment events
+- [ ] Test payment flow in Vipps test environment
+- [ ] Add error handling and user feedback for payment failures
+- [ ] Implement subscription expiry and renewal logic
+- [ ] Add email notifications for payment events
+- [ ] Create admin panel for subscription management
+
+**Note**: Direct Vipps integration requires Norwegian business registration. Alternative: Use Stripe with Vipps payment method support.

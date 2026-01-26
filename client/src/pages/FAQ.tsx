@@ -1,15 +1,19 @@
+import { useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { HelpCircle, Rocket, CreditCard, Settings, Shield, Users, Zap } from "lucide-react";
+import { HelpCircle, Rocket, CreditCard, Settings, Shield, Users, Zap, Search, X } from "lucide-react";
 
 export default function FAQ() {
   const { t } = useLanguage();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const faqCategories = [
     {
@@ -166,6 +170,32 @@ export default function FAQ() {
     }
   ];
 
+  // Filter FAQ categories based on search query
+  const filteredCategories = useMemo(() => {
+    if (!searchQuery.trim()) return faqCategories;
+
+    const query = searchQuery.toLowerCase();
+    return faqCategories
+      .map(category => ({
+        ...category,
+        questions: category.questions.filter(
+          item =>
+            item.q.toLowerCase().includes(query) ||
+            item.a.toLowerCase().includes(query)
+        )
+      }))
+      .filter(category => category.questions.length > 0);
+  }, [searchQuery]);
+
+  const totalResults = filteredCategories.reduce(
+    (sum, cat) => sum + cat.questions.length,
+    0
+  );
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -181,7 +211,58 @@ export default function FAQ() {
       </section>
 
       <div className="container mx-auto px-4 py-12 max-w-5xl">
-        {faqCategories.map((category, categoryIndex) => {
+        {/* Search Box */}
+        <Card className="mb-8 p-6">
+          <div className="flex items-center gap-3 mb-2">
+            <Search className="h-5 w-5 text-muted-foreground" />
+            <h3 className="text-lg font-semibold">Søk i FAQ</h3>
+          </div>
+          <div className="relative">
+            <Input
+              type="text"
+              placeholder="Skriv inn nøkkelord for å finne svar raskt..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pr-10"
+            />
+            {searchQuery && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
+                onClick={handleClearSearch}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          {searchQuery && (
+            <p className="text-sm text-muted-foreground mt-2">
+              {totalResults > 0
+                ? `Fant ${totalResults} resultat${totalResults !== 1 ? 'er' : ''}`
+                : 'Ingen resultater funnet'}
+            </p>
+          )}
+        </Card>
+
+        {/* Results or No Results Message */}
+        {filteredCategories.length === 0 ? (
+          <Card className="p-12 text-center">
+            <HelpCircle className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+            <h3 className="text-xl font-semibold mb-2">Ingen resultater funnet</h3>
+            <p className="text-muted-foreground mb-6">
+              Prøv andre søkeord eller kontakt oss direkte på{' '}
+              <a href="mailto:support@nexify.no" className="text-blue-600 hover:underline">
+                support@nexify.no
+              </a>
+            </p>
+            <Button onClick={handleClearSearch} variant="outline">
+              Nullstill søk
+            </Button>
+          </Card>
+        ) : (
+          <>
+        {filteredCategories.map((category, categoryIndex) => {
           const Icon = category.icon;
           return (
             <Card key={categoryIndex} className="mb-8">
@@ -209,6 +290,8 @@ export default function FAQ() {
             </Card>
           );
         })}
+          </>
+        )}
 
         {/* Contact CTA */}
         <Card className="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white border-0 mt-12">
