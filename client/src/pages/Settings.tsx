@@ -5,13 +5,175 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Zap, AlertTriangle } from "lucide-react";
+import { Zap, AlertTriangle, CreditCard, CheckCircle2, Crown, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
+
+function SubscriptionCard({ language }: { language: "no" | "en" }) {
+  const { data: subscription, isLoading } = trpc.user.getSubscription.useQuery();
+  const createCheckoutMutation = trpc.stripe.createCheckoutSession.useMutation({
+    onSuccess: (data) => {
+      // Open Stripe Checkout in new tab
+      window.open(data.url, "_blank");
+      toast.success(language === "no" ? "Omdirigerer til betaling..." : "Redirecting to payment...");
+    },
+    onError: (error) => {
+      toast.error(error.message || (language === "no" ? "Kunne ikke starte betaling" : "Could not start payment"));
+    },
+  });
+
+  const getPortalMutation = trpc.stripe.getPortalUrl.useMutation({
+    onSuccess: (data) => {
+      window.open(data.url, "_blank");
+    },
+    onError: (error) => {
+      toast.error(error.message || (language === "no" ? "Kunne ikke åpne kundeportal" : "Could not open customer portal"));
+    },
+  });
+
+  const handleUpgrade = (plan: "PRO_MONTHLY" | "PRO_YEARLY") => {
+    createCheckoutMutation.mutate({ productKey: plan });
+  };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="py-8 flex justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const isPro = subscription?.status === "active";
+  const isTrial = subscription?.status === "trial";
+
+  return (
+    <Card className={isPro ? "border-green-200 bg-gradient-to-br from-green-50/50 to-emerald-50/50" : ""}>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          {isPro ? (
+            <>
+              <Crown className="h-5 w-5 text-green-600" />
+              <span className="text-green-700">
+                {language === "no" ? "Pro-abonnement" : "Pro Subscription"}
+              </span>
+            </>
+          ) : (
+            <>
+              <CreditCard className="h-5 w-5" />
+              {language === "no" ? "Abonnement" : "Subscription"}
+            </>
+          )}
+        </CardTitle>
+        <CardDescription>
+          {isPro
+            ? (language === "no" ? "Du har full tilgang til alle funksjoner" : "You have full access to all features")
+            : (language === "no" ? "Oppgrader for å låse opp alle funksjoner" : "Upgrade to unlock all features")}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {isPro ? (
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-green-700">
+              <CheckCircle2 className="h-5 w-5" />
+              <span className="font-medium">
+                {language === "no" ? "Aktiv til: " : "Active until: "}
+                {subscription?.subscriptionEndDate
+                  ? new Date(subscription.subscriptionEndDate).toLocaleDateString("nb-NO")
+                  : "Ubegrenset"}
+              </span>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => getPortalMutation.mutate()}
+              disabled={getPortalMutation.isPending}
+            >
+              {getPortalMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
+              {language === "no" ? "Administrer abonnement" : "Manage Subscription"}
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {isTrial && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                <p className="text-sm text-amber-800">
+                  <Zap className="h-4 w-4 inline mr-1" />
+                  {language === "no"
+                    ? `Du har ${5 - (subscription?.postsGenerated || 0)} innlegg igjen i prøveperioden`
+                    : `You have ${5 - (subscription?.postsGenerated || 0)} posts left in your trial`}
+                </p>
+              </div>
+            )}
+            
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* Monthly Plan */}
+              <div className="border rounded-lg p-4 hover:border-primary transition-colors">
+                <h4 className="font-semibold mb-1">
+                  {language === "no" ? "Månedlig" : "Monthly"}
+                </h4>
+                <p className="text-2xl font-bold text-primary">199 kr<span className="text-sm font-normal text-muted-foreground">/mnd</span></p>
+                <ul className="text-sm text-muted-foreground mt-2 space-y-1">
+                  <li>• 100 innlegg/måned</li>
+                  <li>• AI-bilder inkludert</li>
+                  <li>• Stemmetrening</li>
+                </ul>
+                <Button
+                  className="w-full mt-4 bg-gradient-to-r from-primary to-purple-600"
+                  onClick={() => handleUpgrade("PRO_MONTHLY")}
+                  disabled={createCheckoutMutation.isPending}
+                >
+                  {createCheckoutMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : null}
+                  {language === "no" ? "Velg månedlig" : "Choose Monthly"}
+                </Button>
+              </div>
+              
+              {/* Yearly Plan */}
+              <div className="border-2 border-green-500 rounded-lg p-4 relative">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                  {language === "no" ? "Spar 20%" : "Save 20%"}
+                </div>
+                <h4 className="font-semibold mb-1">
+                  {language === "no" ? "Årlig" : "Yearly"}
+                </h4>
+                <p className="text-2xl font-bold text-green-600">1910 kr<span className="text-sm font-normal text-muted-foreground">/år</span></p>
+                <ul className="text-sm text-muted-foreground mt-2 space-y-1">
+                  <li>• 1200 innlegg/år</li>
+                  <li>• Alt i månedlig</li>
+                  <li>• Prioritert support</li>
+                </ul>
+                <Button
+                  className="w-full mt-4 bg-gradient-to-r from-green-500 to-emerald-600"
+                  onClick={() => handleUpgrade("PRO_YEARLY")}
+                  disabled={createCheckoutMutation.isPending}
+                >
+                  {createCheckoutMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : null}
+                  {language === "no" ? "Velg årlig" : "Choose Yearly"}
+                </Button>
+              </div>
+            </div>
+            
+            <p className="text-xs text-center text-muted-foreground">
+              {language === "no"
+                ? "Sikker betaling med Stripe. Kanseller når som helst."
+                : "Secure payment with Stripe. Cancel anytime."}
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 function DeleteAccountDialog({ language }: { language: "no" | "en" }) {
   const [open, setOpen] = useState(false);
@@ -200,21 +362,7 @@ export default function Settings() {
           </Card>
 
           {/* Subscription */}
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("subscriptionTitle")}</CardTitle>
-              <CardDescription>
-                {language === "no"
-                  ? "Administrer ditt abonnement."
-                  : "Manage your subscription."}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={() => setLocation("/subscription")}>
-                {t("manageSubscription")}
-              </Button>
-            </CardContent>
-          </Card>
+          <SubscriptionCard language={language} />
 
           {/* Delete Account */}
           <Card className="border-red-200 dark:border-red-900">

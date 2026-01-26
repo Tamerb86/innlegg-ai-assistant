@@ -64,6 +64,11 @@ export const subscriptions = mysqlTable("subscriptions", {
   status: mysqlEnum("status", ["trial", "active", "cancelled", "expired"]).default("trial").notNull(),
   postsGenerated: int("posts_generated").default(0).notNull(),
   trialPostsLimit: int("trial_posts_limit").default(5).notNull(),
+  // Stripe integration fields
+  stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),
+  stripeSubscriptionId: varchar("stripe_subscription_id", { length: 255 }),
+  stripePriceId: varchar("stripe_price_id", { length: 255 }),
+  // Legacy Vipps field (kept for backwards compatibility)
   vippsOrderId: varchar("vipps_order_id", { length: 255 }),
   subscriptionStartDate: timestamp("subscription_start_date"),
   subscriptionEndDate: timestamp("subscription_end_date"),

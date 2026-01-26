@@ -7,14 +7,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc";
 import { Copy, Loader2, Sparkles, Wand2, Upload, X, Image as ImageIcon, Mic, Flame } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
 
 export default function Generate() {
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
 
   const [topic, setTopic] = useState("");
   const [platform, setPlatform] = useState<"linkedin" | "twitter" | "instagram" | "facebook">("linkedin");
@@ -33,6 +33,21 @@ export default function Generate() {
   const { data: subscription } = trpc.user.getSubscription.useQuery();
   const { data: voiceProfile } = trpc.voice.getProfile.useQuery();
   const [useVoiceProfile, setUseVoiceProfile] = useState(false);
+
+  // Handle URL parameters from Trends page
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const topicParam = urlParams.get('topic');
+    const platformParam = urlParams.get('platform');
+    
+    if (topicParam) {
+      setTopic(decodeURIComponent(topicParam));
+      toast.success('Trend lastet inn! Klar til å generere innhold.');
+    }
+    if (platformParam && ['linkedin', 'twitter', 'instagram', 'facebook'].includes(platformParam)) {
+      setPlatform(platformParam as any);
+    }
+  }, []);
 
   const uploadImageMutation = trpc.blog.uploadImage.useMutation({
     onSuccess: (data) => {

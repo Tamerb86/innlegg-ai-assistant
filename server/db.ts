@@ -225,6 +225,53 @@ export async function incrementPostsGenerated(userId: number): Promise<void> {
   }
 }
 
+export async function updateSubscriptionFromStripe(
+  userId: number,
+  stripeData: {
+    stripeCustomerId?: string;
+    stripeSubscriptionId?: string;
+    stripePriceId?: string;
+    status?: "trial" | "active" | "cancelled" | "expired";
+  }
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const updates: any = {
+    updatedAt: new Date(),
+  };
+  
+  if (stripeData.stripeCustomerId) updates.stripeCustomerId = stripeData.stripeCustomerId;
+  if (stripeData.stripeSubscriptionId) updates.stripeSubscriptionId = stripeData.stripeSubscriptionId;
+  if (stripeData.stripePriceId) updates.stripePriceId = stripeData.stripePriceId;
+  if (stripeData.status) {
+    updates.status = stripeData.status;
+    if (stripeData.status === "active") {
+      updates.subscriptionStartDate = new Date();
+      // Set end date to 30 days from now for monthly
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + 30);
+      updates.subscriptionEndDate = endDate;
+    }
+  }
+  
+  await db.update(subscriptions)
+    .set(updates)
+    .where(eq(subscriptions.userId, userId));
+}
+
+export async function updateSubscriptionStatus(
+  userId: number,
+  status: "trial" | "active" | "cancelled" | "expired"
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(subscriptions)
+    .set({ status, updatedAt: new Date() })
+    .where(eq(subscriptions.userId, userId));
+}
+
 // ============ User Preferences Queries ============
 
 export async function getUserPreference(userId: number): Promise<UserPreference | undefined> {

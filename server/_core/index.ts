@@ -35,6 +35,91 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
+
+  // Stripe webhook - MUST be before express.json() middleware for signature verification
+  // Note: We need raw body for Stripe signature verification
+  app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async (req, res) => {
+    try {
+      const { constructWebhookEvent } = await import("../stripe/stripeService");
+      const { updateSubscriptionFromStripe, updateSubscriptionStatus } = await import("../db");
+      
+      const signature = req.headers["stripe-signature"] as string;
+      const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
+      
+      if (!signature || !webhookSecret) {
+        console.error("[Stripe Webhook] Missing signature or webhook secret");
+        return res.status(400).json({ error: "Missing signature or webhook secret" });
+      }
+      
+      const event = constructWebhookEvent(req.body, signature, webhookSecret);
+      
+      console.log(`[Stripe Webhook] Received event: ${event.type} (${event.id})`);
+      
+      // Handle test events
+      if (event.id.startsWith("evt_test_")) {
+        console.log("[Stripe Webhook] Test event detected, returning verification response");
+        return res.json({ verified: true });
+      }
+      
+      // Handle different event types
+      switch (event.type) {
+        case "checkout.session.completed": {
+          const session = event.data.object as any;
+          const userId = parseInt(session.metadata?.user_id || session.client_reference_id);
+          
+          if (userId) {
+            await updateSubscriptionFromStripe(userId, {
+              stripeCustomerId: session.customer,
+              stripeSubscriptionId: session.subscription,
+              status: "active",
+            });
+            console.log(`[Stripe Webhook] Subscription activated for user ${userId}`);
+          }
+          break;
+        }
+        
+        case "customer.subscription.updated": {
+          const subscription = event.data.object as any;
+          const customerId = subscription.customer;
+          
+          // Update subscription status based on Stripe status
+          if (subscription.status === "active") {
+            // Subscription is active
+          } else if (subscription.status === "canceled" || subscription.status === "unpaid") {
+            // Handle cancellation
+          }
+          break;
+        }
+        
+        case "customer.subscription.deleted": {
+          const subscription = event.data.object as any;
+          console.log(`[Stripe Webhook] Subscription deleted: ${subscription.id}`);
+          break;
+        }
+        
+        case "invoice.paid": {
+          const invoice = event.data.object as any;
+          console.log(`[Stripe Webhook] Invoice paid: ${invoice.id}`);
+          break;
+        }
+        
+        case "invoice.payment_failed": {
+          const invoice = event.data.object as any;
+          console.log(`[Stripe Webhook] Invoice payment failed: ${invoice.id}`);
+          break;
+        }
+        
+        default:
+          console.log(`[Stripe Webhook] Unhandled event type: ${event.type}`);
+      }
+      
+      res.json({ received: true });
+    } catch (error: any) {
+      console.error("[Stripe Webhook] Error:", error.message);
+      res.status(400).json({ error: error.message });
+    }
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",

@@ -660,6 +660,65 @@ Provide helpful, actionable advice. Be encouraging but honest. Keep responses co
         return { url, fileKey };
       }),
   }),
+
+  // Stripe Payment Router
+  stripe: router({
+    createCheckoutSession: protectedProcedure
+      .input(z.object({
+        productKey: z.enum(["PRO_MONTHLY", "PRO_YEARLY"]),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { createCheckoutSession } = await import("./stripe/stripeService");
+        
+        const origin = ctx.req.headers.origin || "https://innlegg.manus.space";
+        
+        const result = await createCheckoutSession({
+          userId: ctx.user.id,
+          userEmail: ctx.user.email || "",
+          userName: ctx.user.name || undefined,
+          productKey: input.productKey,
+          successUrl: `${origin}/subscription/success`,
+          cancelUrl: `${origin}/subscription/cancel`,
+        });
+        
+        return result;
+      }),
+
+    getPortalUrl: protectedProcedure.mutation(async ({ ctx }) => {
+      const { getUserSubscription } = await import("./db");
+      const { createCustomerPortalSession } = await import("./stripe/stripeService");
+      
+      const subscription = await getUserSubscription(ctx.user.id);
+      
+      if (!subscription?.stripeCustomerId) {
+        throw new Error("Ingen aktiv Stripe-konto funnet");
+      }
+      
+      const origin = ctx.req.headers.origin || "https://innlegg.manus.space";
+      const url = await createCustomerPortalSession(
+        subscription.stripeCustomerId,
+        `${origin}/settings`
+      );
+      
+      return { url };
+    }),
+
+    cancelSubscription: protectedProcedure.mutation(async ({ ctx }) => {
+      const { getUserSubscription, updateSubscriptionStatus } = await import("./db");
+      const { cancelSubscription } = await import("./stripe/stripeService");
+      
+      const subscription = await getUserSubscription(ctx.user.id);
+      
+      if (!subscription?.stripeSubscriptionId) {
+        throw new Error("Ingen aktiv abonnement funnet");
+      }
+      
+      await cancelSubscription(subscription.stripeSubscriptionId);
+      await updateSubscriptionStatus(ctx.user.id, "cancelled");
+      
+      return { success: true, message: "Abonnementet er kansellert" };
+    }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
