@@ -87,3 +87,13 @@
 - [ ] Add FAQ section
 - [x] Optimize for mobile responsiveness
 - [x] Add Norwegian language content
+
+## Landing Page Psychological Optimization
+- [x] Add urgency triggers (limited time, scarcity)
+- [x] Implement social proof (user count, testimonials with photos)
+- [x] Add authority signals (certifications, media mentions)
+- [x] Create emotional connection (pain points, success stories)
+- [x] Add risk reversal (money-back guarantee, free trial emphasis)
+- [x] Implement FOMO (Fear of Missing Out) elements
+- [x] Add comparison table (vs competitors/manual work)
+- [ ] Include video demo or animated showcase

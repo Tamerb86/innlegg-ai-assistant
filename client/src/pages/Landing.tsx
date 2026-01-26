@@ -1,4 +1,3 @@
-import { useAuth } from "@/_core/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,31 +18,9 @@ import {
   Shield,
   Award
 } from "lucide-react";
-import { useEffect } from "react";
-import { useLocation } from "wouter";
 
-export default function Home() {
-  const { isAuthenticated, loading } = useAuth();
+export default function Landing() {
   const { t } = useLanguage();
-  const [, setLocation] = useLocation();
-
-  useEffect(() => {
-    if (!loading && isAuthenticated) {
-      setLocation("/dashboard");
-    }
-  }, [isAuthenticated, loading, setLocation]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (isAuthenticated) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
