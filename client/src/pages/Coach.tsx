@@ -110,27 +110,6 @@ export default function Coach() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="container flex items-center justify-between h-16">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setLocation("/dashboard")}>
-            <Zap className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">Nexify AI</span>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => setLocation("/dashboard")}>
-              {t("dashboard")}
-            </Button>
-            <Button variant="ghost" onClick={() => setLocation("/generate")}>
-              {t("generate")}
-            </Button>
-            <Button variant="ghost" onClick={() => setLocation("/posts")}>
-              {t("myPosts")}
-            </Button>
-          </div>
-        </div>
-      </header>
-
       <main className="container py-8 max-w-4xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">
@@ -142,6 +121,101 @@ export default function Coach() {
               : "Get personalized guidance, tips, and feedback on your content strategy."}
           </p>
         </div>
+
+        {/* Suggested Conversation Starters */}
+        <Card className="mb-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border-blue-200 dark:border-blue-900">
+          <CardContent className="pt-6">
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Zap className="h-5 w-5 text-primary" />
+              {language === "no" ? "Kom i gang - Klikk på et spørsmål" : "Get Started - Click a Question"}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <Button 
+                variant="outline" 
+                className="justify-start text-left h-auto py-3 px-4 hover:bg-primary/10"
+                onClick={() => setInput(language === "no" 
+                  ? "Hvordan kan jeg skrive mer engasjerende LinkedIn-innlegg?"
+                  : "How can I write more engaging LinkedIn posts?")}
+              >
+                <span className="text-sm">
+                  {language === "no" 
+                    ? "💡 Hvordan kan jeg skrive mer engasjerende LinkedIn-innlegg?"
+                    : "💡 How can I write more engaging LinkedIn posts?"}
+                </span>
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="justify-start text-left h-auto py-3 px-4 hover:bg-primary/10"
+                onClick={() => setInput(language === "no" 
+                  ? "Hva er de beste tidspunktene å poste på sosiale medier?"
+                  : "What are the best times to post on social media?")}
+              >
+                <span className="text-sm">
+                  {language === "no" 
+                    ? "⏰ Hva er de beste tidspunktene å poste på sosiale medier?"
+                    : "⏰ What are the best times to post on social media?"}
+                </span>
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="justify-start text-left h-auto py-3 px-4 hover:bg-primary/10"
+                onClick={() => setInput(language === "no" 
+                  ? "Gi meg ideer til innhold for neste uke"
+                  : "Give me content ideas for next week")}
+              >
+                <span className="text-sm">
+                  {language === "no" 
+                    ? "✨ Gi meg ideer til innhold for neste uke"
+                    : "✨ Give me content ideas for next week"}
+                </span>
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="justify-start text-left h-auto py-3 px-4 hover:bg-primary/10"
+                onClick={() => setInput(language === "no" 
+                  ? "Hvordan kan jeg øke engasjementet på innleggene mine?"
+                  : "How can I increase engagement on my posts?")}
+              >
+                <span className="text-sm">
+                  {language === "no" 
+                    ? "📈 Hvordan kan jeg øke engasjementet på innleggene mine?"
+                    : "📈 How can I increase engagement on my posts?"}
+                </span>
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="justify-start text-left h-auto py-3 px-4 hover:bg-primary/10"
+                onClick={() => setInput(language === "no" 
+                  ? "Hva gjør et innlegg viralt?"
+                  : "What makes a post go viral?")}
+              >
+                <span className="text-sm">
+                  {language === "no" 
+                    ? "🚀 Hva gjør et innlegg viralt?"
+                    : "🚀 What makes a post go viral?"}
+                </span>
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="justify-start text-left h-auto py-3 px-4 hover:bg-primary/10"
+                onClick={() => setInput(language === "no" 
+                  ? "Analyser min innholdsstrategi og gi tilbakemeldinger"
+                  : "Analyze my content strategy and give feedback")}
+              >
+                <span className="text-sm">
+                  {language === "no" 
+                    ? "🎯 Analyser min innholdsstrategi og gi tilbakemeldinger"
+                    : "🎯 Analyze my content strategy and give feedback"}
+                </span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

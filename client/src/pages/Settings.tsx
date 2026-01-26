@@ -50,28 +50,6 @@ export default function Settings() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setLocation("/dashboard")}>
-            <Zap className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">Nexify AI</span>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => setLocation("/dashboard")}>
-              {t("dashboard")}
-            </Button>
-            <Button variant="ghost" onClick={() => setLocation("/generate")}>
-              {t("generate")}
-            </Button>
-            <Button variant="ghost" onClick={() => setLocation("/posts")}>
-              {t("myPosts")}
-            </Button>
-          </div>
-        </div>
-      </header>
-
       <main className="container py-8 max-w-3xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">{t("settingsTitle")}</h1>

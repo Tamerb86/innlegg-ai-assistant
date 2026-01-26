@@ -39,31 +39,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Zap className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">Nexify AI</span>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => setLocation("/generate")}>
-              {t("generate")}
-            </Button>
-            <Button variant="ghost" onClick={() => setLocation("/posts")}>
-              {t("myPosts")}
-            </Button>
-            <Button variant="ghost" onClick={() => setLocation("/coach")}>
-              {language === "no" ? "Coach" : "Coach"}
-            </Button>
-            <Button variant="ghost" onClick={() => setLocation("/settings")}>
-              {t("settings")}
-            </Button>
-          </div>
-        </div>
-      </header>
-
       <main className="container py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">

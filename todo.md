@@ -323,3 +323,16 @@
 - [x] Test navigation visibility on all pages
 - [x] Add logout button to DashboardNav
 - [x] Add user name display in navigation
+
+## Remove Duplicate Headers from Dashboard Pages
+- [x] Remove duplicate header from Dashboard.tsx (DashboardNav already provides navigation)
+- [x] Check other dashboard pages for duplicate headers (removed from Posts, Settings, Coach)
+- [x] Ensure clean UI without navigation duplication
+
+## Enhance AI Coach Page with Quick Start Examples
+- [x] Add suggested conversation starters section with 6 clickable questions
+- [x] Add common questions/prompts for users to click (LinkedIn tips, posting times, content ideas, engagement, viral posts, strategy analysis)
+- [x] Add visual design with gradient card and emoji icons
+- [x] Improve empty state with helpful guidance
+- [x] Test quick start examples functionality in browser
+- [x] Keep existing Quick Actions cards (Compare, Tips, Challenge) below
