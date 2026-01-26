@@ -711,3 +711,78 @@ export async function createTrendingTopic(topic: InsertTrendingTopic): Promise<T
     return null;
   }
 }
+
+
+// ============================================
+// Admin Stats Functions
+// ============================================
+
+export async function getAdminStats() {
+  const db = await getDb();
+  if (!db) {
+    return {
+      totalUsers: 0,
+      proSubscribers: 0,
+      totalPosts: 0,
+      monthlyRevenue: 0,
+      recentSubscriptions: [],
+    };
+  }
+  
+  try {
+    const { sql } = await import("drizzle-orm");
+    
+    const [totalUsersResult] = await db.select({ count: sql<number>`count(*)` }).from(users);
+    
+    const [proSubscribersResult] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(subscriptions)
+      .where(eq(subscriptions.status, "active"));
+    
+    const [totalPostsResult] = await db.select({ count: sql<number>`count(*)` }).from(posts);
+    
+    // Calculate monthly revenue (Pro Monthly: 199 NOK, Pro Yearly: 1910 NOK / 12 months)
+    const activeSubscriptions = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.status, "active"));
+    
+    const monthlyRevenue = activeSubscriptions.reduce((sum, sub) => {
+      // Assume monthly if not yearly
+      const isYearly = sub.stripeSubscriptionId?.includes("yearly") || false;
+      return sum + (isYearly ? 1910 / 12 : 199);
+    }, 0);
+    
+    // Get recent subscriptions with user info
+    const recentSubscriptions = await db
+      .select({
+        id: subscriptions.id,
+        userName: users.name,
+        userEmail: users.email,
+        plan: subscriptions.status,
+        createdAt: subscriptions.createdAt,
+      })
+      .from(subscriptions)
+      .innerJoin(users, eq(subscriptions.userId, users.id))
+      .where(eq(subscriptions.status, "active"))
+      .orderBy(desc(subscriptions.createdAt))
+      .limit(10);
+    
+    return {
+      totalUsers: totalUsersResult?.count || 0,
+      proSubscribers: proSubscribersResult?.count || 0,
+      totalPosts: totalPostsResult?.count || 0,
+      monthlyRevenue: Math.round(monthlyRevenue),
+      recentSubscriptions,
+    };
+  } catch (error) {
+    console.error("[Database] Error fetching admin stats:", error);
+    return {
+      totalUsers: 0,
+      proSubscribers: 0,
+      totalPosts: 0,
+      monthlyRevenue: 0,
+      recentSubscriptions: [],
+    };
+  }
+}

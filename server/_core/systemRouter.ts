@@ -46,4 +46,9 @@ export const systemRouter = router({
         success: delivered,
       } as const;
     }),
+
+  getAdminStats: adminProcedure.query(async () => {
+    const { getAdminStats } = await import("../db");
+    return await getAdminStats();
+  }),
 });

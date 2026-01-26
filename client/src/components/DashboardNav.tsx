@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Zap, LayoutDashboard, Sparkles, FileText, MessageSquare, Settings as SettingsIcon, LogOut, Flame, Mic } from "lucide-react";
+import { Menu, X, Zap, LayoutDashboard, Sparkles, FileText, MessageSquare, Settings as SettingsIcon, LogOut, Flame, Mic, BarChart3 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
@@ -28,6 +28,13 @@ export default function DashboardNav() {
     { label: "Innstillinger", href: "/settings", icon: SettingsIcon },
   ];
 
+  // Add admin-only items
+  const adminItems = user?.role === "admin" ? [
+    { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+  ] : [];
+
+  const allNavItems = [...navItems, ...adminItems];
+
   const isActive = (href: string) => {
     if (href === "/dashboard") return location === "/dashboard";
     return location.startsWith(href);
@@ -54,7 +61,7 @@ export default function DashboardNav() {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => {
+          {allNavItems.map((item) => {
             const Icon = item.icon;
             return (
               <Link key={item.href} href={item.href}>
@@ -106,7 +113,7 @@ export default function DashboardNav() {
       {mobileMenuOpen && (
         <div className="md:hidden border-t bg-background">
           <div className="container py-4 space-y-2">
-            {navItems.map((item) => {
+            {allNavItems.map((item) => {
               const Icon = item.icon;
               return (
                 <Link key={item.href} href={item.href}>
