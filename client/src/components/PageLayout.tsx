@@ -1,5 +1,6 @@
 import { useLocation } from "wouter";
 import GlobalNav from "./GlobalNav";
+import DashboardNav from "./DashboardNav";
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -8,25 +9,33 @@ interface PageLayoutProps {
 export default function PageLayout({ children }: PageLayoutProps) {
   const [location] = useLocation();
   
-  // Pages that should NOT show GlobalNav (they have their own navigation)
-  const pagesWithoutGlobalNav = [
-    "/",
-    "/landing",
+  // Pages that show DashboardNav (authenticated internal pages)
+  const dashboardPages = [
     "/dashboard",
     "/generate",
     "/posts",
     "/coach",
     "/settings",
-    "/account-settings",
-    "/admin/blog"
+    "/account-settings"
   ];
   
-  const shouldShowGlobalNav = !pagesWithoutGlobalNav.some(path => 
-    path === "/" ? location === "/" : location.startsWith(path)
-  );
+  // Pages that show GlobalNav (public pages)
+  const publicPages = [
+    "/blog",
+    "/about-us",
+    "/faq",
+    "/contact",
+    "/privacy-policy",
+    "/terms-of-service",
+    "/cookie-policy"
+  ];
+  
+  const shouldShowDashboardNav = dashboardPages.some(path => location.startsWith(path));
+  const shouldShowGlobalNav = publicPages.some(path => location.startsWith(path));
   
   return (
     <>
+      {shouldShowDashboardNav && <DashboardNav />}
       {shouldShowGlobalNav && <GlobalNav />}
       {children}
     </>

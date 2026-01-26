@@ -314,3 +314,12 @@
 - [x] Add loading states and error handling
 - [x] Test image upload and display in blog posts
 - [x] Write comprehensive vitest tests for image upload (5 tests - all passing)
+
+## Fix Missing Navigation in Dashboard Pages
+- [x] Add DashboardNav component with full navigation menu
+- [x] Add GlobalNav to Generate page (/generate)
+- [x] Check all dashboard pages for missing navigation
+- [x] Ensure consistent navigation across all authenticated pages
+- [x] Test navigation visibility on all pages
+- [x] Add logout button to DashboardNav
+- [x] Add user name display in navigation
