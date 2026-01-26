@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { FileText, Sparkles, TrendingUp } from "lucide-react";
+import { FileText, Zap } from "lucide-react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 
@@ -42,7 +42,7 @@ export default function Dashboard() {
       <header className="border-b">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-primary" />
+            <Zap className="h-6 w-6 text-primary" />
             <span className="text-xl font-bold">Innlegg</span>
           </div>
           
@@ -91,7 +91,7 @@ export default function Dashboard() {
               <CardTitle className="text-sm font-medium">
                 {t("postsRemaining")}
               </CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <Zap className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -105,7 +105,7 @@ export default function Dashboard() {
               <CardTitle className="text-sm font-medium">
                 {t("subscriptionTitle")}
               </CardTitle>
-              <Sparkles className="h-4 w-4 text-muted-foreground" />
+              <Zap className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -120,7 +120,7 @@ export default function Dashboard() {
           <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation("/generate")}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary" />
+                <Zap className="h-5 w-5 text-primary" />
                 {t("generateTitle")}
               </CardTitle>
               <CardDescription>

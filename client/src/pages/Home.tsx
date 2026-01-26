@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getLoginUrl } from "@/const";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Check, Globe, Sparkles, Zap } from "lucide-react";
+import { Check, Globe, Zap } from "lucide-react";
 import { useLocation } from "wouter";
 import { useEffect } from "react";
 
@@ -41,7 +41,7 @@ export default function Home() {
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-primary" />
+            <Zap className="h-6 w-6 text-primary" />
             <span className="text-xl font-bold">Innlegg</span>
           </div>
           
@@ -111,7 +111,7 @@ export default function Home() {
 
           <Card>
             <CardHeader>
-              <Sparkles className="h-10 w-10 text-primary mb-4" />
+              <Zap className="h-10 w-10 text-primary mb-4" />
               <CardTitle>{t("feature2Title")}</CardTitle>
             </CardHeader>
             <CardContent>

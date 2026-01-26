@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Copy, Loader2, Sparkles } from "lucide-react";
+import { Copy, Loader2, Zap } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
@@ -74,7 +74,7 @@ export default function Generate() {
       <header className="border-b">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => setLocation("/dashboard")}>
-            <Sparkles className="h-6 w-6 text-primary" />
+            <Zap className="h-6 w-6 text-primary" />
             <span className="text-xl font-bold">Innlegg</span>
           </div>
           
@@ -167,7 +167,7 @@ export default function Generate() {
                   </>
                 ) : (
                   <>
-                    <Sparkles className="mr-2 h-4 w-4" />
+                    <Zap className="mr-2 h-4 w-4" />
                     {t("generateButton")}
                   </>
                 )}

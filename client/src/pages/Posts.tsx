@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Copy, Sparkles, Trash2 } from "lucide-react";
+import { Copy, Zap, Trash2 } from "lucide-react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
@@ -57,7 +57,7 @@ export default function Posts() {
       <header className="border-b">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => setLocation("/dashboard")}>
-            <Sparkles className="h-6 w-6 text-primary" />
+            <Zap className="h-6 w-6 text-primary" />
             <span className="text-xl font-bold">Innlegg</span>
           </div>
           
@@ -84,7 +84,7 @@ export default function Posts() {
             </p>
           </div>
           <Button onClick={() => setLocation("/generate")}>
-            <Sparkles className="mr-2 h-4 w-4" />
+            <Zap className="mr-2 h-4 w-4" />
             {t("generateButton")}
           </Button>
         </div>
@@ -161,7 +161,7 @@ export default function Posts() {
           <Card>
             <CardContent className="py-12">
               <div className="text-center">
-                <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <Zap className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">{t("noPostsYet")}</h3>
                 <p className="text-muted-foreground mb-6">
                   {language === "no"
@@ -169,7 +169,7 @@ export default function Posts() {
                     : "Create your first post by clicking the button below."}
                 </p>
                 <Button onClick={() => setLocation("/generate")}>
-                  <Sparkles className="mr-2 h-4 w-4" />
+                  <Zap className="mr-2 h-4 w-4" />
                   {t("createFirstPost")}
                 </Button>
               </div>
