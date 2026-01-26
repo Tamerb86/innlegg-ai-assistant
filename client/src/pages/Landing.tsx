@@ -589,8 +589,9 @@ export default function Landing() {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Juridisk</h4>
+              <h4 className="font-semibold mb-4">Selskap</h4>
               <ul className="space-y-2 text-sm text-gray-400">
+                <li><a href="/about-us" className="hover:text-white transition-colors">Om oss</a></li>
                 <li><a href="/privacy-policy" className="hover:text-white transition-colors">Personvernerklæring</a></li>
                 <li><a href="/terms-of-service" className="hover:text-white transition-colors">Vilkår for bruk</a></li>
                 <li><a href="/cookie-policy" className="hover:text-white transition-colors">Informasjonskapsler</a></li>

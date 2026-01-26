@@ -106,3 +106,14 @@
 - [x] Add legal page links to footer
 - [x] Add company contact information
 - [x] Test all legal page links
+
+## About Us Page (Om oss)
+- [x] Create Om oss page with company introduction
+- [x] Add company vision and mission
+- [x] Add company values and principles
+- [x] Add team section (optional)
+- [x] Add company history/story
+- [x] Add contact information
+- [x] Add route to App.tsx
+- [x] Add link to footer navigation
+- [x] Test Om oss page
