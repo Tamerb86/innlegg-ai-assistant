@@ -168,6 +168,23 @@ function SubscriptionCard({ language }: { language: "no" | "en" }) {
                 ? "Sikker betaling med Stripe. Kanseller når som helst."
                 : "Secure payment with Stripe. Cancel anytime."}
             </p>
+            
+            {/* Vipps Coming Soon */}
+            <div className="mt-4 p-3 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-lg">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">📱</span>
+                <div>
+                  <p className="text-sm font-medium text-orange-800">
+                    {language === "no" ? "Vipps kommer snart!" : "Vipps coming soon!"}
+                  </p>
+                  <p className="text-xs text-orange-600">
+                    {language === "no"
+                      ? "Betal enkelt med Vipps - Norges favoritt betalingsapp"
+                      : "Pay easily with Vipps - Norway's favorite payment app"}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </CardContent>

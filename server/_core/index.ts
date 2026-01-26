@@ -42,6 +42,7 @@ async function startServer() {
     try {
       const { constructWebhookEvent } = await import("../stripe/stripeService");
       const { updateSubscriptionFromStripe, updateSubscriptionStatus } = await import("../db");
+      const { notifyNewSubscription, notifySubscriptionCancelled, notifyPaymentFailed } = await import("../subscriptionNotifications");
       
       const signature = req.headers["stripe-signature"] as string;
       const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
@@ -74,6 +75,19 @@ async function startServer() {
               status: "active",
             });
             console.log(`[Stripe Webhook] Subscription activated for user ${userId}`);
+            
+            // Send notification to owner
+            const productKey = session.metadata?.product_key || "PRO_MONTHLY";
+            const planName = productKey === "PRO_YEARLY" ? "Pro Årlig" : "Pro Månedlig";
+            const amount = productKey === "PRO_YEARLY" ? "1910" : "199";
+            
+            await notifyNewSubscription({
+              userName: session.metadata?.customer_name || "Ukjent",
+              userEmail: session.metadata?.customer_email || session.customer_email || "Ukjent",
+              planName,
+              amount,
+              currency: "NOK",
+            });
           }
           break;
         }
@@ -106,6 +120,13 @@ async function startServer() {
         case "invoice.payment_failed": {
           const invoice = event.data.object as any;
           console.log(`[Stripe Webhook] Invoice payment failed: ${invoice.id}`);
+          
+          // Notify owner about failed payment
+          await notifyPaymentFailed({
+            userName: invoice.customer_name || "Ukjent",
+            userEmail: invoice.customer_email || "Ukjent",
+            errorMessage: invoice.last_finalization_error?.message,
+          });
           break;
         }
         

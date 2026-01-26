@@ -1007,3 +1007,12 @@
 - [x] Create subscription plans (Free Trial, Pro Monthly 199 NOK, Pro Yearly 1910 NOK)
 - [x] Build subscription management UI
 - [x] Add payment success/cancel pages with confetti animation
+
+
+## Phase 3: Vipps Integration + Email Notifications (Jan 27, 2026)
+- [x] Research Vipps Recurring API for subscriptions (requires business account)
+- [x] Add Vipps as "coming soon" placeholder in Settings
+- [ ] Create Vipps webhook handlers
+- [x] Add owner notifications for subscription events
+- [x] Send notification on successful subscription
+- [ ] Send reminder notification before subscription expires (future)
