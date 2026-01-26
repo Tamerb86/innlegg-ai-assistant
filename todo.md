@@ -384,3 +384,580 @@
 - [x] Test UI implementation in browser - Working perfectly
 - [ ] Update OpenAI API key to test DALL-E 3 generation
 - [ ] Write vitest tests for image generation procedures
+
+## Comprehensive Settings Page Redesign
+- [ ] Add database schema fields for user preferences and usage stats
+- [ ] Add `userUsagePreferences` field in userPreferences table (TEXT/JSON)
+- [ ] Create `invoices` table (id, userId, amount, currency, status, date, stripeInvoiceId)
+- [ ] Create tRPC procedure to get user usage statistics (posts generated, saved, images generated)
+- [ ] Create tRPC procedure to get user invoices/billing history
+- [ ] Create tRPC procedure to cancel subscription
+- [ ] Create tRPC procedure to update user usage preferences
+- [ ] Redesign Settings page with tabbed/sectioned layout
+- [ ] Section 1: User Profile (name, email, avatar, edit profile)
+- [ ] Section 2: Subscription Management (current plan, renewal date, cancel subscription, upgrade/downgrade)
+- [ ] Section 3: Billing & Invoices (payment history, download invoices)
+- [ ] Section 4: Usage Statistics (posts generated, posts saved, images generated, AI coach interactions)
+- [ ] Section 5: Usage Preferences (custom text area: "How do you want to use this platform?")
+- [ ] Add subscription cancellation flow with confirmation dialog
+- [ ] Add invoice download functionality
+- [ ] Test all sections and save checkpoint
+
+
+---
+
+# 🎯 INNLEGG 2.0 - الرؤية الكاملة والقيمة الحقيقية
+
+**"Innlegg = مساعدك الشخصي لصناعة محتوى اجتماعي احترافي في ثوانٍ"**
+
+> "Innlegg يقترح لك مواضيع trending مخصصة لمجالك، ويحولها لمنشورات احترافية بأسلوبك الشخصي في ثوانٍ - عبر الموقع أو WhatsApp."
+
+---
+
+## 🔥 القيمة الحقيقية للمستهلك
+
+### المشكلة:
+- "ماذا أكتب اليوم؟" - متلازمة الصفحة البيضاء
+- "هل هذا الموضوع مهم؟" - لا يعرف ما الـ trending
+- "المحتوى يبدو AI" - ليس بأسلوبه الشخصي
+- "يأخذ وقت طويل" - 1-2 ساعة لكل منشور
+- "منشوراتي ضائعة" - لا تنظيم ولا إحصائيات
+
+### الحل (ROI):
+- Before: 1.5-2 ساعة/منشور
+- After: 3-5 دقائق/منشور
+- **توفير 55+ دقيقة لكل منشور = 10x إنتاجية**
+
+---
+
+## 🚀 الميزات الأساسية الجديدة (Priority Order)
+
+### Feature 1: Trend og Inspirasjon (الميزة الأساسية) 🔥
+- [ ] Create TrendService class in server/trendService.ts
+- [ ] Integrate Google Trends API
+  - [ ] Set up Google Trends unofficial API (pytrends or google-trends-api)
+  - [ ] Fetch trending topics for Norway (geo: NO)
+  - [ ] Fetch global trending topics
+  - [ ] Cache results for 6 hours
+- [ ] Integrate Reddit API
+  - [ ] Register Reddit app for API access
+  - [ ] Fetch hot posts from relevant subreddits:
+    - r/Entrepreneur
+    - r/marketing
+    - r/socialmedia
+    - r/smallbusiness
+    - r/startups
+    - r/Norway (for local trends)
+  - [ ] Filter by user's industry/interests
+- [ ] Integrate Quora trending questions
+  - [ ] Scrape trending questions by topic
+  - [ ] Filter by user's industry
+- [ ] Integrate Medium trending articles
+  - [ ] Use Medium RSS feeds by topic
+  - [ ] Extract trending topics
+- [ ] Integrate LinkedIn trending topics
+  - [ ] Use LinkedIn API or scraping
+  - [ ] Focus on B2B/professional topics
+- [ ] Create user interests/industry selection
+  - [ ] Add onboarding step for industry selection
+  - [ ] Industries: Marketing, Tech, Finance, Health, Real Estate, Consulting, E-commerce, Other
+  - [ ] Allow multiple interests selection
+  - [ ] Store in user_preferences table
+- [ ] Create "Trend og Inspirasjon" page
+  - [ ] Design card-based layout for trends
+  - [ ] Each trend card shows:
+    - Topic title
+    - Source icon (Google, Reddit, Quora, Medium)
+    - Trend score/popularity indicator
+    - Brief description
+    - "Generer innlegg" button
+  - [ ] Filter by source
+  - [ ] Filter by industry
+  - [ ] Refresh button
+- [ ] Add trend-to-post generation
+  - [ ] Click trend → auto-fill topic in Generate page
+  - [ ] Generate post based on trending topic
+- [ ] Daily/weekly trend notifications
+  - [ ] Email digest option
+  - [ ] In-app notification badge
+- [ ] Create trends_cache table in database
+  - [ ] id, source, topic, description, score, industry, cached_at
+  - [ ] Auto-expire after 6 hours
+
+### Feature 2: Stemmetrening (Voice Training) 🎤
+- [ ] Create voice_profiles table in database
+  - [ ] id, user_id, profile_data (JSON), created_at, updated_at
+  - [ ] profile_data includes: tone, sentence_length, emoji_usage, hashtag_style, opening_patterns, closing_patterns, vocabulary
+- [ ] Create voice samples collection UI
+  - [ ] Page: /settings/voice-training
+  - [ ] Input area for 5-10 sample posts
+  - [ ] "Paste your best LinkedIn posts here"
+  - [ ] Minimum 3 samples required
+  - [ ] Maximum 10 samples
+- [ ] Build voice analysis engine
+  - [ ] Use LLM to analyze writing style:
+    - Tone detection (formal, casual, friendly, professional)
+    - Average sentence length
+    - Emoji frequency and types
+    - Hashtag usage patterns
+    - Common opening phrases
+    - Common closing phrases (CTAs)
+    - Vocabulary complexity
+    - Storytelling style
+  - [ ] Store analysis results in voice_profiles
+- [ ] Integrate voice profile in content generation
+  - [ ] Modify generateContent procedure to include voice profile
+  - [ ] Add voice profile to system prompt
+  - [ ] Generate content that matches user's style
+- [ ] Voice profile management UI
+  - [ ] Show current voice profile summary
+  - [ ] "Retrain" button to update profile
+  - [ ] "Reset" button to start fresh
+  - [ ] Voice profile status indicator in Generate page
+- [ ] Voice profile accuracy feedback
+  - [ ] After generation, ask "Does this sound like you?"
+  - [ ] Use feedback to improve profile
+
+### Feature 3: Enhanced Dashboard 📊
+- [ ] Redesign Dashboard layout
+  - [ ] Stats cards row at top:
+    - Total posts generated (all time)
+    - Posts this month
+    - Posts remaining (subscription limit)
+    - Subscription status (Free/Pro/Business)
+    - Days until renewal
+    - Time saved (calculated: posts × 55 minutes)
+  - [ ] Activity chart (posts per day/week)
+  - [ ] Quick actions section
+- [ ] Enhanced posts list
+  - [ ] Card view with:
+    - Platform icon (LinkedIn, Twitter, Instagram, Facebook)
+    - Post preview (first 150 chars)
+    - Date created
+    - Image thumbnail (if any)
+    - Actions: Edit | Copy | Delete | Reuse | Share
+  - [ ] List view option
+  - [ ] Grid view option
+- [ ] Advanced filtering
+  - [ ] Filter by platform
+  - [ ] Filter by date range
+  - [ ] Filter by has image / no image
+  - [ ] Filter by favorites
+- [ ] Search functionality
+  - [ ] Full-text search in post content
+  - [ ] Search by keywords
+  - [ ] Search suggestions
+- [ ] Sorting options
+  - [ ] Newest first
+  - [ ] Oldest first
+  - [ ] Most used (copy count)
+- [ ] Pagination
+  - [ ] 10/25/50 posts per page
+  - [ ] Infinite scroll option
+
+### Feature 4: Innholds-Kalender (Content Calendar) 📅
+- [ ] Create content_calendar table
+  - [ ] id, user_id, event_name, event_date, event_type, industry, description, is_custom
+- [ ] Pre-populate Norwegian holidays
+  - [ ] 1. januar - Nyttårsdag
+  - [ ] Påske (variable dates)
+  - [ ] 1. mai - Arbeidernes dag
+  - [ ] 17. mai - Grunnlovsdagen
+  - [ ] Pinse (variable dates)
+  - [ ] 24. desember - Julaften
+  - [ ] 25. desember - 1. juledag
+  - [ ] 26. desember - 2. juledag
+  - [ ] 31. desember - Nyttårsaften
+- [ ] Pre-populate global events
+  - [ ] Valentine's Day (14. feb)
+  - [ ] International Women's Day (8. mars)
+  - [ ] Earth Day (22. april)
+  - [ ] Mother's Day (variable)
+  - [ ] Father's Day (variable)
+  - [ ] Black Friday (variable)
+  - [ ] Cyber Monday (variable)
+  - [ ] Halloween (31. okt)
+- [ ] Industry-specific events
+  - [ ] Marketing: Social Media Day, Content Marketing World
+  - [ ] Tech: Product Hunt launches, tech conferences
+  - [ ] Finance: Tax deadlines, fiscal year events
+  - [ ] E-commerce: Prime Day, Singles Day
+- [ ] Calendar UI
+  - [ ] Monthly calendar view
+  - [ ] List view of upcoming events
+  - [ ] Event cards with "Generate content" button
+  - [ ] Color coding by event type
+- [ ] Reminder system
+  - [ ] Notify 7 days before event
+  - [ ] Notify 1 day before event
+  - [ ] In-app notifications
+  - [ ] Email notifications (optional)
+- [ ] Custom events
+  - [ ] Add custom events/dates
+  - [ ] Recurring events option
+- [ ] One-click content generation
+  - [ ] Click event → Generate relevant content
+  - [ ] Pre-filled topic based on event
+
+### Feature 5: Gjenbruk-Maskin (Content Repurposing) ♻️
+- [ ] Track post performance
+  - [ ] Add "mark as successful" option
+  - [ ] Track copy count per post
+  - [ ] Track user ratings (1-5 stars)
+- [ ] Identify repurposing candidates
+  - [ ] Algorithm to find best posts for repurposing
+  - [ ] Based on: age (>30 days), success rating, copy count
+- [ ] Repurposing options UI
+  - [ ] "Repurpose" button on each post
+  - [ ] Options:
+    - Update with new data/stats
+    - Convert to different platform
+    - Create thread version (Twitter)
+    - Create carousel version (Instagram/LinkedIn)
+    - Generate video script
+    - Create infographic outline
+- [ ] Repurposing engine
+  - [ ] LLM-based content transformation
+  - [ ] Maintain original message
+  - [ ] Adapt to new format
+- [ ] Track repurposed content
+  - [ ] Link original → repurposed posts
+  - [ ] Prevent duplicate repurposing
+  - [ ] Show repurpose history
+
+### Feature 6: Konkurrent-Radar (Competitor Tracking) 🎯
+- [ ] Create competitors table
+  - [ ] id, user_id, competitor_name, platform, profile_url, added_at
+- [ ] Competitor management UI
+  - [ ] Add up to 5 competitors
+  - [ ] Input: Name + LinkedIn/Twitter URL
+  - [ ] Remove competitor option
+- [ ] Competitor content tracking
+  - [ ] Scrape competitor posts (with rate limiting)
+  - [ ] Store recent posts in database
+  - [ ] Analyze posting frequency
+  - [ ] Identify popular topics
+- [ ] Weekly competitor report
+  - [ ] What topics they covered
+  - [ ] Estimated engagement (likes, comments)
+  - [ ] Content gaps you can fill
+  - [ ] "Create similar post" suggestions
+- [ ] Competitor insights dashboard
+  - [ ] Posting frequency comparison
+  - [ ] Topic overlap analysis
+  - [ ] Content type breakdown
+
+### Feature 7: Idé-Bank (Idea Bank) 💡
+- [ ] Create ideas table
+  - [ ] id, user_id, idea_text, source, tags, status, created_at
+  - [ ] status: new, in_progress, used, archived
+- [ ] Quick idea capture UI
+  - [ ] Floating "+" button on all pages
+  - [ ] Quick input modal
+  - [ ] Voice-to-text option
+  - [ ] Tag assignment
+- [ ] Idea management page
+  - [ ] List all ideas
+  - [ ] Filter by status
+  - [ ] Filter by tags
+  - [ ] Search ideas
+- [ ] Idea to post conversion
+  - [ ] "Convert to post" button
+  - [ ] Pre-fill Generate page with idea
+  - [ ] Mark idea as "used"
+- [ ] Idea sources
+  - [ ] Manual input
+  - [ ] Voice note (WhatsApp)
+  - [ ] Saved from trends
+  - [ ] Saved from competitor analysis
+
+### Feature 8: Beste Tid (Best Time to Post) ⏰
+- [ ] Analyze user's posting history
+  - [ ] Track when posts are created
+  - [ ] Track engagement data (if available)
+- [ ] Platform-specific recommendations
+  - [ ] LinkedIn: Best times for B2B
+  - [ ] Twitter: Best times for engagement
+  - [ ] Instagram: Best times for reach
+  - [ ] Facebook: Best times for interaction
+- [ ] Personalized recommendations
+  - [ ] Based on user's audience timezone
+  - [ ] Based on historical performance
+- [ ] Best time display
+  - [ ] Show in Generate page
+  - [ ] "Best time to post: Tuesday 9:00 AM"
+- [ ] Auto-scheduling option
+  - [ ] Schedule post for best time
+  - [ ] Integration with scheduling system
+
+### Feature 9: WhatsApp/Telegram Bot Integration 📱
+- [ ] Telegram Bot setup
+  - [ ] Create bot via BotFather
+  - [ ] Set up webhook endpoint
+  - [ ] Store bot token securely
+- [ ] Bot command handlers
+  - [ ] /start - Link account
+  - [ ] /generate [topic] - Generate post
+  - [ ] /idea [text] - Save idea
+  - [ ] /trends - Get today's trends
+  - [ ] /help - Show commands
+- [ ] Voice message handling
+  - [ ] Receive voice message
+  - [ ] Transcribe using Whisper API
+  - [ ] Generate post from transcription
+  - [ ] Send back generated post
+- [ ] Text message handling
+  - [ ] Receive text idea
+  - [ ] Generate post
+  - [ ] Send back with options (Copy, Edit, Regenerate)
+- [ ] Account linking
+  - [ ] Generate unique link code
+  - [ ] User clicks link to connect Telegram to Innlegg account
+  - [ ] Store telegram_chat_id in user table
+- [ ] WhatsApp Bot (Phase 2)
+  - [ ] Research WhatsApp Business API
+  - [ ] Consider Baileys library for unofficial API
+  - [ ] Similar functionality to Telegram
+
+### Feature 10: AI Image Generation Enhancement 🎨
+- [ ] Auto-generate image with post
+  - [ ] Option: "Auto-generate matching image"
+  - [ ] Generate image based on post content
+  - [ ] No manual prompt needed
+- [ ] Multiple style options
+  - [ ] Professional (clean, corporate)
+  - [ ] Creative (artistic, colorful)
+  - [ ] Minimal (simple, elegant)
+  - [ ] Bold (high contrast, impactful)
+  - [ ] Photorealistic
+  - [ ] Illustration
+- [ ] Platform-optimized dimensions
+  - [ ] LinkedIn: 1200x627 (link preview), 1080x1080 (post)
+  - [ ] Twitter: 1200x675
+  - [ ] Instagram: 1080x1080 (square), 1080x1350 (portrait)
+  - [ ] Facebook: 1200x630
+- [ ] Text overlay option
+  - [ ] Add quote/headline on image
+  - [ ] Font selection
+  - [ ] Position selection
+  - [ ] Good for Instagram quotes
+- [ ] Image regeneration
+  - [ ] "Regenerate" button
+  - [ ] "Try different style" option
+  - [ ] Keep history of generated images
+- [ ] Image editing
+  - [ ] Basic crop/resize
+  - [ ] Filter options
+  - [ ] Brightness/contrast adjustment
+
+### Feature 11: Ukentlig Rapport (Weekly Report) 📊
+- [ ] Automated weekly report generation
+  - [ ] Every Sunday at 9:00 AM
+  - [ ] Summarize week's activity
+- [ ] Report content
+  - [ ] Posts generated this week
+  - [ ] Most successful post (if tracking)
+  - [ ] Time saved calculation
+  - [ ] Upcoming events from calendar
+  - [ ] Trending topics for next week
+  - [ ] Personalized tips
+- [ ] Delivery options
+  - [ ] Email report
+  - [ ] WhatsApp/Telegram message
+  - [ ] In-app notification
+- [ ] Report customization
+  - [ ] Choose delivery day
+  - [ ] Choose delivery time
+  - [ ] Enable/disable sections
+
+### Feature 12: Engasjement-Hjelper (Engagement Helper) 💬
+- [ ] Comment response suggestions
+  - [ ] User pastes comment received
+  - [ ] AI suggests appropriate response
+  - [ ] Multiple response options
+- [ ] Engagement prompts
+  - [ ] Suggest questions to ask audience
+  - [ ] Suggest CTAs for posts
+  - [ ] Suggest hashtags
+- [ ] Response templates
+  - [ ] Thank you responses
+  - [ ] Follow-up questions
+  - [ ] Promotional responses
+
+### Feature 13: Innholds-Serier (Content Series) 📚
+- [ ] Series creation
+  - [ ] Define series topic
+  - [ ] Number of posts (5-7)
+  - [ ] Posting schedule
+- [ ] Series generation
+  - [ ] Generate all posts at once
+  - [ ] Maintain consistency across series
+  - [ ] Different angles on same topic
+- [ ] Series management
+  - [ ] View all series
+  - [ ] Edit individual posts
+  - [ ] Reschedule posts
+- [ ] Series templates
+  - [ ] "Week of [Topic]"
+  - [ ] "5 Tips about [Topic]"
+  - [ ] "Behind the scenes"
+  - [ ] "Customer stories"
+
+### Feature 14: A/B Testing 🧪
+- [ ] Generate variations
+  - [ ] Create 2-3 versions of same post
+  - [ ] Different hooks
+  - [ ] Different CTAs
+  - [ ] Different lengths
+- [ ] Variation comparison
+  - [ ] Side-by-side view
+  - [ ] Highlight differences
+- [ ] Performance tracking (manual)
+  - [ ] User marks which performed better
+  - [ ] Learn from preferences
+- [ ] AI recommendations
+  - [ ] Suggest which version might perform better
+  - [ ] Based on best practices
+
+### Feature 15: Personlig Coach (Personal Coach) 🏆
+- [ ] Weekly tips
+  - [ ] Personalized based on usage
+  - [ ] "Try adding a question at the end"
+  - [ ] "Your posts are getting longer - try shorter"
+  - [ ] "You haven't used images lately"
+- [ ] Progress tracking
+  - [ ] Posts per week trend
+  - [ ] Consistency score
+  - [ ] Improvement suggestions
+- [ ] Achievements/badges
+  - [ ] "First post generated"
+  - [ ] "10 posts milestone"
+  - [ ] "Consistent poster (7 days streak)"
+  - [ ] "Voice trained"
+- [ ] Coach chat (existing feature enhancement)
+  - [ ] More proactive suggestions
+  - [ ] Based on user's actual data
+
+---
+
+## 🎨 UI/UX Improvements
+
+### Landing Page Redesign
+- [ ] Hero section with new value proposition
+  - [ ] "Skap profesjonelt innhold på sekunder - med din egen stemme"
+  - [ ] Animated demo or video
+  - [ ] CTA: "Prøv gratis"
+- [ ] Features showcase (all 15 features)
+  - [ ] Icon + title + description for each
+  - [ ] Grouped by category
+- [ ] "How it works" section
+  - [ ] 3 steps: Sign up → Train voice → Generate
+  - [ ] Visual flow diagram
+- [ ] Pricing section
+  - [ ] Free: 5 posts, basic features
+  - [ ] Pro: 199 NOK/month, all features, 100 posts
+  - [ ] Business: 499 NOK/month, unlimited, team features
+- [ ] Testimonials
+  - [ ] 3-5 customer quotes
+  - [ ] Photos and titles
+- [ ] FAQ section
+- [ ] Footer with all links
+
+### Generate Page Enhancement
+- [ ] Trend suggestions at top
+  - [ ] "Trending nå: [topic]" cards
+  - [ ] Click to use as topic
+- [ ] Voice profile indicator
+  - [ ] "Genererer med din stemme ✓"
+  - [ ] Link to retrain
+- [ ] Platform preview
+  - [ ] Show how post will look on selected platform
+  - [ ] Character count with limit indicator
+- [ ] Image generation toggle
+  - [ ] "Generer bilde automatisk"
+  - [ ] Style selection dropdown
+- [ ] Save as draft option
+- [ ] Schedule option
+
+---
+
+## 🔧 Technical Requirements
+
+### Database Schema Updates
+- [ ] user_interests table (id, user_id, industry, interests[], created_at)
+- [ ] voice_profiles table (id, user_id, profile_data JSON, created_at, updated_at)
+- [ ] trends_cache table (id, source, topic, description, score, industry, cached_at)
+- [ ] content_calendar table (id, user_id, event_name, event_date, event_type, industry, is_custom)
+- [ ] competitors table (id, user_id, name, platform, profile_url, added_at)
+- [ ] ideas table (id, user_id, idea_text, source, tags, status, created_at)
+- [ ] content_series table (id, user_id, series_name, topic, post_count, created_at)
+- [ ] weekly_reports table (id, user_id, report_data JSON, sent_at)
+
+### API Integrations
+- [ ] Google Trends API (unofficial)
+- [ ] Reddit API
+- [ ] Medium RSS
+- [ ] Telegram Bot API
+- [ ] WhatsApp Business API (or Baileys)
+- [ ] Whisper API (voice transcription)
+
+### External Deployment (Per User Preferences)
+- [ ] Supabase Auth integration (replace Manus OAuth)
+- [ ] Railway deployment setup
+- [ ] Docker configuration (Dockerfile + docker-compose.yml)
+- [ ] Environment variables documentation
+- [ ] Remove all Manus dependencies for commercial use
+
+---
+
+## 📊 Success Metrics
+
+- [ ] User can generate post in < 1 minute
+- [ ] Personalized trends refresh every 6 hours
+- [ ] Voice profile accuracy > 80% (user satisfaction)
+- [ ] WhatsApp/Telegram response time < 30 seconds
+- [ ] Dashboard loads in < 2 seconds
+- [ ] 50% of users use Trend og Inspirasjon weekly
+- [ ] 70% of Pro users complete voice training
+
+---
+
+## 🚀 Implementation Priority
+
+### Phase 1 (Week 1-2): Core Differentiation
+1. Trend og Inspirasjon (basic version)
+2. Stemmetrening (voice training)
+3. Enhanced Dashboard
+
+### Phase 2 (Week 3-4): Content Planning
+4. Innholds-Kalender
+5. Gjenbruk-Maskin
+6. Idé-Bank
+
+### Phase 3 (Week 5-6): Automation
+7. Telegram Bot
+8. AI Image Enhancement
+9. Beste Tid
+
+### Phase 4 (Week 7-8): Advanced Features
+10. Konkurrent-Radar
+11. Ukentlig Rapport
+12. Engasjement-Hjelper
+
+### Phase 5 (Week 9-10): Polish & Scale
+13. Innholds-Serier
+14. A/B Testing
+15. Personlig Coach enhancements
+16. Landing page redesign
+17. External deployment preparation
+
+
+## Pricing Model Update (Jan 27, 2026)
+- [x] Update pricing model: Nothing is free, everything is subscription-based
+- [x] Free Trial: 5 text-only posts (no AI images)
+- [x] Pro (199 NOK/month): 100 posts + AI images (Nano Banana + DALL-E 3)
+- [x] Update Landing Page with new pricing structure
+- [x] Update Generate page to block AI image generation for trial users
+- [x] Show upgrade prompt when trial users try to generate AI images
+- [x] Remove "GRATIS" label from Nano Banana (now PRO only)
+- [x] Both AI image models (Nano Banana & DALL-E 3) require Pro subscription

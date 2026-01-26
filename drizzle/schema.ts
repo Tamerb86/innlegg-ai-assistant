@@ -83,6 +83,7 @@ export const userPreferences = mysqlTable("user_preferences", {
   language: mysqlEnum("language", ["no", "en"]).default("no").notNull(),
   openaiConsent: int("openai_consent").default(0).notNull(), // boolean as int: 0 = not asked, 1 = accepted, 2 = declined
   consentDate: timestamp("consent_date"),
+  usagePreferences: text("usage_preferences"), // User's custom description of how they want to use the platform
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });
@@ -171,3 +172,23 @@ export const blogPosts = mysqlTable("blog_posts", {
 
 export type BlogPost = typeof blogPosts.$inferSelect;
 export type InsertBlogPost = typeof blogPosts.$inferInsert;
+
+/**
+ * Invoices table - stores billing history and payment records
+ */
+export const invoices = mysqlTable("invoices", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  amount: int("amount").notNull(), // Amount in øre (NOK cents) - 19900 = 199.00 NOK
+  currency: varchar("currency", { length: 3 }).notNull().default("NOK"),
+  status: mysqlEnum("status", ["pending", "paid", "failed", "refunded"]).notNull().default("pending"),
+  description: text("description"),
+  vippsOrderId: varchar("vipps_order_id", { length: 255 }),
+  invoiceDate: timestamp("invoice_date").defaultNow().notNull(),
+  paidAt: timestamp("paid_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Invoice = typeof invoices.$inferSelect;
+export type InsertInvoice = typeof invoices.$inferInsert;

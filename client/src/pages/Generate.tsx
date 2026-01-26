@@ -346,56 +346,62 @@ export default function Generate() {
                     <div className="space-y-3 pl-6 border-l-2 border-primary/30">
                       <div className="space-y-2">
                         <Label>Velg AI-modell</Label>
-                        <div className="space-y-2">
-                          <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-accent transition-colors">
-                            <input
-                              type="radio"
-                              name="image-type"
-                              value="nanoBanana"
-                              checked={imageGenerationType === "nanoBanana"}
-                              onChange={(e) => setImageGenerationType(e.target.value as "dalle" | "nanoBanana")}
-                              className="h-4 w-4"
-                            />
-                            <div className="flex-1">
-                              <div className="font-medium flex items-center gap-2">
-                                🍌 Nano Banana (Gemini)
-                                <span className="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">GRATIS</span>
+                        {subscription?.status === "trial" ? (
+                          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                            <p className="text-sm font-medium text-amber-800 mb-2">🔒 AI-bilder krever Pro-abonnement</p>
+                            <p className="text-xs text-amber-700 mb-3">Oppgrader til Pro for å generere bilder med AI (Nano Banana eller DALL-E 3).</p>
+                            <Button variant="outline" size="sm" className="w-full border-amber-300 text-amber-800 hover:bg-amber-100">
+                              Oppgrader til Pro - 199 kr/mnd
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-accent transition-colors">
+                              <input
+                                type="radio"
+                                name="image-type"
+                                value="nanoBanana"
+                                checked={imageGenerationType === "nanoBanana"}
+                                onChange={(e) => setImageGenerationType(e.target.value as "dalle" | "nanoBanana")}
+                                className="h-4 w-4"
+                              />
+                              <div className="flex-1">
+                                <div className="font-medium flex items-center gap-2">
+                                  🍌 Nano Banana (Gemini)
+                                  <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full">PRO</span>
+                                </div>
+                                <p className="text-xs text-muted-foreground">God kvalitet, rask generering</p>
                               </div>
-                              <p className="text-xs text-muted-foreground">God kvalitet, rask generering</p>
-                            </div>
-                          </label>
+                            </label>
 
-                          <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-accent transition-colors">
-                            <input
-                              type="radio"
-                              name="image-type"
-                              value="dalle"
-                              checked={imageGenerationType === "dalle"}
-                              onChange={(e) => setImageGenerationType(e.target.value as "dalle" | "nanoBanana")}
-                              className="h-4 w-4"
-                              disabled={subscription?.status === "trial"}
-                            />
-                            <div className="flex-1">
-                              <div className="font-medium flex items-center gap-2">
-                                ✨ DALL-E 3
-                                <span className="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full">PRO</span>
+                            <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-accent transition-colors">
+                              <input
+                                type="radio"
+                                name="image-type"
+                                value="dalle"
+                                checked={imageGenerationType === "dalle"}
+                                onChange={(e) => setImageGenerationType(e.target.value as "dalle" | "nanoBanana")}
+                                className="h-4 w-4"
+                              />
+                              <div className="flex-1">
+                                <div className="font-medium flex items-center gap-2">
+                                  ✨ DALL-E 3
+                                  <span className="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full">PRO</span>
+                                </div>
+                                <p className="text-xs text-muted-foreground">Høyeste kvalitet, profesjonell</p>
                               </div>
-                              <p className="text-xs text-muted-foreground">
-                                {subscription?.status === "trial" 
-                                  ? "Krever Pro-abonnement" 
-                                  : "Høyeste kvalitet, profesjonell"}
-                              </p>
-                            </div>
-                          </label>
-                        </div>
+                            </label>
+                          </div>
+                        )}
                       </div>
 
-                      <Button
-                        onClick={handleGenerateAIImage}
-                        disabled={isGeneratingImage || !topic.trim()}
-                        variant="outline"
-                        className="w-full"
-                      >
+                      {subscription?.status !== "trial" && (
+                        <Button
+                          onClick={handleGenerateAIImage}
+                          disabled={isGeneratingImage || !topic.trim()}
+                          variant="outline"
+                          className="w-full"
+                        >
                         {isGeneratingImage ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -408,6 +414,7 @@ export default function Generate() {
                           </>
                         )}
                       </Button>
+                      )}
                     </div>
                   )}
                 </div>
