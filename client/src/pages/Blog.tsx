@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
+import { Helmet } from 'react-helmet-async';
 import { BookOpen, Clock, Eye, Tag } from "lucide-react";
 import { Link } from "wouter";
 
@@ -28,7 +29,18 @@ export default function Blog() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <Helmet>
+        <title>Innlegg Blog - Tips og guider om innholdsproduksjon med AI</title>
+        <meta name="description" content="Les våre artikler om hvordan du kan bruke AI til å lage profesjonelt innhold for LinkedIn, Twitter, Instagram og Facebook. Tips, guider og best practices." />
+        <meta property="og:title" content="Innlegg Blog - Tips og guider om innholdsproduksjon med AI" />
+        <meta property="og:description" content="Les våre artikler om hvordan du kan bruke AI til å lage profesjonelt innhold for LinkedIn, Twitter, Instagram og Facebook." />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Innlegg Blog - Tips og guider om innholdsproduksjon med AI" />
+        <meta name="twitter:description" content="Les våre artikler om hvordan du kan bruke AI til å lage profesjonelt innhold." />
+      </Helmet>
+      <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <div className="container py-16">
@@ -110,5 +122,6 @@ export default function Blog() {
         )}
       </main>
     </div>
+    </>
   );
 }

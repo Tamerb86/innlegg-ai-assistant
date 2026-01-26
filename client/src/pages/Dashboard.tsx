@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { FileText, Zap, TrendingUp, Clock, Target, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
@@ -153,6 +154,55 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Activity Chart */}
+        <section className="mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>{language === "no" ? "Aktivitet siste 7 dager" : "Activity last 7 days"}</CardTitle>
+              <CardDescription>
+                {language === "no" ? "Oversikt over dine genererte innlegg" : "Overview of your generated posts"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={[
+                  { day: 'Man', posts: 0 },
+                  { day: 'Tir', posts: 0 },
+                  { day: 'Ons', posts: 0 },
+                  { day: 'Tor', posts: 0 },
+                  { day: 'Fre', posts: 0 },
+                  { day: 'Lør', posts: 0 },
+                  { day: 'Søn', posts: 0 },
+                ]}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis dataKey="day" className="text-sm" />
+                  <YAxis className="text-sm" />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--background))', 
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="posts" 
+                    stroke="hsl(var(--primary))" 
+                    strokeWidth={2}
+                    dot={{ fill: 'hsl(var(--primary))', r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+              <p className="text-sm text-muted-foreground text-center mt-4">
+                {language === "no" 
+                  ? "Ingen aktivitet ennå. Start med å generere ditt første innlegg!"
+                  : "No activity yet. Start by generating your first post!"}
+              </p>
+            </CardContent>
+          </Card>
+        </section>
 
         {/* Quick Actions */}
         <div className="grid gap-6 md:grid-cols-3 mb-8">

@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, Calendar, Clock, Eye, Share2, User } from "lucide-react";
+import { Helmet } from 'react-helmet-async';
+import { ArrowLeft, Calendar, Clock, Eye, User } from "lucide-react";
+import SocialShare from "@/components/SocialShare";
 import { useRoute, Link } from "wouter";
 
 export default function BlogPost() {
@@ -65,7 +67,23 @@ export default function BlogPost() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <Helmet>
+        <title>{post.title} - Innlegg Blog</title>
+        <meta name="description" content={post.excerpt} />
+        <meta property="og:title" content={post.title} />
+        <meta property="og:description" content={post.excerpt} />
+        <meta property="og:type" content="article" />
+        <meta property="og:image" content={post.coverImage || ''} />
+        <meta property="article:published_time" content={new Date(post.createdAt).toISOString()} />
+        <meta property="article:author" content={post.authorName} />
+        <meta property="article:tag" content={post.category} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.excerpt} />
+        <meta name="twitter:image" content={post.coverImage || ''} />
+      </Helmet>
+      <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b">
         <div className="container py-6">
@@ -150,15 +168,16 @@ export default function BlogPost() {
 
           {/* Share */}
           <Card className="p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
-            <div className="flex items-center justify-between">
+            <div className="space-y-4">
               <div>
                 <h3 className="font-semibold mb-1">Likte du denne artikkelen?</h3>
                 <p className="text-sm text-muted-foreground">Del den med ditt nettverk!</p>
               </div>
-              <Button>
-                <Share2 className="h-4 w-4 mr-2" />
-                Del
-              </Button>
+              <SocialShare 
+                url={typeof window !== 'undefined' ? window.location.href : ''}
+                title={post.title}
+                description={post.excerpt}
+              />
             </div>
           </Card>
 
@@ -177,5 +196,6 @@ export default function BlogPost() {
         </article>
       </main>
     </div>
+    </>
   );
 }
