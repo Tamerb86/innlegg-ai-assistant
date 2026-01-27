@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { MessageSquare, Sparkles, Copy, CheckCircle2, Loader2, ThumbsUp, Heart, Lightbulb } from "lucide-react";
+import { MessageSquare, Sparkles, Copy, CheckCircle2, Loader2, ThumbsUp, Heart, Lightbulb, Cloud, Save } from "lucide-react";
 
 export default function EngagementHelper() {
   const { data: subscription } = trpc.user.getSubscription.useQuery();
@@ -21,9 +21,80 @@ export default function EngagementHelper() {
   const [generatedResponse, setGeneratedResponse] = useState("");
   const [copied, setCopied] = useState(false);
 
+  // Auto-save draft functionality
+  const [draftSaved, setDraftSaved] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const { data: existingDraft } = trpc.drafts.get.useQuery({ pageType: "engagement" });
+  const saveDraftMutation = trpc.drafts.save.useMutation({
+    onSuccess: () => {
+      setDraftSaved(true);
+      setLastSavedAt(new Date());
+    },
+  });
+  const deleteDraftMutation = trpc.drafts.delete.useMutation();
+
+  // Restore draft on load
+  useEffect(() => {
+    if (existingDraft && !originalPost) {
+      try {
+        const formData = JSON.parse(existingDraft.formData);
+        if (formData.originalPost) setOriginalPost(formData.originalPost);
+        if (formData.responseType) setResponseType(formData.responseType);
+        toast.info("Utkast gjenopprettet", { duration: 2000 });
+      } catch (e) {
+        console.error("Failed to parse draft", e);
+      }
+    }
+  }, [existingDraft]);
+
+  // Auto-save with debounce
+  const autoSaveDraft = useCallback(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    saveTimeoutRef.current = setTimeout(() => {
+      const formData = JSON.stringify({
+        originalPost,
+        responseType,
+      });
+      
+      if (originalPost) {
+        saveDraftMutation.mutate({
+          pageType: "engagement",
+          formData,
+          title: "Engasjement utkast",
+        });
+      }
+    }, 1500);
+  }, [originalPost, responseType]);
+
+  // Trigger auto-save when form changes
+  useEffect(() => {
+    if (originalPost) {
+      setDraftSaved(false);
+      autoSaveDraft();
+    }
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [originalPost, responseType, autoSaveDraft]);
+
+  // Clear draft after successful generation
+  const clearDraft = () => {
+    deleteDraftMutation.mutate({ pageType: "engagement" });
+    setDraftSaved(false);
+    setLastSavedAt(null);
+  };
+
   const generateResponseMutation = trpc.engagement.generateResponse.useMutation({
     onSuccess: (data: { response: string }) => {
       setGeneratedResponse(data.response);
+      clearDraft();
       toast.success("Svar generert!");
     },
     onError: (error: { message: string }) => {

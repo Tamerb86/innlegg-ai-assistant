@@ -1182,4 +1182,10 @@
 - [x] Add auto-save to Content Series page
 - [x] Add auto-save to A/B Testing page
 - [x] Test all pages (40 tests passing)
+- [x] Save checkpoint
+
+
+## Auto-Save for Engagement Helper
+- [x] Add auto-save to Engagement Helper page
+- [x] Test functionality (40 tests passing)
 - [ ] Save checkpoint
