@@ -39,6 +39,8 @@ import TelegramBot from "@/pages/TelegramBot";
 import CompetitorRadar from "@/pages/CompetitorRadar";
 import ContentSeries from "@/pages/ContentSeries";
 import ABTesting from "@/pages/ABTesting";
+import WeeklyReport from "@/pages/WeeklyReport";
+import EngagementHelper from "@/pages/EngagementHelper";
 
 
 function Router() {
@@ -77,6 +79,8 @@ function Router() {
       <Route path={"/competitor-radar"} component={CompetitorRadar} />
       <Route path={"/content-series"} component={ContentSeries} />
       <Route path={"/ab-testing"} component={ABTesting} />
+      <Route path={"/weekly-report"} component={WeeklyReport} />
+      <Route path={"/engagement-helper"} component={EngagementHelper} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

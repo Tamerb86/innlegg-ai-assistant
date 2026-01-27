@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Zap, LayoutDashboard, Sparkles, FileText, MessageSquare, Settings as SettingsIcon, LogOut, Flame, Mic, BarChart3, Lightbulb, Calendar, Clock, Recycle, Send, Target, List, FlaskConical, ChevronDown } from "lucide-react";
+import { Menu, X, Zap, LayoutDashboard, Sparkles, FileText, MessageSquare, Settings as SettingsIcon, LogOut, Flame, Mic, BarChart3, Lightbulb, Calendar, Clock, Recycle, Send, Target, List, FlaskConical, ChevronDown, Mail } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,6 +46,8 @@ export default function DashboardNav() {
     { label: "Telegram Bot", href: "/telegram-bot", icon: Send, category: "Integrasjoner" },
     { label: "Konkurrent-Radar", href: "/competitor-radar", icon: Target, category: "Analyse" },
     { label: "A/B Testing", href: "/ab-testing", icon: FlaskConical, category: "Analyse" },
+    { label: "Ukentlig Rapport", href: "/weekly-report", icon: Mail, category: "Analyse" },
+    { label: "Engasjement-Hjelper", href: "/engagement-helper", icon: MessageSquare, category: "Analyse" },
   ];
 
 

@@ -453,3 +453,18 @@ export const weeklyReports = mysqlTable("weekly_reports", {
 
 export type WeeklyReport = typeof weeklyReports.$inferSelect;
 export type InsertWeeklyReport = typeof weeklyReports.$inferInsert;
+
+/**
+ * Weekly Report Settings - user preferences for automated reports
+ */
+export const weeklyReportSettings = mysqlTable("weekly_report_settings", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull().unique(),
+  email: varchar("email", { length: 255 }).notNull(),
+  enabled: tinyint("enabled").default(1).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type WeeklyReportSettings = typeof weeklyReportSettings.$inferSelect;
+export type InsertWeeklyReportSettings = typeof weeklyReportSettings.$inferInsert;

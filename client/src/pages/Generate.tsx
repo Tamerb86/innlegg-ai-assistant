@@ -27,6 +27,7 @@ export default function Generate() {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [generateAIImage, setGenerateAIImage] = useState(false);
   const [imageGenerationType, setImageGenerationType] = useState<"dalle" | "nanoBanana">("nanoBanana");
+  const [imageStyle, setImageStyle] = useState<"minimalist" | "bold" | "professional" | "creative">("professional");
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [generatedImagePrompt, setGeneratedImagePrompt] = useState<string | null>(null);
 
@@ -413,7 +414,46 @@ export default function Generate() {
                             </Button>
                           </div>
                         ) : (
-                          <div className="space-y-2">
+                          <div className="space-y-3">
+                            {/* Image Style Selection */}
+                            <div className="space-y-2">
+                              <Label>Bildestil</Label>
+                              <Select value={imageStyle} onValueChange={(value: typeof imageStyle) => setImageStyle(value)}>
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="minimalist">
+                                    <div className="flex items-center gap-2">
+                                      <span>🎯</span>
+                                      <span>Minimalistisk - Ren og enkel</span>
+                                    </div>
+                                  </SelectItem>
+                                  <SelectItem value="bold">
+                                    <div className="flex items-center gap-2">
+                                      <span>💥</span>
+                                      <span>Modig - Sterke farger og kontraster</span>
+                                    </div>
+                                  </SelectItem>
+                                  <SelectItem value="professional">
+                                    <div className="flex items-center gap-2">
+                                      <span>💼</span>
+                                      <span>Profesjonell - Elegant og seriøs</span>
+                                    </div>
+                                  </SelectItem>
+                                  <SelectItem value="creative">
+                                    <div className="flex items-center gap-2">
+                                      <span>🎨</span>
+                                      <span>Kreativ - Kunstnerisk og unik</span>
+                                    </div>
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            
+                            {/* Model Selection */}
+                            <div className="space-y-2">
+                              <Label>AI-modell</Label>
                             <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-accent transition-colors">
                               <input
                                 type="radio"
@@ -449,6 +489,7 @@ export default function Generate() {
                                 <p className="text-xs text-muted-foreground">Høyeste kvalitet, profesjonell</p>
                               </div>
                             </label>
+                            </div>
                           </div>
                         )}
                       </div>
