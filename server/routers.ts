@@ -1644,6 +1644,64 @@ Skriv et ${input.responseType} svar.`
           alternatives: [parsed.alt1, parsed.alt2, parsed.alt3]
         };
       }),
+
+    // Save post to "Mine innlegg" (already saved, just return success)
+    savePost: protectedProcedure
+      .input(z.object({ postId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        // Post is already in "posts" table, so it's already saved
+        // This endpoint exists for UI consistency
+        return { success: true, message: "Post is already saved in Mine innlegg" };
+      }),
+
+    // Delete post
+    deletePost: protectedProcedure
+      .input(z.object({ postId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const { getDb } = await import("./db");
+        const { posts } = await import("../drizzle/schema");
+        const { eq, and } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        await db.delete(posts)
+          .where(and(
+            eq(posts.id, input.postId),
+            eq(posts.userId, ctx.user.id)
+          ));
+
+        return { success: true };
+      }),
+
+    // Move idea to Idea Bank
+    moveToIdeaBank: protectedProcedure
+      .input(z.object({ postId: z.number(), rawInput: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        const { getDb } = await import("./db");
+        const { ideas, posts } = await import("../drizzle/schema");
+        const { eq, and } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        // Add to idea bank
+        await db.insert(ideas).values({
+          userId: ctx.user.id,
+          ideaText: input.rawInput,
+          source: "manual",
+          status: "new",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+
+        // Delete from posts
+        await db.delete(posts)
+          .where(and(
+            eq(posts.id, input.postId),
+            eq(posts.userId, ctx.user.id)
+          ));
+
+        return { success: true };
+      }),
   }),
 });
 

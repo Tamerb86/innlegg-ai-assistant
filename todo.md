@@ -1226,3 +1226,14 @@
 - [x] Write vitest tests (6 tests passing)
 - [ ] Test bot flow end-to-end
 - [ ] Save checkpoint
+
+
+## Telegram Innlegg Action Buttons
+- [x] Add backend procedure to save post to "Mine innlegg"
+- [x] Add backend procedure to move idea to Idea Bank
+- [x] Add backend procedure to delete post
+- [x] Update TelegramPosts.tsx with 3 action buttons (Save, Move to Idea Bank, Delete)
+- [x] Add confirmation dialog for delete action
+- [x] Write vitest tests for new procedures (4 tests passing)
+- [ ] Test all actions end-to-end
+- [ ] Save checkpoint

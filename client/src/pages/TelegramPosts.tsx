@@ -4,19 +4,31 @@ import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
-import { Loader2, MessageSquare, Sparkles, Copy, Check } from "lucide-react";
+import { Loader2, MessageSquare, Sparkles, Copy, Check, Save, Lightbulb, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { nb } from "date-fns/locale";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function TelegramPosts() {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const [expandedPostId, setExpandedPostId] = useState<number | null>(null);
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [postToDelete, setPostToDelete] = useState<number | null>(null);
   
   // Fetch Telegram-generated posts (last 10)
-  const { data: telegramPosts, isLoading } = trpc.telegram.getRecentPosts.useQuery(
+  const { data: telegramPosts, isLoading, refetch } = trpc.telegram.getRecentPosts.useQuery(
     undefined,
     { enabled: isAuthenticated }
   );
@@ -31,6 +43,38 @@ export default function TelegramPosts() {
     },
   });
 
+  // Save post mutation
+  const savePost = trpc.telegram.savePost.useMutation({
+    onSuccess: () => {
+      toast.success("Innlegget er lagret i Mine innlegg!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Kunne ikke lagre innlegg");
+    },
+  });
+
+  // Delete post mutation
+  const deletePost = trpc.telegram.deletePost.useMutation({
+    onSuccess: () => {
+      toast.success("Innlegget er slettet!");
+      refetch();
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Kunne ikke slette innlegg");
+    },
+  });
+
+  // Move to idea bank mutation
+  const moveToIdeaBank = trpc.telegram.moveToIdeaBank.useMutation({
+    onSuccess: () => {
+      toast.success("Idé flyttet til Idé-Bank!");
+      refetch();
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Kunne ikke flytte til Idé-Bank");
+    },
+  });
+
   const handleCopy = (content: string, postId: number) => {
     navigator.clipboard.writeText(content);
     setCopiedId(postId);
@@ -41,6 +85,27 @@ export default function TelegramPosts() {
   const handleGenerateAlternatives = (postId: number, rawInput: string) => {
     setExpandedPostId(postId);
     generateAlternatives.mutate({ postId, rawInput });
+  };
+
+  const handleSave = (postId: number) => {
+    savePost.mutate({ postId });
+  };
+
+  const handleDeleteClick = (postId: number) => {
+    setPostToDelete(postId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (postToDelete) {
+      deletePost.mutate({ postId: postToDelete });
+    }
+    setDeleteDialogOpen(false);
+    setPostToDelete(null);
+  };
+
+  const handleMoveToIdeaBank = (postId: number, rawInput: string) => {
+    moveToIdeaBank.mutate({ postId, rawInput });
   };
 
   if (authLoading || isLoading) {
@@ -130,12 +195,44 @@ export default function TelegramPosts() {
                   </p>
                 </div>
 
-                {/* Generate alternatives button */}
-                <div className="flex gap-2">
+                {/* Action buttons */}
+                <div className="flex gap-2 flex-wrap">
+                  <Button
+                    onClick={() => handleSave(post.id)}
+                    disabled={savePost.isPending}
+                    variant="outline"
+                    size="sm"
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    Lagre
+                  </Button>
+                  
+                  <Button
+                    onClick={() => handleMoveToIdeaBank(post.id, post.rawInput)}
+                    disabled={moveToIdeaBank.isPending}
+                    variant="outline"
+                    size="sm"
+                  >
+                    <Lightbulb className="h-4 w-4 mr-2" />
+                    Til Idé-Bank
+                  </Button>
+                  
+                  <Button
+                    onClick={() => handleDeleteClick(post.id)}
+                    disabled={deletePost.isPending}
+                    variant="outline"
+                    size="sm"
+                    className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Slett
+                  </Button>
+                  
                   <Button
                     onClick={() => handleGenerateAlternatives(post.id, post.rawInput)}
                     disabled={generateAlternatives.isPending && expandedPostId === post.id}
-                    className="flex-1"
+                    size="sm"
+                    className="ml-auto"
                   >
                     {generateAlternatives.isPending && expandedPostId === post.id ? (
                       <>
@@ -188,6 +285,24 @@ export default function TelegramPosts() {
           ))}
         </div>
       )}
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Er du sikker?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Dette vil permanent slette innlegget. Denne handlingen kan ikke angres.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Avbryt</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Slett
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
