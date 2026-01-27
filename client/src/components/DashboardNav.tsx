@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Zap, LayoutDashboard, Sparkles, FileText, MessageSquare, Settings as SettingsIcon, LogOut, Flame, Mic, BarChart3 } from "lucide-react";
+import { Menu, X, Zap, LayoutDashboard, Sparkles, FileText, MessageSquare, Settings as SettingsIcon, LogOut, Flame, Mic, BarChart3, Lightbulb } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
@@ -22,6 +22,7 @@ export default function DashboardNav() {
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { label: "Generer", href: "/generate", icon: Sparkles },
     { label: "Mine innlegg", href: "/posts", icon: FileText },
+    { label: "Eksempler", href: "/examples", icon: Lightbulb },
     { label: "Trender", href: "/trends", icon: Flame },
     { label: "Stemme", href: "/voice-training", icon: Mic },
     { label: "Coach", href: "/coach", icon: MessageSquare },

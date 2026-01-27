@@ -31,6 +31,7 @@ import VoiceTraining from "@/pages/VoiceTraining";
 import SubscriptionSuccess from "@/pages/SubscriptionSuccess";
 import SubscriptionCancel from "@/pages/SubscriptionCancel";
 import AdminAnalytics from "@/pages/AdminAnalytics";
+import Examples from "@/pages/Examples";
 
 
 function Router() {
@@ -61,6 +62,7 @@ function Router() {
       <Route path={"/subscription/success"} component={SubscriptionSuccess} />
       <Route path={"/subscription/cancel"} component={SubscriptionCancel} />
       <Route path={"/admin/analytics"} component={AdminAnalytics} />
+      <Route path={"/examples"} component={Examples} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

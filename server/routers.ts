@@ -366,12 +366,12 @@ export const appRouter = router({
       // Combine samples for analysis
       const combinedText = samples.map((s: { sampleText: string }) => s.sampleText).join("\n\n---\n\n");
       
-      // Use LLM to analyze writing style
+      // Use LLM to analyze writing style with deeper analysis
       const response = await invokeLLM({
         messages: [
           {
             role: "system",
-            content: `You are an expert writing style analyst. Analyze the following writing samples and extract the author's unique writing style characteristics. Return a JSON object with the following structure:
+            content: `You are an expert writing style analyst specializing in Norwegian business communication. Analyze the following writing samples and extract the author's unique writing style characteristics with deep insights. Return a JSON object with the following structure:
 {
   "vocabularyLevel": "simple" | "professional" | "technical",
   "sentenceStyle": "short" | "medium" | "long" | "varied",
@@ -382,13 +382,19 @@ export const appRouter = router({
   "favoriteWords": string[] (max 10 frequently used words/phrases),
   "signaturePhrases": string[] (max 5 unique expressions),
   "toneProfile": { "formal": number, "friendly": number, "professional": number, "casual": number } (values 0-1, should sum to 1),
-  "profileSummary": string (2-3 sentences describing the writing style in Norwegian)
+  "formalityLevel": number (0-10, where 0 is very casual and 10 is very formal),
+  "emojiUsagePattern": string (describe when and how emojis are used, e.g., "Uses emojis at end of sentences for emphasis"),
+  "paragraphStructure": "short_punchy" | "medium_balanced" | "long_detailed",
+  "openingStyle": string (how the author typically starts posts, e.g., "Direct question" or "Personal anecdote"),
+  "closingStyle": string (how the author typically ends posts, e.g., "Call to action" or "Reflective question"),
+  "uniqueTraits": string[] (max 3 distinctive characteristics that make this writing unique),
+  "profileSummary": string (3-4 sentences describing the writing style in Norwegian with specific examples)
 }
 Respond ONLY with valid JSON, no other text.`
           },
           {
             role: "user",
-            content: `Analyze these writing samples:\n\n${combinedText}`
+            content: `Analyze these writing samples in detail:\n\n${combinedText}`
           }
         ],
         response_format: { type: "json_object" }
