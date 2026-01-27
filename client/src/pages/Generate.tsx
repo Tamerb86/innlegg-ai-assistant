@@ -35,13 +35,25 @@ export default function Generate() {
   const { data: voiceProfile } = trpc.voice.getProfile.useQuery();
   const [useVoiceProfile, setUseVoiceProfile] = useState(false);
 
-  // Handle URL parameters from Trends page
+  // State for idea tracking
+  const [currentIdeaId, setCurrentIdeaId] = useState<number | null>(null);
+  const markIdeaAsUsed = trpc.ideas.markAsUsed.useMutation();
+
+  // Handle URL parameters from Trends page or Idea Bank
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const topicParam = urlParams.get('topic');
+    const ideaParam = urlParams.get('idea');
+    const ideaIdParam = urlParams.get('ideaId');
     const platformParam = urlParams.get('platform');
     
-    if (topicParam) {
+    if (ideaParam) {
+      setTopic(decodeURIComponent(ideaParam));
+      toast.success('Idé lastet inn! Klar til å generere innhold.');
+      if (ideaIdParam) {
+        setCurrentIdeaId(parseInt(ideaIdParam));
+      }
+    } else if (topicParam) {
       setTopic(decodeURIComponent(topicParam));
       toast.success('Trend lastet inn! Klar til å generere innhold.');
     }
@@ -93,6 +105,12 @@ export default function Generate() {
       setGeneratedContent(data.content);
       setPostsRemaining(data.postsRemaining);
       toast.success("Innhold generert!");
+      
+      // Mark idea as used if this came from Idea Bank
+      if (currentIdeaId && data.postId) {
+        markIdeaAsUsed.mutate({ id: currentIdeaId, postId: data.postId });
+        setCurrentIdeaId(null);
+      }
     },
     onError: (error) => {
       if (error.message.includes("Trial limit reached")) {

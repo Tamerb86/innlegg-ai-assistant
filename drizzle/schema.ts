@@ -482,3 +482,24 @@ export const onboardingStatus = mysqlTable("onboarding_status", {
 
 export type OnboardingStatus = typeof onboardingStatus.$inferSelect;
 export type InsertOnboardingStatus = typeof onboardingStatus.$inferInsert;
+
+
+/**
+ * Ideas table - Idé-Bank for quick idea capture
+ * Users can save ideas and convert them to posts later
+ */
+export const ideas = mysqlTable("ideas", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  ideaText: text("idea_text").notNull(),
+  source: mysqlEnum("source", ["manual", "voice", "trend", "competitor"]).default("manual").notNull(),
+  tags: text("tags"), // JSON array of tags
+  status: mysqlEnum("status", ["new", "in_progress", "used", "archived"]).default("new").notNull(),
+  platform: mysqlEnum("platform", ["linkedin", "twitter", "instagram", "facebook"]),
+  convertedPostId: int("converted_post_id"), // Reference to post if converted
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Idea = typeof ideas.$inferSelect;
+export type InsertIdea = typeof ideas.$inferInsert;

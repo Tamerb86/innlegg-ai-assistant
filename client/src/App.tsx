@@ -41,6 +41,7 @@ import ContentSeries from "@/pages/ContentSeries";
 import ABTesting from "@/pages/ABTesting";
 import WeeklyReport from "@/pages/WeeklyReport";
 import EngagementHelper from "@/pages/EngagementHelper";
+import IdeaBank from "@/pages/IdeaBank";
 
 
 function Router() {
@@ -81,6 +82,7 @@ function Router() {
       <Route path={"/ab-testing"} component={ABTesting} />
       <Route path={"/weekly-report"} component={WeeklyReport} />
       <Route path={"/engagement-helper"} component={EngagementHelper} />
+      <Route path={"/idea-bank"} component={IdeaBank} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

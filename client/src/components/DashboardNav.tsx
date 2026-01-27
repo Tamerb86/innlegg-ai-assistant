@@ -39,6 +39,7 @@ export default function DashboardNav() {
     { label: "Beste Tid", href: "/best-time", icon: Clock, category: "Planlegging" },
     { label: "Gjenbruk", href: "/repurpose", icon: Recycle, category: "Planlegging" },
     { label: "Innholds-Serier", href: "/content-series", icon: List, category: "Planlegging" },
+    { label: "Idé-Bank", href: "/idea-bank", icon: Lightbulb, category: "Planlegging" },
     { label: "Trender", href: "/trends", icon: Flame, category: "Inspirasjon" },
     { label: "Eksempler", href: "/examples", icon: Lightbulb, category: "Inspirasjon" },
     { label: "Stemme", href: "/voice-training", icon: Mic, category: "Tilpasning" },

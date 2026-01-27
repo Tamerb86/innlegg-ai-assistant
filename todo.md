@@ -1090,3 +1090,23 @@
 - [x] Integrate tour with Dashboard (auto-start for new users)
 - [x] Add "Restart Tour" option in Settings
 - [x] Cover key features: Generate, Trends, Voice Training, Calendar, Settings
+
+
+## Admin Analytics Security Fix
+- [ ] Add admin role check in backend (adminProcedure)
+- [ ] Hide Analytics link from Navigation for regular users
+- [ ] Add redirect for unauthorized users
+- [ ] Test with regular user account
+
+
+## Idé-Bank (Idea Bank) Feature Implementation
+- [x] Create ideas table in database schema
+- [x] Add tRPC procedures for idea management (create, list, update, delete)
+- [x] Create IdeaBank page with list view and filters
+- [x] Add quick idea capture modal
+- [x] Implement "Convert to post" functionality
+- [x] Add floating "+" button for quick access (integrated in page header)
+- [x] Integrate with Generate page
+- [x] Add navigation link to Idé-Bank
+- [x] Test all functionality
+- [ ] Save checkpoint
