@@ -2,8 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Recycle, ArrowRight, Sparkles, TrendingUp, Copy } from "lucide-react";
-import { useState } from "react";
+import { Recycle, ArrowRight, Sparkles, TrendingUp, Copy, Cloud, Save, Loader2 } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
@@ -17,9 +17,82 @@ export default function ContentRepurpose() {
   const { data: posts, isLoading } = trpc.content.list.useQuery();
   const { data: subscription } = trpc.user.getSubscription.useQuery();
 
+  // Auto-save draft functionality
+  const [draftSaved, setDraftSaved] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const { data: existingDraft } = trpc.drafts.get.useQuery({ pageType: "repurpose" });
+  const saveDraftMutation = trpc.drafts.save.useMutation({
+    onSuccess: () => {
+      setDraftSaved(true);
+      setLastSavedAt(new Date());
+    },
+  });
+  const deleteDraftMutation = trpc.drafts.delete.useMutation();
+
+  // Restore draft on load
+  useEffect(() => {
+    if (existingDraft && !selectedPost) {
+      try {
+        const formData = JSON.parse(existingDraft.formData);
+        if (formData.selectedPost) setSelectedPost(formData.selectedPost);
+        if (formData.targetPlatform) setTargetPlatform(formData.targetPlatform);
+        if (formData.repurposeType) setRepurposeType(formData.repurposeType);
+        toast.info("Utkast gjenopprettet", { duration: 2000 });
+      } catch (e) {
+        console.error("Failed to parse draft", e);
+      }
+    }
+  }, [existingDraft]);
+
+  // Auto-save with debounce
+  const autoSaveDraft = useCallback(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    saveTimeoutRef.current = setTimeout(() => {
+      const formData = JSON.stringify({
+        selectedPost,
+        targetPlatform,
+        repurposeType,
+      });
+      
+      if (selectedPost || targetPlatform || repurposeType) {
+        saveDraftMutation.mutate({
+          pageType: "repurpose",
+          formData,
+          title: "Gjenbruk utkast",
+        });
+      }
+    }, 1500);
+  }, [selectedPost, targetPlatform, repurposeType]);
+
+  // Trigger auto-save when form changes
+  useEffect(() => {
+    if (selectedPost || targetPlatform || repurposeType) {
+      setDraftSaved(false);
+      autoSaveDraft();
+    }
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [selectedPost, targetPlatform, repurposeType, autoSaveDraft]);
+
+  // Clear draft after successful repurpose
+  const clearDraft = () => {
+    deleteDraftMutation.mutate({ pageType: "repurpose" });
+    setDraftSaved(false);
+    setLastSavedAt(null);
+  };
+
   const repurposeMutation = trpc.content.repurpose.useMutation({
     onSuccess: (data: any) => {
       toast.success("Innhold gjenbrukt!");
+      clearDraft();
       setLocation(`/generate?content=${encodeURIComponent(data.content)}`);
     },
     onError: () => {

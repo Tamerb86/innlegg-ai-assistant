@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { Plus, Trash2, Edit2, CheckCircle2, Circle, ArrowRight, Sparkles } from "lucide-react";
+import { Plus, Trash2, Edit2, CheckCircle2, Circle, ArrowRight, Sparkles, Cloud, Save, Loader2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function ContentSeries() {
@@ -24,9 +24,82 @@ export default function ContentSeries() {
   })) || [];
   const { data: subscription } = trpc.user.getSubscription.useQuery();
 
+  // Auto-save draft functionality
+  const [draftSaved, setDraftSaved] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const { data: existingDraft } = trpc.drafts.get.useQuery({ pageType: "series" });
+  const saveDraftMutation = trpc.drafts.save.useMutation({
+    onSuccess: () => {
+      setDraftSaved(true);
+      setLastSavedAt(new Date());
+    },
+  });
+  const deleteDraftMutation = trpc.drafts.delete.useMutation();
+
+  // Restore draft on load
+  useEffect(() => {
+    if (existingDraft && !title) {
+      try {
+        const formData = JSON.parse(existingDraft.formData);
+        if (formData.title) setTitle(formData.title);
+        if (formData.description) setDescription(formData.description);
+        if (formData.postCount) setPostCount(formData.postCount);
+        toast.info("Utkast gjenopprettet", { duration: 2000 });
+      } catch (e) {
+        console.error("Failed to parse draft", e);
+      }
+    }
+  }, [existingDraft]);
+
+  // Auto-save with debounce
+  const autoSaveDraft = useCallback(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    saveTimeoutRef.current = setTimeout(() => {
+      const formData = JSON.stringify({
+        title,
+        description,
+        postCount,
+      });
+      
+      if (title || description) {
+        saveDraftMutation.mutate({
+          pageType: "series",
+          formData,
+          title: title.substring(0, 50) || "Serie utkast",
+        });
+      }
+    }, 1500);
+  }, [title, description, postCount]);
+
+  // Trigger auto-save when form changes
+  useEffect(() => {
+    if (title || description) {
+      setDraftSaved(false);
+      autoSaveDraft();
+    }
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [title, description, postCount, autoSaveDraft]);
+
+  // Clear draft after successful creation
+  const clearDraft = () => {
+    deleteDraftMutation.mutate({ pageType: "series" });
+    setDraftSaved(false);
+    setLastSavedAt(null);
+  };
+
   const createMutation = trpc.series.create.useMutation({
     onSuccess: () => {
       toast.success("Serie opprettet!");
+      clearDraft();
       setTitle("");
       setDescription("");
       setPostCount(3);

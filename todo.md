@@ -1174,4 +1174,12 @@
 - [x] Restore draft on page load
 - [x] Clear draft after successful generation
 - [x] Test (15 tests passing)
+- [x] Save checkpoint
+
+
+## Auto-Save for Additional Pages
+- [x] Add auto-save to Repurpose page
+- [x] Add auto-save to Content Series page
+- [x] Add auto-save to A/B Testing page
+- [x] Test all pages (40 tests passing)
 - [ ] Save checkpoint

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { Zap, TrendingUp, TrendingDown, Minus, Trophy, Target, Sparkles } from "lucide-react";
+import { Zap, TrendingUp, TrendingDown, Minus, Trophy, Target, Sparkles, Cloud, Save, Loader2 } from "lucide-react";
 
 export default function ABTesting() {
   const [topic, setTopic] = useState("");
@@ -18,9 +18,82 @@ export default function ABTesting() {
   const { data: tests, refetch } = trpc.abtest.list.useQuery();
   const { data: subscription } = trpc.user.getSubscription.useQuery();
 
+  // Auto-save draft functionality
+  const [draftSaved, setDraftSaved] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const { data: existingDraft } = trpc.drafts.get.useQuery({ pageType: "ab_test" });
+  const saveDraftMutation = trpc.drafts.save.useMutation({
+    onSuccess: () => {
+      setDraftSaved(true);
+      setLastSavedAt(new Date());
+    },
+  });
+  const deleteDraftMutation = trpc.drafts.delete.useMutation();
+
+  // Restore draft on load
+  useEffect(() => {
+    if (existingDraft && !topic) {
+      try {
+        const formData = JSON.parse(existingDraft.formData);
+        if (formData.topic) setTopic(formData.topic);
+        if (formData.variantA) setVariantA(formData.variantA);
+        if (formData.variantB) setVariantB(formData.variantB);
+        toast.info("Utkast gjenopprettet", { duration: 2000 });
+      } catch (e) {
+        console.error("Failed to parse draft", e);
+      }
+    }
+  }, [existingDraft]);
+
+  // Auto-save with debounce
+  const autoSaveDraft = useCallback(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    saveTimeoutRef.current = setTimeout(() => {
+      const formData = JSON.stringify({
+        topic,
+        variantA,
+        variantB,
+      });
+      
+      if (topic || variantA || variantB) {
+        saveDraftMutation.mutate({
+          pageType: "ab_test",
+          formData,
+          title: topic.substring(0, 50) || "A/B Test utkast",
+        });
+      }
+    }, 1500);
+  }, [topic, variantA, variantB]);
+
+  // Trigger auto-save when form changes
+  useEffect(() => {
+    if (topic || variantA || variantB) {
+      setDraftSaved(false);
+      autoSaveDraft();
+    }
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [topic, variantA, variantB, autoSaveDraft]);
+
+  // Clear draft after successful creation
+  const clearDraft = () => {
+    deleteDraftMutation.mutate({ pageType: "ab_test" });
+    setDraftSaved(false);
+    setLastSavedAt(null);
+  };
+
   const createMutation = trpc.abtest.create.useMutation({
     onSuccess: () => {
       toast.success("A/B test opprettet!");
+      clearDraft();
       setTopic("");
       setVariantA("");
       setVariantB("");
