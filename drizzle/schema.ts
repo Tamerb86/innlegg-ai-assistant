@@ -468,3 +468,17 @@ export const weeklyReportSettings = mysqlTable("weekly_report_settings", {
 
 export type WeeklyReportSettings = typeof weeklyReportSettings.$inferSelect;
 export type InsertWeeklyReportSettings = typeof weeklyReportSettings.$inferInsert;
+
+/**
+ * Onboarding Status - track user onboarding tour completion
+ */
+export const onboardingStatus = mysqlTable("onboarding_status", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull().unique(),
+  completed: tinyint("completed").default(0).notNull(),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type OnboardingStatus = typeof onboardingStatus.$inferSelect;
+export type InsertOnboardingStatus = typeof onboardingStatus.$inferInsert;

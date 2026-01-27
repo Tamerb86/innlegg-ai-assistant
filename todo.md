@@ -1082,3 +1082,11 @@
 - [x] Ukentlig Rapport - Weekly automated report via Email with stats and recommendations
 - [x] Engasjement-Hjelper - Engagement helper for smart replies and comments
 - [x] AI Image Enhancement UI - Implement 4 styles (Minimalist, Bold, Professional, Creative) in Generate page
+
+
+## Onboarding Tour Feature
+- [x] Create OnboardingTour component with spotlight and step-by-step guide
+- [x] Add database table to track tour completion status per user
+- [x] Integrate tour with Dashboard (auto-start for new users)
+- [x] Add "Restart Tour" option in Settings
+- [x] Cover key features: Generate, Trends, Voice Training, Calendar, Settings

@@ -72,6 +72,55 @@ export const appRouter = router({
         return { success: true };
       }),
       
+    getOnboardingStatus: protectedProcedure.query(async ({ ctx }) => {
+      const { getDb } = await import("./db");
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      const { onboardingStatus } = await import("../drizzle/schema");
+      const { eq } = await import("drizzle-orm");
+      
+      let status = await db.select().from(onboardingStatus).where(eq(onboardingStatus.userId, ctx.user.id)).limit(1);
+      
+      // Create default status if it doesn't exist
+      if (!status || status.length === 0) {
+        await db.insert(onboardingStatus).values({
+          userId: ctx.user.id,
+          completed: 0,
+        });
+        return { completed: false };
+      }
+      
+      return { completed: status[0].completed === 1 };
+    }),
+    
+    completeOnboarding: protectedProcedure.mutation(async ({ ctx }) => {
+      const { getDb } = await import("./db");
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      const { onboardingStatus } = await import("../drizzle/schema");
+      const { eq } = await import("drizzle-orm");
+      
+      await db.update(onboardingStatus)
+        .set({ completed: 1, completedAt: new Date() })
+        .where(eq(onboardingStatus.userId, ctx.user.id));
+      
+      return { success: true };
+    }),
+    
+    restartOnboarding: protectedProcedure.mutation(async ({ ctx }) => {
+      const { getDb } = await import("./db");
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      const { onboardingStatus } = await import("../drizzle/schema");
+      const { eq } = await import("drizzle-orm");
+      
+      await db.update(onboardingStatus)
+        .set({ completed: 0, completedAt: null })
+        .where(eq(onboardingStatus.userId, ctx.user.id));
+      
+      return { success: true };
+    }),
+
     getSubscription: protectedProcedure.query(async ({ ctx }) => {
       const { getUserSubscription, createSubscription } = await import("./db");
       let subscription = await getUserSubscription(ctx.user.id);

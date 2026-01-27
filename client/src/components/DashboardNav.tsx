@@ -97,7 +97,7 @@ export default function DashboardNav() {
           {/* More dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="gap-1">
+              <Button variant="ghost" size="sm" className="gap-1 onboarding-dropdown">
                 Flere
                 <ChevronDown className="h-4 w-4" />
               </Button>

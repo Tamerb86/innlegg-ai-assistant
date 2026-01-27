@@ -13,6 +13,31 @@ import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
 
+function RestartTourButton({ language }: { language: "no" | "en" }) {
+  const restartMutation = trpc.user.restartOnboarding.useMutation({
+    onSuccess: () => {
+      toast.success(language === "no" ? "Omvisning startet på nytt! Last inn siden på nytt." : "Tour restarted! Reload the page.");
+      setTimeout(() => window.location.reload(), 1500);
+    },
+    onError: () => {
+      toast.error(language === "no" ? "Kunne ikke starte omvisning på nytt" : "Could not restart tour");
+    },
+  });
+
+  return (
+    <Button 
+      variant="outline" 
+      onClick={() => restartMutation.mutate()}
+      disabled={restartMutation.isPending}
+    >
+      {restartMutation.isPending ? (
+        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+      ) : null}
+      {language === "no" ? "Start omvisning på nytt" : "Restart Tour"}
+    </Button>
+  );
+}
+
 function SubscriptionCard({ language }: { language: "no" | "en" }) {
   const { data: subscription, isLoading } = trpc.user.getSubscription.useQuery();
   const createCheckoutMutation = trpc.stripe.createCheckoutSession.useMutation({
@@ -396,6 +421,23 @@ export default function Settings() {
             </CardHeader>
             <CardContent>
               <DeleteAccountDialog language={language} />
+            </CardContent>
+          </Card>
+
+          {/* Restart Onboarding Tour */}
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                {language === "no" ? "Omvisning" : "Tour"}
+              </CardTitle>
+              <CardDescription>
+                {language === "no"
+                  ? "Start omvisningen på nytt for å lære om plattformen."
+                  : "Restart the tour to learn about the platform."}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RestartTourButton language={language} />
             </CardContent>
           </Card>
 
