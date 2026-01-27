@@ -1061,3 +1061,18 @@
 - [x] Konkurrent-Radar - Competitor tracking system
 - [x] Innholds-Serier - Multi-part content series with timeline UI
 - [x] A/B Testing - Test different versions with side-by-side comparison
+
+
+## UI/UX Fixes (Critical)
+- [ ] Fix Dashboard layout - cards not showing
+- [ ] Clean up Navigation - too many items in header
+- [ ] Move secondary items to sidebar dropdown
+- [ ] Fix responsive design and spacing
+- [ ] Test all pages for layout issues
+
+
+## UI/UX Fixes (Critical) - COMPLETED
+- [x] Fix Dashboard layout and cards
+- [x] Clean up Navigation - move items to organized dropdown by categories (Planlegging, Inspirasjon, Tilpasning, Avansert)
+- [x] Fix responsive design and spacing
+- [x] Reduce header clutter from 22 items to 7 (Dashboard, Generer, Mine innlegg, Flere dropdown, Innstillinger, Analytics, User menu)
