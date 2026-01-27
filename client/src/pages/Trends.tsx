@@ -18,118 +18,15 @@ import {
   Target,
   Lightbulb,
   Clock,
-  Globe
+  Globe,
+  Loader2
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
-
-// Simulated trending topics for MVP
-const TRENDING_TOPICS = [
-  {
-    id: 1,
-    title: "AI i arbeidslivet: Hvordan forberede seg på fremtiden",
-    description: "Kunstig intelligens endrer måten vi jobber på. Lær hvordan du kan tilpasse deg og dra nytte av AI-verktøy.",
-    category: "tech",
-    source: "LinkedIn",
-    trendScore: 95,
-    suggestedPlatforms: ["linkedin", "twitter"],
-    tags: ["AI", "fremtid", "karriere", "teknologi"]
-  },
-  {
-    id: 2,
-    title: "Bærekraftig forretningsdrift i 2026",
-    description: "Norske bedrifter satser stort på bærekraft. Se hvordan du kan kommunisere din miljøinnsats.",
-    category: "business",
-    source: "Google Trends",
-    trendScore: 88,
-    suggestedPlatforms: ["linkedin", "instagram"],
-    tags: ["bærekraft", "ESG", "grønn", "miljø"]
-  },
-  {
-    id: 3,
-    title: "Remote work: Beste praksis for hybridkontoret",
-    description: "Hybridarbeid er her for å bli. Del dine erfaringer og tips for effektivt fjernarbeid.",
-    category: "work",
-    source: "Reddit",
-    trendScore: 82,
-    suggestedPlatforms: ["linkedin", "twitter"],
-    tags: ["hjemmekontor", "hybrid", "produktivitet", "arbeidsliv"]
-  },
-  {
-    id: 4,
-    title: "Personlig merkevarebygging på LinkedIn",
-    description: "Bygg din profesjonelle profil og bli en tankeleder i din bransje.",
-    category: "marketing",
-    source: "LinkedIn",
-    trendScore: 91,
-    suggestedPlatforms: ["linkedin"],
-    tags: ["personal branding", "LinkedIn", "karriere", "nettverk"]
-  },
-  {
-    id: 5,
-    title: "Norsk startup-scene: Suksesshistorier fra 2026",
-    description: "Norske gründere gjør det stort. Inspirer andre med historier om innovasjon og vekst.",
-    category: "startup",
-    source: "Shifter",
-    trendScore: 79,
-    suggestedPlatforms: ["linkedin", "twitter", "instagram"],
-    tags: ["startup", "gründer", "innovasjon", "Norge"]
-  },
-  {
-    id: 6,
-    title: "Mental helse på arbeidsplassen",
-    description: "Åpenhet om mental helse blir stadig viktigere. Del dine tanker om trivsel og balanse.",
-    category: "wellness",
-    source: "Google Trends",
-    trendScore: 86,
-    suggestedPlatforms: ["linkedin", "instagram"],
-    tags: ["mental helse", "trivsel", "balanse", "arbeidsmiljø"]
-  },
-  {
-    id: 7,
-    title: "Generativ AI for innholdsproduksjon",
-    description: "ChatGPT, Claude og andre AI-verktøy revolusjonerer innholdsproduksjon. Del dine erfaringer.",
-    category: "tech",
-    source: "Twitter/X",
-    trendScore: 94,
-    suggestedPlatforms: ["twitter", "linkedin"],
-    tags: ["ChatGPT", "AI", "innhold", "produktivitet"]
-  },
-  {
-    id: 8,
-    title: "Kundeopplevelse i den digitale tidsalderen",
-    description: "Hvordan skape minneverdige kundeopplevelser når alt blir digitalt?",
-    category: "marketing",
-    source: "Medium",
-    trendScore: 77,
-    suggestedPlatforms: ["linkedin", "facebook"],
-    tags: ["CX", "kundeservice", "digital", "opplevelse"]
-  },
-  {
-    id: 9,
-    title: "Lederskap i usikre tider",
-    description: "Gode ledere skinner i utfordrende perioder. Del dine ledertips og erfaringer.",
-    category: "leadership",
-    source: "LinkedIn",
-    trendScore: 85,
-    suggestedPlatforms: ["linkedin"],
-    tags: ["lederskap", "ledelse", "team", "motivasjon"]
-  },
-  {
-    id: 10,
-    title: "Sosiale medier-trender for 2026",
-    description: "Kortvideo, autentisitet og community-bygging dominerer. Hva er din strategi?",
-    category: "marketing",
-    source: "Hootsuite",
-    trendScore: 90,
-    suggestedPlatforms: ["instagram", "twitter", "linkedin"],
-    tags: ["sosiale medier", "trender", "video", "strategi"]
-  }
-];
 
 const CATEGORIES = [
   { value: "all", label: "Alle kategorier" },
@@ -158,6 +55,7 @@ export default function Trends() {
   const [selectedPlatform, setSelectedPlatform] = useState("all");
 
   const { data: subscription } = trpc.user.getSubscription.useQuery();
+  const { data: trendsData, isLoading: trendsLoading, error: trendsError, refetch } = trpc.trends.getDailyTrends.useQuery();
 
   if (authLoading || !isAuthenticated) {
     if (!authLoading && !isAuthenticated) {
@@ -173,23 +71,70 @@ export default function Trends() {
 
   const isPro = subscription?.status === "active";
 
+  // Parse Google Trends data
+  const trendingTopics = useMemo(() => {
+    if (!trendsData?.success || !trendsData.data) return [];
+    
+    try {
+      const trendingSearches = trendsData.data.default?.trendingSearchesDays?.[0]?.trendingSearches || [];
+      
+      return trendingSearches.map((trend: any, index: number) => {
+        const title = trend.title?.query || "Ukjent trend";
+        const traffic = trend.formattedTraffic || "N/A";
+        const articles = trend.articles || [];
+        const description = articles[0]?.snippet || "Ingen beskrivelse tilgjengelig";
+        
+        // Estimate trend score based on traffic
+        let trendScore = 70;
+        if (traffic.includes("M+")) trendScore = 95;
+        else if (traffic.includes("K+")) {
+          const num = parseInt(traffic.replace(/[^0-9]/g, ''));
+          if (num > 500) trendScore = 90;
+          else if (num > 100) trendScore = 85;
+          else trendScore = 80;
+        }
+        
+        return {
+          id: index + 1,
+          title,
+          description,
+          category: "all", // Google Trends doesn't provide categories
+          source: "Google Trends",
+          trendScore,
+          traffic,
+          suggestedPlatforms: ["linkedin", "twitter"],
+          tags: trend.relatedQueries?.map((q: any) => q.query).slice(0, 4) || [],
+          articles,
+        };
+      });
+    } catch (error) {
+      console.error("Error parsing trends data:", error);
+      return [];
+    }
+  }, [trendsData]);
+
   // Filter topics
-  const filteredTopics = TRENDING_TOPICS.filter(topic => {
+  const filteredTopics = trendingTopics.filter((topic: any) => {
     const matchesSearch = topic.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          topic.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         topic.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+                         topic.tags.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesCategory = selectedCategory === "all" || topic.category === selectedCategory;
     const matchesPlatform = selectedPlatform === "all" || topic.suggestedPlatforms.includes(selectedPlatform);
     return matchesSearch && matchesCategory && matchesPlatform;
   });
 
-  const handleUseTopic = (topic: typeof TRENDING_TOPICS[0]) => {
+  const handleUseTopic = (topic: any) => {
     if (!isPro) {
       toast.error("Trend og Inspirasjon krever Pro-abonnement");
       return;
     }
     // Navigate to generate page with topic pre-filled
     setLocation(`/generate?topic=${encodeURIComponent(topic.title)}&platform=${topic.suggestedPlatforms[0]}`);
+  };
+
+  const handleRefresh = () => {
+    refetch();
+    toast.success("Oppdaterer trender...");
   };
 
   const getScoreColor = (score: number) => {
@@ -215,12 +160,21 @@ export default function Trends() {
             <div className="h-12 w-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
               <Flame className="h-6 w-6 text-white" />
             </div>
-            <div>
+            <div className="flex-1">
               <PageHeader title="Trend og Inspirasjon" description={PAGE_DESCRIPTIONS.trends} />
               <p className="text-muted-foreground">
-                Oppdag hva som trender akkurat nå og skap engasjerende innhold
+                Oppdag hva som trender akkurat nå i Norge og skap engasjerende innhold
               </p>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={trendsLoading}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${trendsLoading ? 'animate-spin' : ''}`} />
+              Oppdater
+            </Button>
           </div>
 
           {!isPro && (
@@ -256,17 +210,6 @@ export default function Trends() {
                   className="pl-10"
                 />
               </div>
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full md:w-[200px]">
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Kategori" />
-                </SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map(cat => (
-                    <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
               <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
                 <SelectTrigger className="w-full md:w-[200px]">
                   <Globe className="h-4 w-4 mr-2" />
@@ -283,150 +226,146 @@ export default function Trends() {
         </Card>
 
         {/* Stats Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <Card className="bg-gradient-to-br from-red-50 to-orange-50 border-red-100">
-            <CardContent className="pt-4 pb-4 text-center">
-              <Flame className="h-6 w-6 text-red-500 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-red-600">{TRENDING_TOPICS.filter(t => t.trendScore >= 90).length}</p>
-              <p className="text-xs text-muted-foreground">Veldig populære</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Aktive trender</p>
+                  <p className="text-2xl font-bold">{trendsLoading ? '-' : filteredTopics.length}</p>
+                </div>
+                <TrendingUp className="h-8 w-8 text-blue-500" />
+              </div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-orange-50 to-yellow-50 border-orange-100">
-            <CardContent className="pt-4 pb-4 text-center">
-              <TrendingUp className="h-6 w-6 text-orange-500 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-orange-600">{TRENDING_TOPICS.filter(t => t.trendScore >= 80 && t.trendScore < 90).length}</p>
-              <p className="text-xs text-muted-foreground">Stigende</p>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Kilde</p>
+                  <p className="text-2xl font-bold">Google Trends</p>
+                </div>
+                <Globe className="h-8 w-8 text-green-500" />
+              </div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-100">
-            <CardContent className="pt-4 pb-4 text-center">
-              <Target className="h-6 w-6 text-blue-500 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-blue-600">{CATEGORIES.length - 1}</p>
-              <p className="text-xs text-muted-foreground">Kategorier</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-100">
-            <CardContent className="pt-4 pb-4 text-center">
-              <Clock className="h-6 w-6 text-green-500 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-green-600">Nå</p>
-              <p className="text-xs text-muted-foreground">Sist oppdatert</p>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Oppdatert</p>
+                  <p className="text-2xl font-bold">I dag</p>
+                </div>
+                <Clock className="h-8 w-8 text-purple-500" />
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Results count */}
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm text-muted-foreground">
-            Viser {filteredTopics.length} av {TRENDING_TOPICS.length} trender
-          </p>
-          <Button variant="ghost" size="sm" className="text-muted-foreground">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Oppdater
-          </Button>
-        </div>
+        {/* Loading State */}
+        {trendsLoading && (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="ml-3 text-muted-foreground">Henter trender fra Google...</p>
+          </div>
+        )}
 
-        {/* Topics Grid */}
-        <div className="grid md:grid-cols-2 gap-4">
-          {filteredTopics.map((topic) => (
-            <Card 
-              key={topic.id} 
-              className={`hover:shadow-lg transition-all hover:-translate-y-1 ${!isPro ? 'opacity-75' : ''}`}
-            >
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline" className="text-xs">
-                        {CATEGORIES.find(c => c.value === topic.category)?.label || topic.category}
-                      </Badge>
-                      <Badge variant="secondary" className="text-xs">
-                        {topic.source}
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-lg leading-tight">{topic.title}</CardTitle>
-                  </div>
-                  <div className="text-right ml-4">
-                    <div className={`text-2xl font-bold ${getScoreColor(topic.trendScore)}`}>
-                      {topic.trendScore}
-                    </div>
-                    <p className="text-xs text-muted-foreground">{getScoreLabel(topic.trendScore)}</p>
-                  </div>
+        {/* Error State */}
+        {trendsError && (
+          <Card className="border-red-200 bg-red-50">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <span className="text-red-600 text-xl">⚠️</span>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="mb-4">{topic.description}</CardDescription>
-                
-                {/* Tags */}
-                <div className="flex flex-wrap gap-1 mb-4">
-                  {topic.tags.map((tag, i) => (
-                    <Badge key={i} variant="outline" className="text-xs bg-gray-50">
-                      #{tag}
-                    </Badge>
-                  ))}
+                <div>
+                  <p className="font-medium text-red-800">Kunne ikke hente trender</p>
+                  <p className="text-sm text-red-700">Prøv å oppdatere siden eller kom tilbake senere.</p>
                 </div>
-
-                {/* Suggested platforms */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground">Best for:</span>
-                    {topic.suggestedPlatforms.map((platform, i) => (
-                      <Badge key={i} variant="secondary" className="text-xs">
-                        {platform === "linkedin" && "💼"}
-                        {platform === "twitter" && "🐦"}
-                        {platform === "instagram" && "📸"}
-                        {platform === "facebook" && "👥"}
-                      </Badge>
-                    ))}
-                  </div>
-                  <Button 
-                    size="sm" 
-                    onClick={() => handleUseTopic(topic)}
-                    disabled={!isPro}
-                    className="bg-gradient-to-r from-primary to-purple-600 hover:opacity-90"
-                  >
-                    <Sparkles className="h-4 w-4 mr-1" />
-                    Bruk dette
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {filteredTopics.length === 0 && (
-          <Card className="text-center py-12">
-            <CardContent>
-              <Lightbulb className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Ingen trender funnet</h3>
-              <p className="text-muted-foreground mb-4">
-                Prøv å justere filtrene eller søkeordet ditt
-              </p>
-              <Button variant="outline" onClick={() => {
-                setSearchQuery("");
-                setSelectedCategory("all");
-                setSelectedPlatform("all");
-              }}>
-                Nullstill filtre
-              </Button>
+              </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Pro Feature Banner */}
-        {!isPro && (
-          <Card className="mt-8 bg-gradient-to-r from-primary/10 to-purple-500/10 border-primary/20">
-            <CardContent className="pt-6 text-center">
-              <Zap className="h-10 w-10 text-primary mx-auto mb-4" />
-              <h3 className="text-xl font-bold mb-2">Få tilgang til alle trender</h3>
-              <p className="text-muted-foreground mb-4 max-w-md mx-auto">
-                Med Pro-abonnement får du full tilgang til alle trender, personaliserte forslag basert på din bransje, og muligheten til å bruke trender direkte i innholdsgenerering.
-              </p>
-              <Button className="bg-gradient-to-r from-primary to-purple-600 hover:opacity-90">
-                Oppgrader til Pro - 199 kr/mnd
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
+        {/* Trending Topics Grid */}
+        {!trendsLoading && !trendsError && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {filteredTopics.length === 0 ? (
+              <Card className="col-span-full">
+                <CardContent className="pt-6 text-center">
+                  <p className="text-muted-foreground">Ingen trender funnet. Prøv å justere søket ditt.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              filteredTopics.map((topic: any) => (
+                <Card key={topic.id} className="group hover:shadow-lg transition-all duration-300 hover:border-primary/50">
+                  <CardHeader>
+                    <div className="flex items-start justify-between gap-4 mb-2">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg mb-2 group-hover:text-primary transition-colors">
+                          {topic.title}
+                        </CardTitle>
+                        <CardDescription className="line-clamp-2">
+                          {topic.description}
+                        </CardDescription>
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        <Badge variant="secondary" className={getScoreColor(topic.trendScore)}>
+                          {getScoreLabel(topic.trendScore)}
+                        </Badge>
+                        {topic.traffic && (
+                          <Badge variant="outline" className="text-xs">
+                            {topic.traffic} søk
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Tags */}
+                    {topic.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {topic.tags.slice(0, 4).map((tag: string, idx: number) => (
+                          <Badge key={idx} variant="outline" className="text-xs">
+                            #{tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Sparkles className="h-4 w-4" />
+                        <span>{topic.source}</span>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        {topic.articles?.[0]?.url && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => window.open(topic.articles[0].url, '_blank')}
+                          >
+                            <ExternalLink className="h-4 w-4 mr-1" />
+                            Les mer
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          onClick={() => handleUseTopic(topic)}
+                          className="bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90"
+                        >
+                          Bruk trend
+                          <ArrowRight className="h-4 w-4 ml-1" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
         )}
       </main>
     </div>

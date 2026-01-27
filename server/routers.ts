@@ -1942,6 +1942,74 @@ Skriv et ${input.responseType} svar.`
         return { tags: Array.from(allTags).sort() };
       }),
   }),
+
+  // Google Trends Integration
+  trends: router({
+    getDailyTrends: publicProcedure
+      .input(z.object({ geo: z.string().optional() }).optional())
+      .query(async ({ input }) => {
+        const { getDailyTrends } = await import('./googleTrends');
+        const geo = input?.geo || 'NO';
+        
+        try {
+          const data = await getDailyTrends(geo);
+          return { success: true, data };
+        } catch (error) {
+          console.error('[Trends] Error fetching daily trends:', error);
+          return { success: false, error: 'Failed to fetch trends' };
+        }
+      }),
+
+    getInterestOverTime: publicProcedure
+      .input(z.object({
+        keyword: z.string(),
+        geo: z.string().optional(),
+        startTime: z.date().optional(),
+        endTime: z.date().optional(),
+      }))
+      .query(async ({ input }) => {
+        const { getInterestOverTime } = await import('./googleTrends');
+        const geo = input.geo || 'NO';
+        
+        try {
+          const data = await getInterestOverTime(
+            input.keyword,
+            geo,
+            input.startTime,
+            input.endTime
+          );
+          return { success: true, data };
+        } catch (error) {
+          console.error('[Trends] Error fetching interest over time:', error);
+          return { success: false, error: 'Failed to fetch interest data' };
+        }
+      }),
+
+    getRelatedQueries: publicProcedure
+      .input(z.object({
+        keyword: z.string(),
+        geo: z.string().optional(),
+      }))
+      .query(async ({ input }) => {
+        const { getRelatedQueries } = await import('./googleTrends');
+        const geo = input.geo || 'NO';
+        
+        try {
+          const data = await getRelatedQueries(input.keyword, geo);
+          return { success: true, data };
+        } catch (error) {
+          console.error('[Trends] Error fetching related queries:', error);
+          return { success: false, error: 'Failed to fetch related queries' };
+        }
+      }),
+
+    clearCache: protectedProcedure
+      .mutation(async () => {
+        const { clearCache } = await import('./googleTrends');
+        clearCache();
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
