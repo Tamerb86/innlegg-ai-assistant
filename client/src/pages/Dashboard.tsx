@@ -51,10 +51,10 @@ export default function Dashboard() {
         </div>
 
         {/* Enhanced Stats Cards */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-          <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-200 dark:border-blue-900 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-10">
+          <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-200 dark:border-blue-900 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className="text-sm font-medium truncate">
                 {t("postsGenerated")}
               </CardTitle>
               <div className="p-2.5 bg-blue-500/15 rounded-xl">
@@ -62,18 +62,18 @@ export default function Dashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl sm:text-5xl font-bold text-blue-600 dark:text-blue-400">
+              <div className="text-5xl sm:text-6xl font-bold text-blue-600 dark:text-blue-400">
                 {subLoading ? "..." : subscription?.postsGenerated || 0}
               </div>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="text-xs text-muted-foreground mt-2 truncate">
                 {language === "no" ? "Totalt generert" : "Total generated"}
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border-purple-200 dark:border-purple-900 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+          <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border-purple-200 dark:border-purple-900 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className="text-sm font-medium truncate">
                 {t("postsRemaining")}
               </CardTitle>
               <div className="p-2.5 bg-purple-500/15 rounded-xl">
@@ -81,18 +81,18 @@ export default function Dashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl sm:text-5xl font-bold text-purple-600 dark:text-purple-400">
+              <div className="text-5xl sm:text-6xl font-bold text-purple-600 dark:text-purple-400">
                 {subLoading ? "..." : postsRemaining}
               </div>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="text-xs text-muted-foreground mt-2 truncate">
                 {language === "no" ? "Gjenstående denne måneden" : "Remaining this month"}
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-green-200 dark:border-green-900 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+          <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-green-200 dark:border-green-900 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className="text-sm font-medium truncate">
                 {language === "no" ? "Tid spart" : "Time Saved"}
               </CardTitle>
               <div className="p-2.5 bg-green-500/15 rounded-xl">
@@ -100,18 +100,18 @@ export default function Dashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl sm:text-5xl font-bold text-green-600 dark:text-green-400">
+              <div className="text-5xl sm:text-6xl font-bold text-green-600 dark:text-green-400">
                 {subLoading ? "..." : Math.round((subscription?.postsGenerated || 0) * 15)} <span className="text-2xl sm:text-3xl">min</span>
               </div>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="text-xs text-muted-foreground mt-2 truncate">
                 {language === "no" ? "≈15 min per innlegg" : "≈15 min per post"}
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 border-orange-200 dark:border-orange-900 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+          <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 border-orange-200 dark:border-orange-900 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className="text-sm font-medium truncate">
                 {t("subscriptionTitle")}
               </CardTitle>
               <div className="p-2.5 bg-orange-500/15 rounded-xl">
@@ -122,10 +122,10 @@ export default function Dashboard() {
               <div className="text-2xl sm:text-3xl font-bold text-orange-600 dark:text-orange-400">
                 {subscription?.status === "trial" ? t("trialStatus") : t("activeStatus")}
               </div>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="text-xs text-muted-foreground mt-2 truncate">
                 {subscription?.status === "trial" 
-                  ? (language === "no" ? "14 dagers prøveperiode" : "14-day trial period")
-                  : (language === "no" ? "Aktiv abonnement" : "Active subscription")}
+                  ? (language === "no" ? "Prøveperiode" : "Trial period")
+                  : (language === "no" ? "Aktiv" : "Active")}
               </p>
             </CardContent>
           </Card>
@@ -178,8 +178,8 @@ export default function Dashboard() {
         )}
 
         {/* Quick Actions */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-8">
-          <Card className="cursor-pointer hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] bg-gradient-to-br from-blue-600 to-purple-600 text-white border-0" onClick={() => setLocation("/generate")}>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-10">
+          <Card className="cursor-pointer hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] bg-gradient-to-br from-blue-600 to-purple-600 text-white border-0 h-full" onClick={() => setLocation("/generate")}>
             <CardHeader>
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-3 bg-white/20 rounded-lg">
@@ -196,7 +196,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.03] hover:border-blue-300" onClick={() => setLocation("/posts")}>
+          <Card className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.03] hover:border-blue-300 h-full" onClick={() => setLocation("/posts")}>
             <CardHeader>
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-3 bg-blue-500/10 rounded-lg">
@@ -213,7 +213,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.03] hover:border-purple-300" onClick={() => setLocation("/coach")}>
+          <Card className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.03] hover:border-purple-300 h-full" onClick={() => setLocation("/coach")}>
             <CardHeader>
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-3 bg-purple-500/10 rounded-lg">
