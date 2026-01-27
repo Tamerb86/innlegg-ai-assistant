@@ -36,6 +36,7 @@ import ContentCalendar from "@/pages/ContentCalendar";
 import BestTime from "@/pages/BestTime";
 import ContentRepurpose from "@/pages/ContentRepurpose";
 import TelegramBot from "@/pages/TelegramBot";
+import CompetitorRadar from "@/pages/CompetitorRadar";
 
 
 function Router() {
@@ -71,6 +72,7 @@ function Router() {
       <Route path={"/best-time"} component={BestTime} />
       <Route path={"/repurpose"} component={ContentRepurpose} />
       <Route path={"/telegram-bot"} component={TelegramBot} />
+      <Route path={"/competitor-radar"} component={CompetitorRadar} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
