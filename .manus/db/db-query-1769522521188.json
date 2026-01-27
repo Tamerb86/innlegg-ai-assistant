@@ -1,0 +1,20 @@
+{
+  "query": "SELECT u.id, u.name, o.completed FROM users u LEFT JOIN onboarding_status o ON u.id = o.user_id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VZWkmDdVMGTAoV.bcd7d121ddff --database aUg4CGwS8nNj3ozbCiedm7 --execute SELECT u.id, u.name, o.completed FROM users u LEFT JOIN onboarding_status o ON u.id = o.user_id;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Easy Charge",
+      "completed": "NULL"
+    },
+    {
+      "id": "150034",
+      "name": "Tamer",
+      "completed": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tcompleted\n1\tEasy Charge\tNULL\n150034\tTamer\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

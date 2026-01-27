@@ -1,0 +1,8 @@
+{
+  "query": "SELECT u.id, u.name, o.completed, o.completedAt FROM users u LEFT JOIN onboardingStatus o ON u.id = o.userId WHERE u.name = 'Easy Charge' OR u.email LIKE '%easycharge%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VZWkmDdVMGTAoV.bcd7d121ddff --database aUg4CGwS8nNj3ozbCiedm7 --execute SELECT u.id, u.name, o.completed, o.completedAt FROM users u LEFT JOIN onboardingStatus o ON u.id = o.userId WHERE u.name = 'Easy Charge' OR u.email LIKE '%easycharge%';",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 1: Table 'aug4cgws8nnj3ozbciedm7.onboardingStatus' doesn't exist"
+  ]
+}

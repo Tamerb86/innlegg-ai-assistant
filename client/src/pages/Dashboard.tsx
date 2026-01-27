@@ -7,6 +7,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { FileText, Zap, TrendingUp, Clock, Target, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
+import OnboardingTour from "@/components/OnboardingTour";
 
 export default function Dashboard() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
@@ -327,6 +328,7 @@ export default function Dashboard() {
           </Card>
         )}
       </main>
+      <OnboardingTour />
     </div>
   );
 }
