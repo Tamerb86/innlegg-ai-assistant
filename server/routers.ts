@@ -777,6 +777,34 @@ Provide helpful, actionable advice. Be encouraging but honest. Keep responses co
     }),
   }),
   
+  telegram: router({
+    setup: protectedProcedure
+      .input(z.object({ token: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        const { getUserSubscription } = await import("./db");
+        
+        // Check Pro subscription
+        const subscription = await getUserSubscription(ctx.user.id);
+        if (!subscription || subscription.status !== "active") {
+          throw new Error("Telegram Bot krever Pro-abonnement");
+        }
+        
+        // Store token in user preferences or env
+        // For now, just return success
+        // In production, you'd store this securely and initialize the bot
+        return { success: true, message: "Bot aktivert" };
+      }),
+      
+    getStatus: protectedProcedure.query(async ({ ctx }) => {
+      // Return bot status
+      // In production, check if bot is running and return its username
+      return {
+        active: false,
+        username: "innlegg_bot",
+      };
+    }),
+  }),
+  
   calendar: router({
     getEvents: protectedProcedure
       .input(z.object({ month: z.number().min(1).max(12), year: z.number() }))
