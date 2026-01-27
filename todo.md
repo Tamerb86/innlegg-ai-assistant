@@ -1156,4 +1156,11 @@
 - [x] Push database schema to create onboardingStatus table
 - [x] Add OnboardingTour component to Dashboard.tsx
 - [x] Test onboarding tour functionality - WORKING!
+- [x] Save checkpoint
+
+
+## Convert Flere to Fixed Sidebar
+- [x] Update DashboardNav to include fixed sidebar with all Flere items
+- [x] Remove dropdown menu from top navigation
+- [x] Test sidebar navigation
 - [ ] Save checkpoint
