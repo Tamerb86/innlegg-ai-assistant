@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, openId, name, email, role, createdAt FROM users WHERE name = 'Tamer';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VZWkmDdVMGTAoV.bcd7d121ddff --database aUg4CGwS8nNj3ozbCiedm7 --execute SELECT id, openId, name, email, role, createdAt FROM users WHERE name = 'Tamer';",
+  "rows": [
+    {
+      "id": "150034",
+      "openId": "tamer-user-001",
+      "name": "Tamer",
+      "email": "tamer@example.com",
+      "role": "user",
+      "createdAt": "2026-01-27 13:34:07"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\temail\trole\tcreatedAt\n150034\ttamer-user-001\tTamer\ttamer@example.com\tuser\t2026-01-27 13:34:07\n",
+  "stderr": "",
+  "execution_time_ms": 63
+}

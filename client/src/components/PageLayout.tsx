@@ -16,7 +16,24 @@ export default function PageLayout({ children }: PageLayoutProps) {
     "/posts",
     "/coach",
     "/settings",
-    "/account-settings"
+    "/account-settings",
+    "/trends",
+    "/voice-training",
+    "/calendar",
+    "/best-time",
+    "/repurpose",
+    "/telegram-bot",
+    "/competitor-radar",
+    "/content-series",
+    "/ab-testing",
+    "/weekly-report",
+    "/engagement-helper",
+    "/idea-bank",
+    "/examples",
+    "/admin/analytics",
+    "/admin/blog",
+    "/subscription/success",
+    "/subscription/cancel"
   ];
   
   // Pages that show GlobalNav (public pages)
@@ -27,7 +44,9 @@ export default function PageLayout({ children }: PageLayoutProps) {
     "/contact",
     "/privacy-policy",
     "/terms-of-service",
-    "/cookie-policy"
+    "/cookie-policy",
+    "/privacy",
+    "/terms"
   ];
   
   const shouldShowDashboardNav = dashboardPages.some(path => location.startsWith(path));
