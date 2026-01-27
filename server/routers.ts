@@ -1377,7 +1377,7 @@ Skriv et ${input.responseType} svar.`
       }),
 
     markAsUsed: protectedProcedure
-      .input(z.object({ id: z.number(), postId: z.number() }))
+      .input(z.object({ id: z.number(), postId: z.number().optional() }))
       .mutation(async ({ ctx, input }) => {
         const { getDb } = await import("./db");
         const db = await getDb();
@@ -1385,8 +1385,13 @@ Skriv et ${input.responseType} svar.`
         const { ideas } = await import("../drizzle/schema");
         const { eq, and } = await import("drizzle-orm");
         
+        const updateData: any = { status: "used" };
+        if (input.postId) {
+          updateData.convertedPostId = input.postId;
+        }
+        
         await db.update(ideas)
-          .set({ status: "used", convertedPostId: input.postId })
+          .set(updateData)
           .where(and(eq(ideas.id, input.id), eq(ideas.userId, ctx.user.id)));
         
         return { success: true };
@@ -1595,6 +1600,50 @@ Skriv et ${input.responseType} svar.`
 
       return { success: true };
     }),
+
+    // Get recent posts generated via Telegram (last 10)
+    getRecentPosts: protectedProcedure.query(async ({ ctx }) => {
+      const { getDb } = await import("./db");
+      const { posts } = await import("../drizzle/schema");
+      const { eq, desc } = await import("drizzle-orm");
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      const recentPosts = await db.select()
+        .from(posts)
+        .where(eq(posts.userId, ctx.user.id))
+        .orderBy(desc(posts.createdAt))
+        .limit(10);
+
+      return recentPosts;
+    }),
+
+    // Generate 3 alternative versions of a post
+    generateAlternatives: protectedProcedure
+      .input(z.object({ postId: z.number(), rawInput: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        const { invokeLLM } = await import("./_core/llm");
+
+        const response = await invokeLLM({
+          messages: [
+            {
+              role: "system",
+              content: "Du er en ekspert på sosiale medier. Generer 3 FORSKJELLIGE versjoner av et LinkedIn-innlegg basert på brukerens idé. Hver versjon skal ha en unik vinkling: 1) Profesjonell/formell, 2) Personlig/historiefortelling, 3) Kort og engasjerende. Skriv på norsk. Svar i JSON format: {\"alt1\": \"...\", \"alt2\": \"...\", \"alt3\": \"...\"}"
+            },
+            {
+              role: "user",
+              content: `Idé: ${input.rawInput}\n\nGenerer 3 forskjellige versjoner av dette innlegget.`
+            }
+          ],
+        });
+
+        const content = response.choices[0].message.content;
+        const parsed = JSON.parse(typeof content === "string" ? content : JSON.stringify(content));
+
+        return {
+          alternatives: [parsed.alt1, parsed.alt2, parsed.alt3]
+        };
+      }),
   }),
 });
 

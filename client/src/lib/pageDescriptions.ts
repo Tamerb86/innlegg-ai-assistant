@@ -20,6 +20,7 @@ export const PAGE_DESCRIPTIONS = {
   abTesting: "Test forskjellige versjoner av innhold for å finne hva som fungerer best.",
   coach: "Din personlige AI-coach som gir tips og veiledning for bedre innhold.",
   telegramBot: "Koble til Telegram-boten for å sende ideer og motta innlegg direkte i chatten.",
+  telegramPosts: "Se alle innlegg generert via Telegram-boten. Generer flere alternativer og kopier innhold.",
   settings: "Administrer kontoen din, abonnement, personvern og preferanser.",
   analytics: "Detaljert statistikk og innsikt for administratorer (kun for admin-brukere).",
   examples: "Utforsk eksempler på godt innhold og la deg inspirere.",

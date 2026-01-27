@@ -72,6 +72,7 @@ export default function DashboardNav() {
       title: "Avansert",
       items: [
         { label: "Telegram Bot", href: "/telegram-bot", icon: Send },
+        { label: "Telegram Innlegg", href: "/telegram-posts", icon: MessageSquare },
         { label: "Konkurrent-Radar", href: "/competitor-radar", icon: Target },
         { label: "A/B Testing", href: "/ab-testing", icon: FlaskConical },
         { label: "Ukentlig Rapport", href: "/weekly-report", icon: Mail },

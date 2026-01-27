@@ -195,8 +195,8 @@ export default function Generate() {
       clearDraft();
       
       // Mark idea as used if this came from Idea Bank
-      if (currentIdeaId && data.postId) {
-        markIdeaAsUsed.mutate({ id: currentIdeaId, postId: data.postId });
+      if (currentIdeaId) {
+        markIdeaAsUsed.mutate({ id: currentIdeaId });
         setCurrentIdeaId(null);
       }
     },

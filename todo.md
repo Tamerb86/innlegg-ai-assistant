@@ -1214,4 +1214,15 @@
 - [x] Create centralized page descriptions file (pageDescriptions.ts)
 - [x] Add PageHeader to all 18 dashboard pages
 - [x] Test tooltips on all pages - Working!
+- [x] Save checkpoint
+
+
+## Telegram Bot UX Improvements
+- [x] Modify telegram.ts to send single concise post instead of 3 long proposals
+- [x] Add link to dashboard in bot message for more options
+- [x] Create new "Telegram Innlegg" dashboard page
+- [x] Show last 10 Telegram-generated ideas with 3 options each
+- [x] Add ability to save/edit chosen option from Telegram posts
+- [x] Write vitest tests (6 tests passing)
+- [ ] Test bot flow end-to-end
 - [ ] Save checkpoint

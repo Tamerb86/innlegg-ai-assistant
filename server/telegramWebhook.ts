@@ -114,7 +114,7 @@ export async function handleTelegramWebhook(req: Request, res: Response) {
         messages: [
           {
             role: "system",
-            content: "Du er en ekspert på sosiale medier. Lag engasjerende innlegg basert på brukerens idé. Skriv på norsk."
+            content: "Du er en ekspert på sosiale medier. Lag ETT ENKELT, KORT og engasjerende LinkedIn-innlegg basert på brukerens idé. Skriv på norsk. IKKE lag flere forslag - bare ett innlegg klart til bruk. Maks 200 ord. Inkluder relevante hashtags på slutten."
           },
           {
             role: "user",
@@ -135,11 +135,13 @@ export async function handleTelegramWebhook(req: Request, res: Response) {
         generatedContent,
       });
 
-      // Send result to user
+      // Send result to user with link to dashboard
+      const dashboardUrl = process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://innlegg.no';
       await sendTelegramMessage(chatId,
         `✅ Innlegget ditt er klart!\n\n` +
         `${generatedContent}\n\n` +
-        `Se alle innleggene dine på innlegg.no`
+        `💡 Vil du ha flere alternativer?\n` +
+        `👉 Åpne dashbordet: ${dashboardUrl}/dashboard`
       );
     } catch (error) {
       console.error("[Telegram] Error generating post:", error);
