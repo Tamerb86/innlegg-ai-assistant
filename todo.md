@@ -1109,4 +1109,13 @@
 - [x] Integrate with Generate page
 - [x] Add navigation link to Idé-Bank
 - [x] Test all functionality
+- [x] Save checkpoint
+
+
+## Floating Idea Button (Quick Add)
+- [x] Create FloatingIdeaButton component
+- [x] Add dialog for quick idea input
+- [x] Integrate into DashboardNav or PageLayout
+- [x] Show only on authenticated dashboard pages
+- [x] Test functionality
 - [ ] Save checkpoint

@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import FloatingIdeaButton from "./FloatingIdeaButton";
 
 export default function DashboardNav() {
   const [location, setLocation] = useLocation();
@@ -63,6 +64,7 @@ export default function DashboardNav() {
   };
 
   return (
+    <>
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
@@ -342,5 +344,9 @@ export default function DashboardNav() {
         </div>
       )}
     </nav>
+    
+    {/* Floating Idea Button */}
+    <FloatingIdeaButton />
+    </>
   );
 }
