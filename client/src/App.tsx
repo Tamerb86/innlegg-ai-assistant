@@ -32,6 +32,9 @@ import SubscriptionSuccess from "@/pages/SubscriptionSuccess";
 import SubscriptionCancel from "@/pages/SubscriptionCancel";
 import AdminAnalytics from "@/pages/AdminAnalytics";
 import Examples from "@/pages/Examples";
+import ContentCalendar from "@/pages/ContentCalendar";
+import BestTime from "@/pages/BestTime";
+import ContentRepurpose from "@/pages/ContentRepurpose";
 
 
 function Router() {
@@ -63,6 +66,9 @@ function Router() {
       <Route path={"/subscription/cancel"} component={SubscriptionCancel} />
       <Route path={"/admin/analytics"} component={AdminAnalytics} />
       <Route path={"/examples"} component={Examples} />
+      <Route path={"/calendar"} component={ContentCalendar} />
+      <Route path={"/best-time"} component={BestTime} />
+      <Route path={"/repurpose"} component={ContentRepurpose} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

@@ -286,6 +286,57 @@ export const appRouter = router({
         return { success: true };
       }),
       
+    repurpose: protectedProcedure
+      .input(z.object({
+        postId: z.number(),
+        targetPlatform: z.string(),
+        repurposeType: z.enum(["platform_adapt", "format_change", "audience_shift", "update"]),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { getUserSubscription, getPostById } = await import("./db");
+        const { invokeLLM } = await import("./_core/llm");
+        
+        // Check Pro subscription
+        const subscription = await getUserSubscription(ctx.user.id);
+        if (!subscription || subscription.status !== "active") {
+          throw new Error("Gjenbruk-Maskin krever Pro-abonnement");
+        }
+        
+        // Get original post
+        const post = await getPostById(input.postId);
+        if (!post || post.userId !== ctx.user.id) {
+          throw new Error("Post not found or unauthorized");
+        }
+        
+        // Generate repurposed content
+        const repurposeInstructions = {
+          platform_adapt: `Tilpass dette innholdet for ${input.targetPlatform}. Juster lengde, tone og format til plattformen.`,
+          format_change: `Endre formatet på dette innholdet for ${input.targetPlatform}. Hvis det er en liste, gjør det til en fortelling, og omvendt.`,
+          audience_shift: `Skriv om dette innholdet for en annen målgruppe på ${input.targetPlatform}. Juster språk og eksempler.`,
+          update: `Oppdater dette innholdet med fersk informasjon og nye insights for ${input.targetPlatform}.`,
+        };
+        
+        const response = await invokeLLM({
+          messages: [
+            {
+              role: "system",
+              content: `Du er en ekspert på å gjenbruke og tilpasse innhold for sosiale medier. ${repurposeInstructions[input.repurposeType]} Behold kjernebudskapet, men tilpass presentasjonen.`
+            },
+            {
+              role: "user",
+              content: `Originalt innlegg (${post.platform}):\n\n${post.generatedContent}\n\nGjenbruk dette for ${input.targetPlatform}.`
+            }
+          ]
+        });
+        
+        const repurposedContent = response.choices[0]?.message?.content;
+        if (typeof repurposedContent !== 'string') {
+          throw new Error("Kunne ikke gjenbruke innhold");
+        }
+        
+        return { content: repurposedContent };
+      }),
+      
     update: protectedProcedure
       .input(z.object({ postId: z.number(), content: z.string() }))
       .mutation(async ({ ctx, input }) => {
@@ -723,6 +774,33 @@ Provide helpful, actionable advice. Be encouraging but honest. Keep responses co
       await updateSubscriptionStatus(ctx.user.id, "cancelled");
       
       return { success: true, message: "Abonnementet er kansellert" };
+    }),
+  }),
+  
+  calendar: router({
+    getEvents: protectedProcedure
+      .input(z.object({ month: z.number().min(1).max(12), year: z.number() }))
+      .query(async ({ input }) => {
+        // Return Norwegian + global events for the specified month
+        const norwegianEvents = [
+          { id: 1, title: "Nyttårsdag", description: "Feire nytt år og nye muligheter", eventDate: `${input.year}-01-01`, category: "norwegian", isRecurring: 1 },
+          { id: 2, title: "Valentinsdag", description: "Kjærlighet og relasjoner", eventDate: `${input.year}-02-14`, category: "global", isRecurring: 1 },
+          { id: 3, title: "Kvinnedagen", description: "Feire kvinner i arbeidslivet", eventDate: `${input.year}-03-08`, category: "global", isRecurring: 1 },
+          { id: 4, title: "17. mai", description: "Norges nasjonaldag", eventDate: `${input.year}-05-17`, category: "norwegian", isRecurring: 1 },
+          { id: 5, title: "Sankthansaften", description: "Midsommer feiring", eventDate: `${input.year}-06-23`, category: "norwegian", isRecurring: 1 },
+          { id: 6, title: "Black Friday", description: "Salg og markedsføring", eventDate: `${input.year}-11-24`, category: "business", isRecurring: 1 },
+          { id: 7, title: "Jul", description: "Julefeiring og tradisjon", eventDate: `${input.year}-12-24`, category: "norwegian", isRecurring: 1 },
+        ];
+        
+        return norwegianEvents.filter(event => {
+          const eventMonth = parseInt(event.eventDate.split('-')[1]);
+          return eventMonth === input.month;
+        });
+      }),
+      
+    getUserSchedule: protectedProcedure.query(async ({ ctx }) => {
+      // Return empty for now - will be implemented with schedule feature
+      return [];
     }),
   }),
 });

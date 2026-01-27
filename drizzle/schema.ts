@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, tinyint, date } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -278,3 +278,178 @@ export const voiceProfiles = mysqlTable("voice_profiles", {
 
 export type VoiceProfile = typeof voiceProfiles.$inferSelect;
 export type InsertVoiceProfile = typeof voiceProfiles.$inferInsert;
+
+
+/**
+ * Content Calendar Events - Norwegian + global events for content planning
+ */
+export const calendarEvents = mysqlTable("calendar_events", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 200 }).notNull(),
+  description: text("description"),
+  eventDate: date("event_date").notNull(),
+  category: mysqlEnum("category", ["norwegian", "global", "business", "tech", "seasonal"]).notNull(),
+  isRecurring: tinyint("is_recurring").default(0).notNull(), // 0 = no, 1 = yes
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type CalendarEvent = typeof calendarEvents.$inferSelect;
+export type InsertCalendarEvent = typeof calendarEvents.$inferInsert;
+
+/**
+ * User Content Schedule - planned posts
+ */
+export const contentSchedule = mysqlTable("content_schedule", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  postId: int("post_id"), // nullable - can be planned without post yet
+  scheduledDate: timestamp("scheduled_date").notNull(),
+  platform: mysqlEnum("platform", ["linkedin", "twitter", "instagram", "facebook"]).notNull(),
+  status: mysqlEnum("status", ["planned", "published", "cancelled"]).default("planned").notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ContentSchedule = typeof contentSchedule.$inferSelect;
+export type InsertContentSchedule = typeof contentSchedule.$inferInsert;
+
+/**
+ * Best Time Analytics - track when posts perform best
+ */
+export const postAnalytics = mysqlTable("post_analytics", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  postId: int("post_id").notNull(),
+  platform: mysqlEnum("platform", ["linkedin", "twitter", "instagram", "facebook"]).notNull(),
+  publishedAt: timestamp("published_at").notNull(),
+  dayOfWeek: int("day_of_week").notNull(), // 0-6 (Sunday-Saturday)
+  hourOfDay: int("hour_of_day").notNull(), // 0-23
+  engagement: int("engagement").default(0).notNull(), // likes + comments + shares
+  impressions: int("impressions").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type PostAnalytics = typeof postAnalytics.$inferSelect;
+export type InsertPostAnalytics = typeof postAnalytics.$inferInsert;
+
+/**
+ * Content Repurposing - track repurposed content
+ */
+export const repurposedContent = mysqlTable("repurposed_content", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  originalPostId: int("original_post_id").notNull(),
+  newPostId: int("new_post_id").notNull(),
+  repurposeType: mysqlEnum("repurpose_type", ["platform_adapt", "format_change", "audience_shift", "update"]).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type RepurposedContent = typeof repurposedContent.$inferSelect;
+export type InsertRepurposedContent = typeof repurposedContent.$inferInsert;
+
+/**
+ * Competitor Tracking
+ */
+export const competitors = mysqlTable("competitors", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  name: varchar("name", { length: 200 }).notNull(),
+  platform: mysqlEnum("platform", ["linkedin", "twitter", "instagram", "facebook"]).notNull(),
+  profileUrl: varchar("profile_url", { length: 500 }).notNull(),
+  isActive: tinyint("is_active").default(1).notNull(),
+  lastChecked: timestamp("last_checked"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Competitor = typeof competitors.$inferSelect;
+export type InsertCompetitor = typeof competitors.$inferInsert;
+
+/**
+ * Competitor Posts - track competitor content
+ */
+export const competitorPosts = mysqlTable("competitor_posts", {
+  id: int("id").autoincrement().primaryKey(),
+  competitorId: int("competitor_id").notNull(),
+  content: text("content").notNull(),
+  engagement: int("engagement").default(0).notNull(),
+  publishedAt: timestamp("published_at").notNull(),
+  postUrl: varchar("post_url", { length: 500 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type CompetitorPost = typeof competitorPosts.$inferSelect;
+export type InsertCompetitorPost = typeof competitorPosts.$inferInsert;
+
+/**
+ * Content Series - multi-part content planning
+ */
+export const contentSeries = mysqlTable("content_series", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  title: varchar("title", { length: 200 }).notNull(),
+  description: text("description"),
+  totalParts: int("total_parts").notNull(),
+  status: mysqlEnum("status", ["planning", "in_progress", "completed"]).default("planning").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ContentSeries = typeof contentSeries.$inferSelect;
+export type InsertContentSeries = typeof contentSeries.$inferInsert;
+
+/**
+ * Series Posts - individual posts in a series
+ */
+export const seriesPosts = mysqlTable("series_posts", {
+  id: int("id").autoincrement().primaryKey(),
+  seriesId: int("series_id").notNull(),
+  postId: int("post_id"),
+  partNumber: int("part_number").notNull(),
+  title: varchar("title", { length: 200 }).notNull(),
+  status: mysqlEnum("status", ["draft", "published"]).default("draft").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type SeriesPost = typeof seriesPosts.$inferSelect;
+export type InsertSeriesPost = typeof seriesPosts.$inferInsert;
+
+/**
+ * A/B Testing - test different versions of content
+ */
+export const abTests = mysqlTable("ab_tests", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  title: varchar("title", { length: 200 }).notNull(),
+  platform: mysqlEnum("platform", ["linkedin", "twitter", "instagram", "facebook"]).notNull(),
+  variantA: text("variant_a").notNull(),
+  variantB: text("variant_b").notNull(),
+  engagementA: int("engagement_a").default(0).notNull(),
+  engagementB: int("engagement_b").default(0).notNull(),
+  winner: mysqlEnum("winner", ["a", "b", "tie", "pending"]).default("pending"),
+  status: mysqlEnum("status", ["active", "completed"]).default("active").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  completedAt: timestamp("completed_at"),
+});
+
+export type AbTest = typeof abTests.$inferSelect;
+export type InsertAbTest = typeof abTests.$inferInsert;
+
+/**
+ * Weekly Reports - automated performance reports
+ */
+export const weeklyReports = mysqlTable("weekly_reports", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  weekStartDate: date("week_start_date").notNull(),
+  weekEndDate: date("week_end_date").notNull(),
+  totalPosts: int("total_posts").default(0).notNull(),
+  totalEngagement: int("total_engagement").default(0).notNull(),
+  topPerformingPostId: int("top_performing_post_id"),
+  insights: text("insights"), // JSON string with detailed insights
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type WeeklyReport = typeof weeklyReports.$inferSelect;
+export type InsertWeeklyReport = typeof weeklyReports.$inferInsert;
