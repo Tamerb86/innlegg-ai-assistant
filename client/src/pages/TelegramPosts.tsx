@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
-import { Loader2, MessageSquare, Sparkles, Copy, Check, Save, Lightbulb, Trash2, Edit, CheckSquare, Square } from "lucide-react";
+import { Loader2, MessageSquare, Sparkles, Copy, Check, Save, Lightbulb, Trash2, Edit, CheckSquare, Square, Search, CopyPlus } from "lucide-react";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -49,6 +49,8 @@ export default function TelegramPosts() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<{ id: number; content: string } | null>(null);
   const [editedContent, setEditedContent] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<string>("newest");
   
   // Fetch Telegram-generated posts (last 10)
   const { data: telegramPosts, isLoading, refetch } = trpc.telegram.getRecentPosts.useQuery(
@@ -56,12 +58,42 @@ export default function TelegramPosts() {
     { enabled: isAuthenticated }
   );
   
-  // Filter posts by platform
+  // Filter, search, and sort posts
   const filteredPosts = useMemo(() => {
     if (!telegramPosts) return [];
-    if (platformFilter === "all") return telegramPosts;
-    return telegramPosts.filter((post: any) => post.platform === platformFilter);
-  }, [telegramPosts, platformFilter]);
+    
+    let filtered = telegramPosts;
+    
+    // Filter by platform
+    if (platformFilter !== "all") {
+      filtered = filtered.filter((post: any) => post.platform === platformFilter);
+    }
+    
+    // Search by rawInput or generatedContent
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((post: any) => 
+        post.rawInput.toLowerCase().includes(query) ||
+        post.generatedContent.toLowerCase().includes(query)
+      );
+    }
+    
+    // Sort
+    const sorted = [...filtered];
+    switch (sortBy) {
+      case "newest":
+        sorted.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        break;
+      case "oldest":
+        sorted.sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        break;
+      case "platform":
+        sorted.sort((a: any, b: any) => a.platform.localeCompare(b.platform));
+        break;
+    }
+    
+    return sorted;
+  }, [telegramPosts, platformFilter, searchQuery, sortBy]);
 
   // Generate 3 alternatives mutation
   const generateAlternatives = trpc.telegram.generateAlternatives.useMutation({
@@ -142,6 +174,21 @@ export default function TelegramPosts() {
     },
   });
 
+  // Duplicate post mutation
+  const duplicatePost = trpc.telegram.duplicatePost.useMutation({
+    onSuccess: (data) => {
+      toast.success("Innlegg duplisert!");
+      // Open edit dialog with duplicated content
+      setEditingPost({ id: data.newPostId, content: data.content });
+      setEditedContent(data.content);
+      setEditDialogOpen(true);
+      refetch();
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Kunne ikke duplisere innlegg");
+    },
+  });
+
   const handleCopy = (content: string, postId: number) => {
     navigator.clipboard.writeText(content);
     setCopiedId(postId);
@@ -185,6 +232,10 @@ export default function TelegramPosts() {
     if (editingPost) {
       editPost.mutate({ postId: editingPost.id, newContent: editedContent });
     }
+  };
+
+  const handleDuplicate = (postId: number) => {
+    duplicatePost.mutate({ postId });
   };
 
   const handleSelectPost = (postId: number, checked: boolean) => {
@@ -253,7 +304,38 @@ export default function TelegramPosts() {
       {/* Filter and bulk actions bar */}
       {telegramPosts && telegramPosts.length > 0 && (
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="pt-6 space-y-4">
+            {/* Search and Sort Row */}
+            <div className="flex flex-wrap items-center gap-4">
+              {/* Search */}
+              <div className="flex items-center gap-2 flex-1 min-w-[250px]">
+                <Search className="h-4 w-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Søk i innlegg..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                />
+              </div>
+
+              {/* Sort */}
+              <div className="flex items-center gap-2">
+                <Label htmlFor="sort-by">Sorter:</Label>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger id="sort-by" className="w-[180px]">
+                    <SelectValue placeholder="Sorter etter" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Nyeste først</SelectItem>
+                    <SelectItem value="oldest">Eldste først</SelectItem>
+                    <SelectItem value="platform">Platform A-Z</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Filter and Bulk Actions Row */}
             <div className="flex flex-wrap items-center gap-4">
               {/* Platform filter */}
               <div className="flex items-center gap-2">
@@ -405,6 +487,16 @@ export default function TelegramPosts() {
                   >
                     <Edit className="h-4 w-4 mr-2" />
                     Rediger
+                  </Button>
+
+                  <Button
+                    onClick={() => handleDuplicate(post.id)}
+                    disabled={duplicatePost.isPending}
+                    variant="outline"
+                    size="sm"
+                  >
+                    <CopyPlus className="h-4 w-4 mr-2" />
+                    Dupliser
                   </Button>
 
                   <Button

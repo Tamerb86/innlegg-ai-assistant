@@ -1785,6 +1785,47 @@ Skriv et ${input.responseType} svar.`
 
         return { success: true };
       }),
+
+    // Duplicate post (creates a new post with same content)
+    duplicatePost: protectedProcedure
+      .input(z.object({ postId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const { getDb } = await import("./db");
+        const { posts } = await import("../drizzle/schema");
+        const { eq, and } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        // Get the original post
+        const [originalPost] = await db.select()
+          .from(posts)
+          .where(and(
+            eq(posts.id, input.postId),
+            eq(posts.userId, ctx.user.id)
+          ))
+          .limit(1);
+
+        if (!originalPost) {
+          throw new Error("Post not found");
+        }
+
+        // Create duplicate
+        const [newPost] = await db.insert(posts).values({
+          userId: ctx.user.id,
+          platform: originalPost.platform,
+          tone: originalPost.tone,
+          rawInput: originalPost.rawInput,
+          generatedContent: originalPost.generatedContent,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }).$returningId();
+
+        return { 
+          success: true, 
+          newPostId: newPost.id,
+          content: originalPost.generatedContent 
+        };
+      }),
   }),
 });
 

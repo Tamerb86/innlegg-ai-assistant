@@ -1250,4 +1250,17 @@
 - [x] Add "Select All" / "Deselect All" functionality
 - [x] Write vitest tests for new procedures (6 tests passing)
 - [ ] Test all features end-to-end
+- [x] Save checkpoint
+
+
+## Telegram Innlegg Search, Sort & Duplicate
+- [x] Add backend procedure for duplicate post
+- [x] Add search input field in UI (searches rawInput and generatedContent)
+- [x] Add sort dropdown (Nyeste først, Eldste først, Platform A-Z)
+- [x] Implement client-side search filtering
+- [x] Implement client-side sorting
+- [x] Add "Dupliser" button to each post
+- [x] Open edit dialog with duplicated content when clicking "Dupliser"
+- [x] Write vitest tests for duplicate procedure (4 tests passing)
+- [ ] Test search and sort functionality
 - [ ] Save checkpoint
