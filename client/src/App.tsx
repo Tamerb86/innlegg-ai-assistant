@@ -37,6 +37,8 @@ import BestTime from "@/pages/BestTime";
 import ContentRepurpose from "@/pages/ContentRepurpose";
 import TelegramBot from "@/pages/TelegramBot";
 import CompetitorRadar from "@/pages/CompetitorRadar";
+import ContentSeries from "@/pages/ContentSeries";
+import ABTesting from "@/pages/ABTesting";
 
 
 function Router() {
@@ -73,6 +75,8 @@ function Router() {
       <Route path={"/repurpose"} component={ContentRepurpose} />
       <Route path={"/telegram-bot"} component={TelegramBot} />
       <Route path={"/competitor-radar"} component={CompetitorRadar} />
+      <Route path={"/content-series"} component={ContentSeries} />
+      <Route path={"/ab-testing"} component={ABTesting} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
