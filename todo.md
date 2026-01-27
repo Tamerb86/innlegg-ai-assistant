@@ -1263,4 +1263,20 @@
 - [x] Open edit dialog with duplicated content when clicking "Dupliser"
 - [x] Write vitest tests for duplicate procedure (4 tests passing)
 - [ ] Test search and sort functionality
+- [x] Save checkpoint
+
+
+## Telegram Innlegg Tags & Quick Actions Menu
+- [x] Update database schema to add tags field to posts table
+- [x] Run database migration (pnpm db:push)
+- [x] Add backend procedure to add tag to post
+- [x] Add backend procedure to remove tag from post
+- [x] Add backend procedure to get all unique tags
+- [x] Add tags display in post card (colored badges)
+- [x] Add tag filter dropdown (shows all available tags)
+- [x] Add tag management UI (add/remove tags per post)
+- [x] Replace individual action buttons with dropdown menu (⋮)
+- [x] Add DropdownMenu component with all actions (Edit, Duplicate, Save, Move to Idea Bank, Delete)
+- [x] Write vitest tests for tag procedures (6 tests passing)
+- [ ] Test tags and quick actions menu
 - [ ] Save checkpoint

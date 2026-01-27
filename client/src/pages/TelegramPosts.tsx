@@ -2,10 +2,12 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
-import { Loader2, MessageSquare, Sparkles, Copy, Check, Save, Lightbulb, Trash2, Edit, CheckSquare, Square, Search, CopyPlus } from "lucide-react";
+import { Loader2, MessageSquare, Sparkles, Copy, Check, Save, Lightbulb, Trash2, Edit, CheckSquare, Square, Search, CopyPlus, MoreVertical, Tag, X } from "lucide-react";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -29,6 +31,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -46,19 +55,29 @@ export default function TelegramPosts() {
   const [postToDelete, setPostToDelete] = useState<number | null>(null);
   const [selectedPosts, setSelectedPosts] = useState<number[]>([]);
   const [platformFilter, setPlatformFilter] = useState<string>("all");
+  const [tagFilter, setTagFilter] = useState<string>("all");
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<{ id: number; content: string } | null>(null);
   const [editedContent, setEditedContent] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("newest");
+  const [tagDialogOpen, setTagDialogOpen] = useState(false);
+  const [tagPostId, setTagPostId] = useState<number | null>(null);
+  const [newTag, setNewTag] = useState("");
   
   // Fetch Telegram-generated posts (last 10)
   const { data: telegramPosts, isLoading, refetch } = trpc.telegram.getRecentPosts.useQuery(
     undefined,
     { enabled: isAuthenticated }
   );
+
+  // Fetch all available tags
+  const { data: tagsData } = trpc.telegram.getAllTags.useQuery(
+    undefined,
+    { enabled: isAuthenticated }
+  );
   
-  // Filter, search, and sort posts
+  // Filter, search, sort, and filter by tags
   const filteredPosts = useMemo(() => {
     if (!telegramPosts) return [];
     
@@ -67,6 +86,13 @@ export default function TelegramPosts() {
     // Filter by platform
     if (platformFilter !== "all") {
       filtered = filtered.filter((post: any) => post.platform === platformFilter);
+    }
+
+    // Filter by tag
+    if (tagFilter !== "all") {
+      filtered = filtered.filter((post: any) => 
+        post.tags && Array.isArray(post.tags) && post.tags.includes(tagFilter)
+      );
     }
     
     // Search by rawInput or generatedContent
@@ -93,7 +119,7 @@ export default function TelegramPosts() {
     }
     
     return sorted;
-  }, [telegramPosts, platformFilter, searchQuery, sortBy]);
+  }, [telegramPosts, platformFilter, tagFilter, searchQuery, sortBy]);
 
   // Generate 3 alternatives mutation
   const generateAlternatives = trpc.telegram.generateAlternatives.useMutation({
@@ -115,17 +141,6 @@ export default function TelegramPosts() {
     },
   });
 
-  // Delete post mutation
-  const deletePost = trpc.telegram.deletePost.useMutation({
-    onSuccess: () => {
-      toast.success("Innlegget er slettet!");
-      refetch();
-    },
-    onError: (error: any) => {
-      toast.error(error.message || "Kunne ikke slette innlegg");
-    },
-  });
-
   // Move to idea bank mutation
   const moveToIdeaBank = trpc.telegram.moveToIdeaBank.useMutation({
     onSuccess: () => {
@@ -137,8 +152,21 @@ export default function TelegramPosts() {
     },
   });
 
-  // Bulk delete mutation
-  const bulkDelete = trpc.telegram.bulkDeletePosts.useMutation({
+  // Delete post mutation
+  const deletePost = trpc.telegram.deletePost.useMutation({
+    onSuccess: () => {
+      toast.success("Innlegg slettet!");
+      setDeleteDialogOpen(false);
+      setPostToDelete(null);
+      refetch();
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Kunne ikke slette innlegg");
+    },
+  });
+
+  // Bulk delete posts mutation
+  const bulkDeletePosts = trpc.telegram.bulkDeletePosts.useMutation({
     onSuccess: (data) => {
       toast.success(`${data.count} innlegg slettet!`);
       setSelectedPosts([]);
@@ -189,6 +217,30 @@ export default function TelegramPosts() {
     },
   });
 
+  // Add tag mutation
+  const addTag = trpc.telegram.addTag.useMutation({
+    onSuccess: () => {
+      toast.success("Tag lagt til!");
+      setNewTag("");
+      setTagDialogOpen(false);
+      refetch();
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Kunne ikke legge til tag");
+    },
+  });
+
+  // Remove tag mutation
+  const removeTag = trpc.telegram.removeTag.useMutation({
+    onSuccess: () => {
+      toast.success("Tag fjernet!");
+      refetch();
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Kunne ikke fjerne tag");
+    },
+  });
+
   const handleCopy = (content: string, postId: number) => {
     navigator.clipboard.writeText(content);
     setCopiedId(postId);
@@ -214,12 +266,29 @@ export default function TelegramPosts() {
     if (postToDelete) {
       deletePost.mutate({ postId: postToDelete });
     }
-    setDeleteDialogOpen(false);
-    setPostToDelete(null);
   };
 
   const handleMoveToIdeaBank = (postId: number, rawInput: string) => {
     moveToIdeaBank.mutate({ postId, rawInput });
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedPosts.length === 0) return;
+    bulkDeletePosts.mutate({ postIds: selectedPosts });
+  };
+
+  const handleBulkMoveToIdeaBank = () => {
+    if (selectedPosts.length === 0) return;
+    
+    const items = selectedPosts.map(postId => {
+      const post = telegramPosts?.find((p: any) => p.id === postId);
+      return {
+        postId,
+        rawInput: post?.rawInput || "",
+      };
+    });
+    
+    bulkMoveToIdeaBank.mutate({ items });
   };
 
   const handleEditClick = (postId: number, content: string) => {
@@ -254,28 +323,36 @@ export default function TelegramPosts() {
     }
   };
 
-  const handleBulkDelete = () => {
-    if (selectedPosts.length === 0) {
-      toast.error("Ingen innlegg valgt");
-      return;
-    }
-    bulkDelete.mutate({ postIds: selectedPosts });
+  const handleAddTagClick = (postId: number) => {
+    setTagPostId(postId);
+    setTagDialogOpen(true);
   };
 
-  const handleBulkMoveToIdeaBank = () => {
-    if (selectedPosts.length === 0) {
-      toast.error("Ingen innlegg valgt");
-      return;
+  const handleAddTagSubmit = () => {
+    if (tagPostId && newTag.trim()) {
+      addTag.mutate({ postId: tagPostId, tag: newTag.trim() });
     }
-    const items = filteredPosts
-      .filter((post: any) => selectedPosts.includes(post.id))
-      .map((post: any) => ({ postId: post.id, rawInput: post.rawInput }));
-    bulkMoveToIdeaBank.mutate({ items });
   };
 
-  if (authLoading || isLoading) {
+  const handleRemoveTag = (postId: number, tag: string) => {
+    removeTag.mutate({ postId, tag });
+  };
+
+  // Tag color mapping
+  const getTagColor = (tag: string) => {
+    const colors: Record<string, string> = {
+      "viktig": "bg-red-100 text-red-800 hover:bg-red-200",
+      "haster": "bg-orange-100 text-orange-800 hover:bg-orange-200",
+      "utkast": "bg-gray-100 text-gray-800 hover:bg-gray-200",
+      "klar": "bg-green-100 text-green-800 hover:bg-green-200",
+      "planlagt": "bg-blue-100 text-blue-800 hover:bg-blue-200",
+    };
+    return colors[tag.toLowerCase()] || "bg-purple-100 text-purple-800 hover:bg-purple-200";
+  };
+
+  if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="container py-8 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -287,7 +364,7 @@ export default function TelegramPosts() {
         <Card>
           <CardHeader>
             <CardTitle>Logg inn</CardTitle>
-            <CardDescription>Du må være logget inn for å se Telegram-innlegg</CardDescription>
+            <CardDescription>Du må være logget inn for å se Telegram-innlegg.</CardDescription>
           </CardHeader>
         </Card>
       </div>
@@ -310,12 +387,12 @@ export default function TelegramPosts() {
               {/* Search */}
               <div className="flex items-center gap-2 flex-1 min-w-[250px]">
                 <Search className="h-4 w-4 text-muted-foreground" />
-                <input
+                <Input
                   type="text"
                   placeholder="Søk i innlegg..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  className="flex-1"
                 />
               </div>
 
@@ -350,6 +427,22 @@ export default function TelegramPosts() {
                     <SelectItem value="twitter">Twitter</SelectItem>
                     <SelectItem value="instagram">Instagram</SelectItem>
                     <SelectItem value="facebook">Facebook</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Tag filter */}
+              <div className="flex items-center gap-2">
+                <Label htmlFor="tag-filter">Tag:</Label>
+                <Select value={tagFilter} onValueChange={setTagFilter}>
+                  <SelectTrigger id="tag-filter" className="w-[180px]">
+                    <SelectValue placeholder="Velg tag" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Alle</SelectItem>
+                    {tagsData?.tags.map((tag: string) => (
+                      <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -392,7 +485,7 @@ export default function TelegramPosts() {
                     variant="outline"
                     size="sm"
                     onClick={handleBulkDelete}
-                    disabled={bulkDelete.isPending}
+                    disabled={bulkDeletePosts.isPending}
                     className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
@@ -405,59 +498,139 @@ export default function TelegramPosts() {
         </Card>
       )}
 
-      {!filteredPosts || filteredPosts.length === 0 ? (
+      {/* Posts list */}
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : !telegramPosts || telegramPosts.length === 0 ? (
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5" />
-              {platformFilter === "all" 
-                ? "Ingen Telegram-innlegg ennå"
-                : `Ingen ${platformFilter}-innlegg ennå`
-              }
-            </CardTitle>
-            <CardDescription>
-              {platformFilter === "all"
-                ? "Send en idé til @Nexifynorgebot på Telegram for å generere innlegg!"
-                : "Prøv et annet filter eller send en idé til @Nexifynorgebot på Telegram."
-              }
-            </CardDescription>
-          </CardHeader>
+          <CardContent className="py-12 text-center">
+            <MessageSquare className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+            <h3 className="text-lg font-semibold mb-2">Ingen innlegg ennå</h3>
+            <p className="text-muted-foreground mb-4">
+              Send en idé til Telegram-boten for å generere ditt første innlegg!
+            </p>
+          </CardContent>
+        </Card>
+      ) : filteredPosts.length === 0 ? (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+            <h3 className="text-lg font-semibold mb-2">Ingen resultater</h3>
+            <p className="text-muted-foreground">
+              Prøv å justere søket eller filtrene dine.
+            </p>
+          </CardContent>
         </Card>
       ) : (
         <div className="space-y-4">
           {filteredPosts.map((post: any) => (
-            <Card key={post.id} className="overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
-                <div className="flex items-start justify-between">
+            <Card key={post.id} className="relative">
+              <CardHeader>
+                <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3 flex-1">
                     <Checkbox
                       checked={selectedPosts.includes(post.id)}
                       onCheckedChange={(checked) => handleSelectPost(post.id, checked as boolean)}
-                      className="mt-1"
                     />
-                    <div className="flex-1">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4 text-blue-600" />
-                        {post.rawInput}
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Badge variant="outline" className="capitalize">
+                          {post.platform}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">
+                          {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: nb })}
+                        </span>
+                      </div>
+                      
+                      {/* Tags display */}
+                      {post.tags && Array.isArray(post.tags) && post.tags.length > 0 && (
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {post.tags.map((tag: string) => (
+                            <Badge 
+                              key={tag} 
+                              className={`${getTagColor(tag)} cursor-pointer`}
+                              onClick={() => handleRemoveTag(post.id, tag)}
+                            >
+                              {tag}
+                              <X className="h-3 w-3 ml-1" />
+                            </Badge>
+                          ))}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 px-2"
+                            onClick={() => handleAddTagClick(post.id)}
+                          >
+                            <Tag className="h-3 w-3 mr-1" />
+                            Legg til tag
+                          </Button>
+                        </div>
+                      )}
+                      {(!post.tags || post.tags.length === 0) && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 px-2"
+                          onClick={() => handleAddTagClick(post.id)}
+                        >
+                          <Tag className="h-3 w-3 mr-1" />
+                          Legg til tag
+                        </Button>
+                      )}
+                      
+                      <CardTitle className="text-base">
+                        Opprinnelig idé:
                       </CardTitle>
-                      <CardDescription className="mt-1">
-                        {formatDistanceToNow(new Date(post.createdAt), { 
-                          addSuffix: true, 
-                          locale: nb 
-                        })}
-                        {" • "}
-                        <span className="capitalize">{post.platform}</span>
+                      <CardDescription className="whitespace-pre-wrap">
+                        {post.rawInput}
                       </CardDescription>
                     </div>
                   </div>
+
+                  {/* Quick Actions Dropdown Menu */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleEditClick(post.id, post.generatedContent)}>
+                        <Edit className="h-4 w-4 mr-2" />
+                        Rediger
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleDuplicate(post.id)}>
+                        <CopyPlus className="h-4 w-4 mr-2" />
+                        Dupliser
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleSave(post.id)}>
+                        <Save className="h-4 w-4 mr-2" />
+                        Lagre
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => handleMoveToIdeaBank(post.id, post.rawInput)}>
+                        <Lightbulb className="h-4 w-4 mr-2" />
+                        Til Idé-Bank
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => handleDeleteClick(post.id)}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Slett
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </CardHeader>
-              
-              <CardContent className="pt-6 space-y-4">
-                {/* Original generated content */}
-                <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+
+              <CardContent className="space-y-4">
+                {/* Generated content */}
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-muted-foreground">
+                    <p className="text-sm font-medium">
                       Generert innlegg:
                     </p>
                     <Button
@@ -477,64 +650,14 @@ export default function TelegramPosts() {
                   </p>
                 </div>
 
-                {/* Action buttons */}
-                <div className="flex gap-2 flex-wrap">
-                  <Button
-                    onClick={() => handleEditClick(post.id, post.generatedContent)}
-                    disabled={editPost.isPending}
-                    variant="outline"
-                    size="sm"
-                  >
-                    <Edit className="h-4 w-4 mr-2" />
-                    Rediger
-                  </Button>
-
-                  <Button
-                    onClick={() => handleDuplicate(post.id)}
-                    disabled={duplicatePost.isPending}
-                    variant="outline"
-                    size="sm"
-                  >
-                    <CopyPlus className="h-4 w-4 mr-2" />
-                    Dupliser
-                  </Button>
-
-                  <Button
-                    onClick={() => handleSave(post.id)}
-                    disabled={savePost.isPending}
-                    variant="outline"
-                    size="sm"
-                  >
-                    <Save className="h-4 w-4 mr-2" />
-                    Lagre
-                  </Button>
-                  
-                  <Button
-                    onClick={() => handleMoveToIdeaBank(post.id, post.rawInput)}
-                    disabled={moveToIdeaBank.isPending}
-                    variant="outline"
-                    size="sm"
-                  >
-                    <Lightbulb className="h-4 w-4 mr-2" />
-                    Til Idé-Bank
-                  </Button>
-                  
-                  <Button
-                    onClick={() => handleDeleteClick(post.id)}
-                    disabled={deletePost.isPending}
-                    variant="outline"
-                    size="sm"
-                    className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Slett
-                  </Button>
-                  
+                {/* Generate alternatives button */}
+                {expandedPostId !== post.id && (
                   <Button
                     onClick={() => handleGenerateAlternatives(post.id, post.rawInput)}
-                    disabled={generateAlternatives.isPending && expandedPostId === post.id}
+                    disabled={generateAlternatives.isPending}
+                    variant="outline"
                     size="sm"
-                    className="ml-auto"
+                    className="w-full"
                   >
                     {generateAlternatives.isPending && expandedPostId === post.id ? (
                       <>
@@ -548,39 +671,6 @@ export default function TelegramPosts() {
                       </>
                     )}
                   </Button>
-                </div>
-
-                {/* Show alternatives if generated */}
-                {expandedPostId === post.id && generateAlternatives.data && (
-                  <div className="space-y-3 pt-4 border-t">
-                    <p className="text-sm font-medium text-muted-foreground">
-                      3 alternativer:
-                    </p>
-                    
-                    {generateAlternatives.data.alternatives.map((alt: string, idx: number) => (
-                      <div key={idx} className="bg-background border rounded-lg p-4 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-semibold text-primary">
-                            Alternativ {idx + 1}
-                          </span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleCopy(alt, post.id * 10 + idx)}
-                          >
-                            {copiedId === post.id * 10 + idx ? (
-                              <Check className="h-4 w-4 text-green-600" />
-                            ) : (
-                              <Copy className="h-4 w-4" />
-                            )}
-                          </Button>
-                        </div>
-                        <p className="text-sm whitespace-pre-wrap leading-relaxed">
-                          {alt}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
                 )}
               </CardContent>
             </Card>
@@ -612,18 +702,18 @@ export default function TelegramPosts() {
           <DialogHeader>
             <DialogTitle>Rediger innlegg</DialogTitle>
             <DialogDescription>
-              Gjør endringer i innlegget ditt. Klikk lagre når du er ferdig.
+              Gjør endringer i innlegget ditt her.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
+          <div className="space-y-4">
+            <div>
               <Label htmlFor="edit-content">Innhold</Label>
               <Textarea
                 id="edit-content"
                 value={editedContent}
                 onChange={(e) => setEditedContent(e.target.value)}
                 rows={10}
-                className="resize-none"
+                className="mt-2"
               />
             </div>
           </div>
@@ -639,6 +729,68 @@ export default function TelegramPosts() {
                 </>
               ) : (
                 "Lagre endringer"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add tag dialog */}
+      <Dialog open={tagDialogOpen} onOpenChange={setTagDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Legg til tag</DialogTitle>
+            <DialogDescription>
+              Legg til en tag for å organisere innlegget ditt.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="new-tag">Tag navn</Label>
+              <Input
+                id="new-tag"
+                value={newTag}
+                onChange={(e) => setNewTag(e.target.value)}
+                placeholder="f.eks. viktig, haster, utkast"
+                className="mt-2"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddTagSubmit();
+                  }
+                }}
+              />
+            </div>
+            <div className="text-sm text-muted-foreground">
+              <p className="font-medium mb-2">Foreslåtte tags:</p>
+              <div className="flex flex-wrap gap-2">
+                {["viktig", "haster", "utkast", "klar", "planlagt"].map((tag) => (
+                  <Badge
+                    key={tag}
+                    className={`${getTagColor(tag)} cursor-pointer`}
+                    onClick={() => setNewTag(tag)}
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setTagDialogOpen(false);
+              setNewTag("");
+            }}>
+              Avbryt
+            </Button>
+            <Button onClick={handleAddTagSubmit} disabled={addTag.isPending || !newTag.trim()}>
+              {addTag.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Legger til...
+                </>
+              ) : (
+                "Legg til"
               )}
             </Button>
           </DialogFooter>

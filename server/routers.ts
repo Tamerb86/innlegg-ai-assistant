@@ -1826,6 +1826,121 @@ Skriv et ${input.responseType} svar.`
           content: originalPost.generatedContent 
         };
       }),
+
+    // Add tag to post
+    addTag: protectedProcedure
+      .input(z.object({ 
+        postId: z.number(), 
+        tag: z.string().min(1).max(50) 
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { getDb } = await import("./db");
+        const { posts } = await import("../drizzle/schema");
+        const { eq, and, sql } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        // Get current post
+        const [post] = await db.select()
+          .from(posts)
+          .where(and(
+            eq(posts.id, input.postId),
+            eq(posts.userId, ctx.user.id)
+          ))
+          .limit(1);
+
+        if (!post) {
+          throw new Error("Post not found");
+        }
+
+        // Get current tags or initialize empty array
+        const currentTags: string[] = post.tags ? (Array.isArray(post.tags) ? post.tags : []) : [];
+        
+        // Add tag if not already present
+        if (!currentTags.includes(input.tag)) {
+          const newTags = [...currentTags, input.tag];
+          await db.update(posts)
+            .set({ 
+              tags: newTags,
+              updatedAt: new Date(),
+            })
+            .where(and(
+              eq(posts.id, input.postId),
+              eq(posts.userId, ctx.user.id)
+            ));
+        }
+
+        return { success: true };
+      }),
+
+    // Remove tag from post
+    removeTag: protectedProcedure
+      .input(z.object({ 
+        postId: z.number(), 
+        tag: z.string() 
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { getDb } = await import("./db");
+        const { posts } = await import("../drizzle/schema");
+        const { eq, and } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        // Get current post
+        const [post] = await db.select()
+          .from(posts)
+          .where(and(
+            eq(posts.id, input.postId),
+            eq(posts.userId, ctx.user.id)
+          ))
+          .limit(1);
+
+        if (!post) {
+          throw new Error("Post not found");
+        }
+
+        // Get current tags
+        const currentTags: string[] = post.tags ? (Array.isArray(post.tags) ? post.tags : []) : [];
+        
+        // Remove tag
+        const newTags = currentTags.filter(t => t !== input.tag);
+        await db.update(posts)
+          .set({ 
+            tags: newTags,
+            updatedAt: new Date(),
+          })
+          .where(and(
+            eq(posts.id, input.postId),
+            eq(posts.userId, ctx.user.id)
+          ));
+
+        return { success: true };
+      }),
+
+    // Get all unique tags for user
+    getAllTags: protectedProcedure
+      .query(async ({ ctx }) => {
+        const { getDb } = await import("./db");
+        const { posts } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        // Get all posts for user
+        const userPosts = await db.select()
+          .from(posts)
+          .where(eq(posts.userId, ctx.user.id));
+
+        // Extract and deduplicate tags
+        const allTags = new Set<string>();
+        userPosts.forEach(post => {
+          if (post.tags && Array.isArray(post.tags)) {
+            post.tags.forEach((tag: string) => allTags.add(tag));
+          }
+        });
+
+        return { tags: Array.from(allTags).sort() };
+      }),
   }),
 });
 

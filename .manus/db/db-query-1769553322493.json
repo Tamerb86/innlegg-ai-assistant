@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE posts ADD COLUMN tags JSON;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VZWkmDdVMGTAoV.bcd7d121ddff --database aUg4CGwS8nNj3ozbCiedm7 --execute ALTER TABLE posts ADD COLUMN tags JSON;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 521
+}

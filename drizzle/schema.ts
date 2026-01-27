@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, tinyint, date, boolean } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, tinyint, date, boolean, json } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -35,6 +35,7 @@ export const posts = mysqlTable("posts", {
   tone: varchar("tone", { length: 50 }).notNull(), // professional, friendly, motivational, educational
   rawInput: text("raw_input").notNull(),
   generatedContent: text("generated_content").notNull(),
+  tags: json("tags").$type<string[]>(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });
