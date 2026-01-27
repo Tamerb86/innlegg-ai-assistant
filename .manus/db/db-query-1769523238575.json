@@ -1,0 +1,18 @@
+{
+  "query": "SELECT user_id, status, posts_generated, trial_posts_limit, subscription_start_date, subscription_end_date FROM subscriptions;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VZWkmDdVMGTAoV.bcd7d121ddff --database aUg4CGwS8nNj3ozbCiedm7 --execute SELECT user_id, status, posts_generated, trial_posts_limit, subscription_start_date, subscription_end_date FROM subscriptions;",
+  "rows": [
+    {
+      "user_id": "1",
+      "status": "active",
+      "posts_generated": "0",
+      "trial_posts_limit": "9999",
+      "subscription_start_date": "2026-01-27 14:13:53",
+      "subscription_end_date": "2027-01-27 14:13:53"
+    }
+  ],
+  "messages": [],
+  "stdout": "user_id\tstatus\tposts_generated\ttrial_posts_limit\tsubscription_start_date\tsubscription_end_date\n1\tactive\t0\t9999\t2026-01-27 14:13:53\t2027-01-27 14:13:53\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}

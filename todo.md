@@ -1163,4 +1163,15 @@
 - [x] Update DashboardNav to include fixed sidebar with all Flere items
 - [x] Remove dropdown menu from top navigation
 - [x] Test sidebar navigation
+- [x] Save checkpoint
+
+
+## Auto-Save Drafts Feature
+- [x] Create drafts table in database schema
+- [x] Add draft tRPC procedures (save, get, delete, list)
+- [x] Implement auto-save in Generate page (debounced 1.5s)
+- [x] Add drafts indicator in UI (shows save status)
+- [x] Restore draft on page load
+- [x] Clear draft after successful generation
+- [x] Test (15 tests passing)
 - [ ] Save checkpoint

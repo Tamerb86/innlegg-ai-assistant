@@ -1,0 +1,25 @@
+{
+  "query": "SELECT * FROM subscriptions;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VZWkmDdVMGTAoV.bcd7d121ddff --database aUg4CGwS8nNj3ozbCiedm7 --execute SELECT * FROM subscriptions;",
+  "rows": [
+    {
+      "id": "1",
+      "user_id": "1",
+      "status": "trial",
+      "posts_generated": "0",
+      "trial_posts_limit": "5",
+      "vipps_order_id": "NULL",
+      "subscription_start_date": "NULL",
+      "subscription_end_date": "NULL",
+      "created_at": "2026-01-26 00:05:26",
+      "updated_at": "2026-01-26 00:05:26",
+      "stripe_customer_id": "NULL",
+      "stripe_subscription_id": "NULL",
+      "stripe_price_id": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuser_id\tstatus\tposts_generated\ttrial_posts_limit\tvipps_order_id\tsubscription_start_date\tsubscription_end_date\tcreated_at\tupdated_at\tstripe_customer_id\tstripe_subscription_id\tstripe_price_id\n1\t1\ttrial\t0\t5\tNULL\tNULL\tNULL\t2026-01-26 00:05:26\t2026-01-26 00:05:26\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}

@@ -6,8 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc";
-import { Copy, Loader2, Sparkles, Wand2, Upload, X, Image as ImageIcon, Mic, Flame } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Copy, Loader2, Sparkles, Wand2, Upload, X, Image as ImageIcon, Mic, Flame, Save, Cloud } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
@@ -38,6 +38,89 @@ export default function Generate() {
   // State for idea tracking
   const [currentIdeaId, setCurrentIdeaId] = useState<number | null>(null);
   const markIdeaAsUsed = trpc.ideas.markAsUsed.useMutation();
+
+  // Auto-save draft functionality
+  const [draftSaved, setDraftSaved] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const { data: existingDraft } = trpc.drafts.get.useQuery({ pageType: "generate" });
+  const saveDraftMutation = trpc.drafts.save.useMutation({
+    onSuccess: () => {
+      setDraftSaved(true);
+      setLastSavedAt(new Date());
+    },
+  });
+  const deleteDraftMutation = trpc.drafts.delete.useMutation();
+
+  // Restore draft on load
+  useEffect(() => {
+    if (existingDraft && !topic) {
+      try {
+        const formData = JSON.parse(existingDraft.formData);
+        if (formData.topic) setTopic(formData.topic);
+        if (formData.platform) setPlatform(formData.platform);
+        if (formData.tone) setTone(formData.tone);
+        if (formData.length) setLength(formData.length);
+        if (formData.keywords) setKeywords(formData.keywords);
+        if (formData.useVoiceProfile !== undefined) setUseVoiceProfile(formData.useVoiceProfile);
+        if (formData.generateAIImage !== undefined) setGenerateAIImage(formData.generateAIImage);
+        if (formData.imageStyle) setImageStyle(formData.imageStyle);
+        toast.info("Utkast gjenopprettet", { duration: 2000 });
+      } catch (e) {
+        console.error("Failed to parse draft", e);
+      }
+    }
+  }, [existingDraft]);
+
+  // Auto-save with debounce
+  const autoSaveDraft = useCallback(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    saveTimeoutRef.current = setTimeout(() => {
+      const formData = JSON.stringify({
+        topic,
+        platform,
+        tone,
+        length,
+        keywords,
+        useVoiceProfile,
+        generateAIImage,
+        imageStyle,
+      });
+      
+      // Only save if there's content
+      if (topic.trim()) {
+        saveDraftMutation.mutate({
+          pageType: "generate",
+          formData,
+          title: topic.substring(0, 50) || "Utkast",
+        });
+      }
+    }, 1500); // 1.5 second debounce
+  }, [topic, platform, tone, length, keywords, useVoiceProfile, generateAIImage, imageStyle]);
+
+  // Trigger auto-save when form changes
+  useEffect(() => {
+    if (topic) {
+      setDraftSaved(false);
+      autoSaveDraft();
+    }
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [topic, platform, tone, length, keywords, useVoiceProfile, generateAIImage, imageStyle, autoSaveDraft]);
+
+  // Clear draft after successful generation
+  const clearDraft = () => {
+    deleteDraftMutation.mutate({ pageType: "generate" });
+    setDraftSaved(false);
+    setLastSavedAt(null);
+  };
 
   // Handle URL parameters from Trends page or Idea Bank
   useEffect(() => {
@@ -105,6 +188,9 @@ export default function Generate() {
       setGeneratedContent(data.content);
       setPostsRemaining(data.postsRemaining);
       toast.success("Innhold generert!");
+      
+      // Clear draft after successful generation
+      clearDraft();
       
       // Mark idea as used if this came from Idea Bank
       if (currentIdeaId && data.postId) {
@@ -270,6 +356,27 @@ export default function Generate() {
             <p className="text-sm text-muted-foreground mt-2">
               📊 Du har {postsRemaining} innlegg igjen i prøveperioden
             </p>
+          )}
+          {/* Auto-save indicator */}
+          {topic && (
+            <div className="flex items-center gap-2 mt-2 text-sm">
+              {saveDraftMutation.isPending ? (
+                <span className="text-muted-foreground flex items-center gap-1">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Lagrer...
+                </span>
+              ) : draftSaved ? (
+                <span className="text-green-600 flex items-center gap-1">
+                  <Cloud className="h-3 w-3" />
+                  Utkast lagret {lastSavedAt && `kl. ${lastSavedAt.toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit' })}`}
+                </span>
+              ) : (
+                <span className="text-muted-foreground flex items-center gap-1">
+                  <Save className="h-3 w-3" />
+                  Endringer vil bli lagret automatisk
+                </span>
+              )}
+            </div>
           )}
         </div>
 

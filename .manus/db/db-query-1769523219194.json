@@ -1,0 +1,32 @@
+{
+  "query": "SELECT * FROM users;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VZWkmDdVMGTAoV.bcd7d121ddff --database aUg4CGwS8nNj3ozbCiedm7 --execute SELECT * FROM users;",
+  "rows": [
+    {
+      "id": "1",
+      "openId": "T9t5cEQDNbEz4iMaZMgikX",
+      "name": "Easy Charge",
+      "email": "goeasychargeco@gmail.com",
+      "loginMethod": "google",
+      "role": "admin",
+      "createdAt": "2026-01-25 23:51:23",
+      "updatedAt": "2026-01-27 14:13:19",
+      "lastSignedIn": "2026-01-27 14:13:20"
+    },
+    {
+      "id": "150034",
+      "openId": "tamer-user-001",
+      "name": "Tamer",
+      "email": "tamer@example.com",
+      "loginMethod": "NULL",
+      "role": "user",
+      "createdAt": "2026-01-27 13:34:07",
+      "updatedAt": "2026-01-27 13:34:07",
+      "lastSignedIn": "2026-01-27 13:34:07"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\temail\tloginMethod\trole\tcreatedAt\tupdatedAt\tlastSignedIn\n1\tT9t5cEQDNbEz4iMaZMgikX\tEasy Charge\tgoeasychargeco@gmail.com\tgoogle\tadmin\t2026-01-25 23:51:23\t2026-01-27 14:13:19\t2026-01-27 14:13:20\n150034\ttamer-user-001\tTamer\ttamer@example.com\tNULL\tuser\t2026-01-27 13:34:07\t2026-01-27 13:34:07\t2026-01-27 13:34:07\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}

@@ -503,3 +503,25 @@ export const ideas = mysqlTable("ideas", {
 
 export type Idea = typeof ideas.$inferSelect;
 export type InsertIdea = typeof ideas.$inferInsert;
+
+
+/**
+ * Drafts table - Auto-save user work in progress
+ * Saves form state automatically so users never lose their work
+ */
+export const drafts = mysqlTable("drafts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  /** Which page/form this draft is for */
+  pageType: mysqlEnum("page_type", ["generate", "repurpose", "series", "ab_test", "engagement"]).notNull(),
+  /** JSON string containing all form field values */
+  formData: text("form_data").notNull(),
+  /** Optional title/preview for the draft */
+  title: varchar("title", { length: 200 }),
+  /** Last auto-save timestamp */
+  lastSavedAt: timestamp("last_saved_at").defaultNow().onUpdateNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type Draft = typeof drafts.$inferSelect;
+export type InsertDraft = typeof drafts.$inferInsert;
