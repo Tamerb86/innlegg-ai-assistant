@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc";
 import { Copy, Loader2, Sparkles, Wand2, Upload, X, Image as ImageIcon, Mic, Flame, Save, Cloud } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
@@ -346,9 +348,7 @@ export default function Generate() {
     <div className="min-h-screen bg-background">
       <main className="container py-8 max-w-6xl">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-            Generer Innhold med AI
-          </h1>
+          <PageHeader title="Generer Innhold med AI" description={PAGE_DESCRIPTIONS.generate} />
           <p className="text-muted-foreground text-lg">
             Skriv inn emnet ditt, velg plattform og tone, og la AI lage profesjonelt innhold på sekunder.
           </p>

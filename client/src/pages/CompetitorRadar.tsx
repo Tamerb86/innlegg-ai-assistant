@@ -8,6 +8,8 @@ import { Target, Plus, Trash2, ExternalLink, TrendingUp, Eye, EyeOff } from "luc
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 export default function CompetitorRadar() {
   const [name, setName] = useState("");
@@ -64,9 +66,7 @@ export default function CompetitorRadar() {
               <Target className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
-                Konkurrent-Radar
-              </h1>
+              <PageHeader title="Konkurrent-Radar" description={PAGE_DESCRIPTIONS.competitorRadar} />
               <p className="text-muted-foreground">
                 Følg med på konkurrentenes innhold og strategi
               </p>

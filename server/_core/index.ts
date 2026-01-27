@@ -5,6 +5,7 @@ import net from "net";
 import helmet from "helmet";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
+import { registerTelegramWebhook } from "./telegramWebhookRoute";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
@@ -41,7 +42,7 @@ async function startServer() {
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         imgSrc: ["'self'", "data:", "blob:", "https:"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
-        connectSrc: ["'self'", "https://*.manus.im", "https://api.stripe.com", "wss:"],
+        connectSrc: ["'self'", "https://*.manus.im", "https://api.stripe.com", "https://manus-analytics.com", "https://*.manus-analytics.com", "wss:"],
         frameSrc: ["'self'", "https://js.stripe.com"],
       },
     },
@@ -54,6 +55,9 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
+  
+  // Telegram webhook
+  registerTelegramWebhook(app);
 
   // Stripe webhook - MUST be before express.json() middleware for signature verification
   // Note: We need raw body for Stripe signature verification

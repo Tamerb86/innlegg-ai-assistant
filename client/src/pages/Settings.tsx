@@ -12,6 +12,8 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 function RestartTourButton({ language }: { language: "no" | "en" }) {
   const restartMutation = trpc.user.restartOnboarding.useMutation({
@@ -344,7 +346,7 @@ export default function Settings() {
     <div className="min-h-screen bg-background">
       <main className="container py-8 max-w-3xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">{t("settingsTitle")}</h1>
+          <PageHeader title="Innstillinger" description={PAGE_DESCRIPTIONS.settings} />
           <p className="text-muted-foreground">
             {language === "no"
               ? "Administrer kontoinnstillingene dine."

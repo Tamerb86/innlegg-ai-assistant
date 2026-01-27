@@ -1105,33 +1105,7 @@ Provide helpful, actionable advice. Be encouraging but honest. Keep responses co
       }),
   }),
   
-  telegram: router({
-    setup: protectedProcedure
-      .input(z.object({ token: z.string() }))
-      .mutation(async ({ ctx, input }) => {
-        const { getUserSubscription } = await import("./db");
-        
-        // Check Pro subscription
-        const subscription = await getUserSubscription(ctx.user.id);
-        if (!subscription || subscription.status !== "active") {
-          throw new Error("Telegram Bot krever Pro-abonnement");
-        }
-        
-        // Store token in user preferences or env
-        // For now, just return success
-        // In production, you'd store this securely and initialize the bot
-        return { success: true, message: "Bot aktivert" };
-      }),
-      
-    getStatus: protectedProcedure.query(async ({ ctx }) => {
-      // Return bot status
-      // In production, check if bot is running and return its username
-      return {
-        active: false,
-        username: "innlegg_bot",
-      };
-    }),
-  }),
+
   
   calendar: router({
     getEvents: protectedProcedure
@@ -1541,6 +1515,85 @@ Skriv et ${input.responseType} svar.`
         .orderBy(desc(drafts.lastSavedAt));
       
       return userDrafts;
+    }),
+  }),
+
+  // Telegram Bot Integration
+  telegram: router({
+    // Generate link code for connecting Telegram account
+    generateLinkCode: protectedProcedure.mutation(async ({ ctx }) => {
+      const { getDb } = await import("./db");
+      const { telegramLinks } = await import("../drizzle/schema");
+      const { eq } = await import("drizzle-orm");
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      // Generate random 8-character code
+      const linkCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+      const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+      // Check if user already has a link
+      const existing = await db.select()
+        .from(telegramLinks)
+        .where(eq(telegramLinks.userId, ctx.user.id))
+        .limit(1);
+
+      if (existing.length > 0) {
+        // Update link code
+        await db.update(telegramLinks)
+          .set({ linkCode, linkCodeExpiry: expiry })
+          .where(eq(telegramLinks.userId, ctx.user.id));
+      } else {
+        // Create new link entry
+        await db.insert(telegramLinks).values({
+          userId: ctx.user.id,
+          telegramUserId: "", // Will be filled when user sends code
+          linkCode,
+          linkCodeExpiry: expiry,
+          isActive: false,
+        });
+      }
+
+      return { linkCode, expiresAt: expiry };
+    }),
+
+    // Get current Telegram connection status
+    getStatus: protectedProcedure.query(async ({ ctx }) => {
+      const { getDb } = await import("./db");
+      const { telegramLinks } = await import("../drizzle/schema");
+      const { eq } = await import("drizzle-orm");
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      const link = await db.select()
+        .from(telegramLinks)
+        .where(eq(telegramLinks.userId, ctx.user.id))
+        .limit(1);
+
+      if (link.length === 0) {
+        return { connected: false };
+      }
+
+      return {
+        connected: link[0].isActive,
+        telegramUsername: link[0].telegramUsername,
+        telegramFirstName: link[0].telegramFirstName,
+        linkedAt: link[0].linkedAt,
+      };
+    }),
+
+    // Disconnect Telegram
+    disconnect: protectedProcedure.mutation(async ({ ctx }) => {
+      const { getDb } = await import("./db");
+      const { telegramLinks } = await import("../drizzle/schema");
+      const { eq } = await import("drizzle-orm");
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      await db.delete(telegramLinks)
+        .where(eq(telegramLinks.userId, ctx.user.id));
+
+      return { success: true };
     }),
   }),
 });

@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import { Users, TrendingUp, DollarSign, Activity } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 export default function AdminAnalytics() {
   const [, setLocation] = useLocation();
@@ -27,7 +29,7 @@ export default function AdminAnalytics() {
   if (isLoading) {
     return (
       <div className="container py-8">
-        <h1 className="text-3xl font-bold mb-8">📊 Admin Analytics</h1>
+        <PageHeader title="Admin Analytics" description={PAGE_DESCRIPTIONS.analytics} />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
             <Card key={i}>

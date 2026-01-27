@@ -13,6 +13,8 @@ import {
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { MessageSquare, Sparkles, Copy, CheckCircle2, Loader2, ThumbsUp, Heart, Lightbulb, Cloud, Save } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 export default function EngagementHelper() {
   const { data: subscription } = trpc.user.getSubscription.useQuery();
@@ -123,9 +125,7 @@ export default function EngagementHelper() {
     return (
       <div className="container max-w-4xl py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-500 to-teal-500 bg-clip-text text-transparent">
-            💬 Engasjement-Hjelper
-          </h1>
+          <PageHeader title="Engasjement-Hjelper" description={PAGE_DESCRIPTIONS.engagementHelper} />
           <p className="text-muted-foreground mt-2">
             Generer smarte og engasjerende svar på innlegg
           </p>

@@ -8,6 +8,8 @@ import { FileText, Zap, TrendingUp, Clock, Target, Sparkles } from "lucide-react
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import OnboardingTour from "@/components/OnboardingTour";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 export default function Dashboard() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
@@ -42,9 +44,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background">
       <main className="container py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">
-            {t("dashboardTitle")}, {user?.name || user?.email}!
-          </h1>
+          <PageHeader title="Dashboard" description={PAGE_DESCRIPTIONS.dashboard} />
           <p className="text-muted-foreground">
             {subscription?.status === "trial" ? t("trialStatus") : t("activeStatus")}
           </p>

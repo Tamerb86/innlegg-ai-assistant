@@ -25,6 +25,8 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 export default function VoiceTraining() {
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -138,9 +140,7 @@ export default function VoiceTraining() {
               <Mic className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
-                Stemmetrening
-              </h1>
+              <PageHeader title="Stemmetrening" description={PAGE_DESCRIPTIONS.voiceTraining} />
               <p className="text-muted-foreground">
                 Lær AI å skrive som deg - din unike stemme, din stil
               </p>

@@ -6,6 +6,8 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 export default function ContentCalendar() {
   const [, setLocation] = useLocation();
@@ -54,9 +56,7 @@ export default function ContentCalendar() {
                 <CalendarIcon className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-                  Innholds-Kalender
-                </h1>
+                <PageHeader title="Innholds-Kalender" description={PAGE_DESCRIPTIONS.calendar} />
                 <p className="text-muted-foreground">
                   Planlegg innhold rundt viktige datoer og hendelser
                 </p>

@@ -11,6 +11,8 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 export default function Posts() {
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -85,7 +87,7 @@ export default function Posts() {
       <main className="container py-8 max-w-5xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2">{t("myPosts")}</h1>
+            <PageHeader title="Mine Innlegg" description={PAGE_DESCRIPTIONS.posts} />
             <p className="text-muted-foreground">
               {isLoading ? t("loading") : `${posts?.length || 0} ${t("postsGenerated").toLowerCase()}`}
             </p>

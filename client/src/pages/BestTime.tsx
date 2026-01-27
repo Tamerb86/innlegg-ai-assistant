@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, TrendingUp, Calendar, BarChart3, Zap } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 export default function BestTime() {
   const { data: subscription } = trpc.user.getSubscription.useQuery();
@@ -59,9 +61,7 @@ export default function BestTime() {
               <Clock className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
-                Beste Tid å Publisere
-              </h1>
+              <PageHeader title="Beste Tid" description={PAGE_DESCRIPTIONS.bestTime} />
               <p className="text-muted-foreground">
                 Optimaliser engasjement ved å publisere på riktig tidspunkt
               </p>

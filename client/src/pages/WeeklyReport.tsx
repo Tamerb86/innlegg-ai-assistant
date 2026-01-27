@@ -7,6 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { Mail, TrendingUp, Calendar, BarChart3, CheckCircle2, Loader2 } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 export default function WeeklyReport() {
   const { data: user } = trpc.auth.me.useQuery();
@@ -55,9 +57,7 @@ export default function WeeklyReport() {
     return (
       <div className="container max-w-4xl py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-            📊 Ukentlig Rapport
-          </h1>
+          <PageHeader title="Ukentlig Rapport" description={PAGE_DESCRIPTIONS.weeklyReport} />
           <p className="text-muted-foreground mt-2">
             Få automatiske ukentlige rapporter med innsikt og anbefalinger
           </p>

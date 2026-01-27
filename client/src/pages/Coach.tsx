@@ -8,6 +8,8 @@ import { Send, Zap, Loader2, TrendingUp, Target, Award } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 interface Message {
   role: "user" | "assistant";
@@ -112,9 +114,7 @@ export default function Coach() {
     <div className="min-h-screen bg-background">
       <main className="container py-8 max-w-4xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">
-            {language === "no" ? "AI Innholds-Coach" : "AI Content Coach"}
-          </h1>
+          <PageHeader title="Personlig Coach" description={PAGE_DESCRIPTIONS.coach} />
           <p className="text-muted-foreground">
             {language === "no" 
               ? "Få personlig veiledning, tips og tilbakemeldinger på innholdsstrategien din."

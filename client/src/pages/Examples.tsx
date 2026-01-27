@@ -5,6 +5,8 @@ import { Lightbulb, Copy, ArrowRight, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 interface Example {
   id: number;
@@ -196,9 +198,7 @@ export default function Examples() {
               <Lightbulb className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
-                Eksempler & Inspirasjon
-              </h1>
+              <PageHeader title="Eksempler" description={PAGE_DESCRIPTIONS.examples} />
               <p className="text-muted-foreground">
                 Profesjonelle innlegg som fungerer - bruk dem som inspirasjon
               </p>

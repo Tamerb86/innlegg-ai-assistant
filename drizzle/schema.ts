@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, tinyint, date } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, tinyint, date, boolean } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -525,3 +525,24 @@ export const drafts = mysqlTable("drafts", {
 
 export type Draft = typeof drafts.$inferSelect;
 export type InsertDraft = typeof drafts.$inferInsert;
+
+
+/**
+ * Telegram Links table - Connect Telegram users to Innlegg accounts
+ * SaaS-level bot: one bot serves all users
+ */
+export const telegramLinks = mysqlTable("telegram_links", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull().unique(), // One Telegram per user
+  telegramUserId: varchar("telegram_user_id", { length: 64 }).notNull().unique(),
+  telegramUsername: varchar("telegram_username", { length: 64 }),
+  telegramFirstName: varchar("telegram_first_name", { length: 100 }),
+  linkCode: varchar("link_code", { length: 32 }).unique(), // Temporary code for linking
+  linkCodeExpiry: timestamp("link_code_expiry"),
+  isActive: boolean("is_active").default(true).notNull(),
+  linkedAt: timestamp("linked_at").defaultNow().notNull(),
+  lastUsedAt: timestamp("last_used_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type TelegramLink = typeof telegramLinks.$inferSelect;
+export type InsertTelegramLink = typeof telegramLinks.$inferInsert;

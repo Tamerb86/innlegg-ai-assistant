@@ -1,41 +1,55 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Send, Bot, Check, Copy, ExternalLink } from "lucide-react";
+import { Send, Bot, Check, Copy, ExternalLink, RefreshCw, Unlink } from "lucide-react";
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 export default function TelegramBot() {
-  const [botToken, setBotToken] = useState("");
+  const [linkCode, setLinkCode] = useState("");
+  const { data: status, refetch } = trpc.telegram.getStatus.useQuery();
   const { data: subscription } = trpc.user.getSubscription.useQuery();
-  const { data: botStatus } = trpc.telegram.getStatus.useQuery();
 
-  const setupMutation = trpc.telegram.setup.useMutation({
-    onSuccess: () => {
-      toast.success("Telegram Bot aktivert!");
+  const generateCodeMutation = trpc.telegram.generateLinkCode.useMutation({
+    onSuccess: (data) => {
+      setLinkCode(data.linkCode);
+      toast.success("Koblingskode generert!");
     },
-    onError: (error: any) => {
-      toast.error(error.message || "Kunne ikke aktivere bot");
+    onError: () => {
+      toast.error("Kunne ikke generere kode");
+    },
+  });
+
+  const disconnectMutation = trpc.telegram.disconnect.useMutation({
+    onSuccess: () => {
+      setLinkCode("");
+      refetch();
+      toast.success("Telegram frakoblet");
+    },
+    onError: () => {
+      toast.error("Kunne ikke frakoble");
     },
   });
 
   const isPro = subscription?.status === "active";
+  const isConnected = status?.connected || false;
 
-  const handleSetup = () => {
-    if (!botToken.trim()) {
-      toast.error("Vennligst skriv inn Bot Token");
-      return;
+  const copyCode = () => {
+    if (linkCode) {
+      navigator.clipboard.writeText(linkCode);
+      toast.success("Kode kopiert!");
     }
-    setupMutation.mutate({ token: botToken });
   };
 
-  const copyBotUsername = () => {
-    if (botStatus?.username) {
-      navigator.clipboard.writeText(`@${botStatus.username}`);
-      toast.success("Bot-brukernavn kopiert!");
+  const handleGenerateCode = () => {
+    if (!isPro) {
+      toast.error("Telegram Bot krever Pro-abonnement");
+      return;
     }
+    generateCodeMutation.mutate();
   };
 
   return (
@@ -48,202 +62,238 @@ export default function TelegramBot() {
               <Send className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
-                Telegram Bot
-              </h1>
+              <PageHeader title="Telegram Bot" description={PAGE_DESCRIPTIONS.telegramBot} />
               <p className="text-muted-foreground">
-                Send idé → Få ferdig innlegg direkte i Telegram
+                Send idéer via Telegram og få innlegg tilbake
               </p>
             </div>
           </div>
 
           {!isPro && (
-            <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 mb-6">
-              <CardContent className="pt-4 pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Bot className="h-5 w-5 text-purple-600" />
-                    <div>
-                      <p className="font-medium text-purple-800">Telegram Bot krever Pro-abonnement</p>
-                      <p className="text-sm text-purple-700">Oppgrader for å aktivere din personlige innlegg-bot</p>
-                    </div>
-                  </div>
-                  <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90">
-                    Oppgrader nå
-                  </Button>
-                </div>
-              </CardContent>
+            <Card className="p-4 border-orange-200 bg-orange-50">
+              <p className="text-sm text-orange-900">
+                ⚠️ Telegram Bot krever Pro-abonnement. Oppgrader for å bruke denne funksjonen.
+              </p>
             </Card>
           )}
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Setup */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Sett opp din Telegram Bot</CardTitle>
-                <CardDescription>
-                  Følg stegene under for å koble til din egen bot
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  {/* Step 1 */}
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0 h-8 w-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold">
-                      1
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold mb-2">Opprett Telegram Bot</h3>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        Gå til <a href="https://t.me/BotFather" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline inline-flex items-center gap-1">
-                          @BotFather <ExternalLink className="h-3 w-3" />
-                        </a> på Telegram og send kommandoen <code className="bg-muted px-2 py-1 rounded">/newbot</code>
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Følg instruksjonene for å gi boten et navn og brukernavn.
-                      </p>
-                    </div>
-                  </div>
+        {/* Connection Status */}
+        <Card className="p-6 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Bot className="h-8 w-8 text-blue-500" />
+              <div>
+                <h2 className="font-semibold">@Nexifynorgebot</h2>
+                <p className="text-sm text-muted-foreground">
+                  {isConnected ? "Koblet til" : "Ikke koblet"}
+                </p>
+              </div>
+            </div>
+            <Badge variant={isConnected ? "default" : "secondary"}>
+              {isConnected ? "Aktiv" : "Inaktiv"}
+            </Badge>
+          </div>
 
-                  {/* Step 2 */}
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0 h-8 w-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold">
-                      2
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold mb-2">Kopier Bot Token</h3>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        BotFather vil gi deg en <strong>token</strong> som ser slik ut:
+          {isConnected && status?.telegramFirstName && (
+            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm text-green-900">
+                ✅ Koblet til Telegram som <strong>{status.telegramFirstName}</strong>
+                {status.telegramUsername && ` (@${status.telegramUsername})`}
+              </p>
+            </div>
+          )}
+        </Card>
+
+        {/* Setup Instructions */}
+        {!isConnected ? (
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4">Koble til Telegram</h2>
+            
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="h-6 w-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-semibold text-blue-600">1</span>
+                </div>
+                <div>
+                  <p className="font-medium">Generer koblingskode</p>
+                  <p className="text-sm text-muted-foreground">
+                    Klikk på knappen nedenfor for å generere en unik 8-sifret kode
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="h-6 w-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-semibold text-blue-600">2</span>
+                </div>
+                <div>
+                  <p className="font-medium">Åpne Telegram</p>
+                  <p className="text-sm text-muted-foreground">
+                    Søk etter <strong>@Nexifynorgebot</strong> eller{" "}
+                    <a
+                      href="https://t.me/Nexifynorgebot"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline inline-flex items-center gap-1"
+                    >
+                      klikk her
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="h-6 w-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-semibold text-blue-600">3</span>
+                </div>
+                <div>
+                  <p className="font-medium">Send koblingskoden</p>
+                  <p className="text-sm text-muted-foreground">
+                    Trykk /start og send den 8-sifrede koden til boten
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="h-6 w-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-semibold text-blue-600">4</span>
+                </div>
+                <div>
+                  <p className="font-medium">Ferdig!</p>
+                  <p className="text-sm text-muted-foreground">
+                    Nå kan du sende idéer til boten og få innlegg tilbake
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-6 border-t">
+              {linkCode ? (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                      <p className="text-2xl font-mono font-bold text-center tracking-widest text-blue-600">
+                        {linkCode}
                       </p>
-                      <code className="block bg-muted px-3 py-2 rounded text-sm">
-                        123456789:ABCdefGHIjklMNOpqrsTUVwxyz
-                      </code>
                     </div>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={copyCode}
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
                   </div>
-
-                  {/* Step 3 */}
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0 h-8 w-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold">
-                      3
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold mb-2">Lim inn Token her</h3>
-                      <div className="flex gap-2">
-                        <Input
-                          type="password"
-                          placeholder="Lim inn Bot Token..."
-                          value={botToken}
-                          onChange={(e) => setBotToken(e.target.value)}
-                          disabled={!isPro || setupMutation.isPending}
-                        />
-                        <Button
-                          onClick={handleSetup}
-                          disabled={!isPro || !botToken.trim() || setupMutation.isPending}
-                        >
-                          {setupMutation.isPending ? "Aktiverer..." : "Aktiver"}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Status */}
-                  {botStatus?.active && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                      <div className="flex items-center gap-3">
-                        <Check className="h-5 w-5 text-green-600" />
-                        <div className="flex-1">
-                          <p className="font-medium text-green-900">Bot er aktiv!</p>
-                          <p className="text-sm text-green-700">
-                            Start en chat med{" "}
-                            <button
-                              onClick={copyBotUsername}
-                              className="inline-flex items-center gap-1 text-green-800 font-medium hover:underline"
-                            >
-                              @{botStatus.username}
-                              <Copy className="h-3 w-3" />
-                            </button>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Koden utløper om 10 minutter
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={handleGenerateCode}
+                    disabled={generateCodeMutation.isPending}
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Generer ny kode
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={handleGenerateCode}
+                  disabled={!isPro || generateCodeMutation.isPending}
+                  className="w-full"
+                  size="lg"
+                >
+                  {generateCodeMutation.isPending ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                      Genererer...
+                    </>
+                  ) : (
+                    <>
+                      <Bot className="h-4 w-4 mr-2" />
+                      Generer koblingskode
+                    </>
                   )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                </Button>
+              )}
+            </div>
+          </Card>
+        ) : (
+          /* Connected - Show Usage */
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4">Slik bruker du boten</h2>
+            
+            <div className="space-y-4 mb-6">
+              <div className="p-4 bg-muted rounded-lg">
+                <p className="font-medium mb-2">💡 Send en idé</p>
+                <p className="text-sm text-muted-foreground">
+                  Åpne Telegram og send en melding til @Nexifynorgebot med idéen din.
+                  Boten genererer automatisk et innlegg basert på idéen.
+                </p>
+              </div>
 
-          {/* How it works */}
-          <div>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Slik fungerer det</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex gap-3">
-                    <div className="flex-shrink-0 h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <Send className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-sm">Send idé</p>
-                      <p className="text-xs text-muted-foreground">
-                        Skriv tema eller idé til boten
-                      </p>
-                    </div>
-                  </div>
+              <div className="p-4 bg-muted rounded-lg">
+                <p className="font-medium mb-2">📝 Eksempel</p>
+                <p className="text-sm text-muted-foreground italic">
+                  "Jeg vil skrive om viktigheten av kaffe i arbeidslivet"
+                </p>
+              </div>
 
-                  <div className="flex gap-3">
-                    <div className="flex-shrink-0 h-8 w-8 bg-purple-100 rounded-full flex items-center justify-center">
-                      <Bot className="h-4 w-4 text-purple-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-sm">Velg plattform</p>
-                      <p className="text-xs text-muted-foreground">
-                        LinkedIn, Twitter, Instagram eller Facebook
-                      </p>
-                    </div>
-                  </div>
+              <div className="p-4 bg-muted rounded-lg">
+                <p className="font-medium mb-2">⚡ Rask og enkelt</p>
+                <p className="text-sm text-muted-foreground">
+                  Boten svarer innen få sekunder med et ferdig innlegg som du kan
+                  se og redigere på innlegg.no
+                </p>
+              </div>
+            </div>
 
-                  <div className="flex gap-3">
-                    <div className="flex-shrink-0 h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
-                      <Check className="h-4 w-4 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-sm">Få innlegg</p>
-                      <p className="text-xs text-muted-foreground">
-                        Ferdig innlegg på sekunder!
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <Button
+              variant="destructive"
+              className="w-full"
+              onClick={() => disconnectMutation.mutate()}
+              disabled={disconnectMutation.isPending}
+            >
+              <Unlink className="h-4 w-4 mr-2" />
+              Frakoble Telegram
+            </Button>
+          </Card>
+        )}
 
-            {/* Example */}
-            <Card className="mt-4 bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
-              <CardHeader>
-                <CardTitle className="text-sm">💬 Eksempel</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3 text-sm">
-                  <div className="bg-white rounded-lg p-3 border">
-                    <p className="text-muted-foreground">Du:</p>
-                    <p className="font-medium">"Viktigheten av AI i moderne business"</p>
-                  </div>
-                  <div className="bg-blue-100 rounded-lg p-3 border border-blue-200">
-                    <p className="text-blue-700 font-medium">Bot:</p>
-                    <p className="text-xs text-blue-600">Velg plattform: LinkedIn | Twitter | Instagram | Facebook</p>
-                  </div>
-                  <div className="bg-green-100 rounded-lg p-3 border border-green-200">
-                    <p className="text-green-700 font-medium">Bot:</p>
-                    <p className="text-xs text-green-600">✅ Her er ditt LinkedIn-innlegg: [Ferdig innhold]</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        {/* Features */}
+        <div className="grid md:grid-cols-3 gap-4 mt-6">
+          <Card className="p-4">
+            <div className="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+              <Send className="h-5 w-5 text-blue-600" />
+            </div>
+            <h3 className="font-semibold mb-2">Rask innsending</h3>
+            <p className="text-sm text-muted-foreground">
+              Send idéer når som helst, direkte fra Telegram
+            </p>
+          </Card>
+
+          <Card className="p-4">
+            <div className="h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center mb-3">
+              <Check className="h-5 w-5 text-green-600" />
+            </div>
+            <h3 className="font-semibold mb-2">Automatisk generering</h3>
+            <p className="text-sm text-muted-foreground">
+              Boten lager innlegget automatisk og lagrer det
+            </p>
+          </Card>
+
+          <Card className="p-4">
+            <div className="h-10 w-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
+              <Bot className="h-5 w-5 text-purple-600" />
+            </div>
+            <h3 className="font-semibold mb-2">Alltid tilgjengelig</h3>
+            <p className="text-sm text-muted-foreground">
+              Boten er aktiv 24/7 og svarer umiddelbart
+            </p>
+          </Card>
         </div>
       </main>
     </div>

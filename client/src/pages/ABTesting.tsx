@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { Zap, TrendingUp, TrendingDown, Minus, Trophy, Target, Sparkles, Cloud, Save, Loader2 } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 export default function ABTesting() {
   const [topic, setTopic] = useState("");
@@ -154,9 +156,7 @@ export default function ABTesting() {
               <Target className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                A/B Testing
-              </h1>
+              <PageHeader title="A/B Testing" description={PAGE_DESCRIPTIONS.abTesting} />
               <p className="text-muted-foreground mt-1">
                 Test to versjoner og finn ut hva som fungerer best
               </p>

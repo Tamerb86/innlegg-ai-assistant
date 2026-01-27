@@ -9,6 +9,8 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { Plus, Trash2, Edit2, CheckCircle2, Circle, ArrowRight, Sparkles, Cloud, Save, Loader2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 export default function ContentSeries() {
   const [title, setTitle] = useState("");
@@ -147,9 +149,7 @@ export default function ContentSeries() {
               <Sparkles className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Innholds-Serier
-              </h1>
+              <PageHeader title="Innholds-Serier" description={PAGE_DESCRIPTIONS.contentSeries} />
               <p className="text-muted-foreground mt-1">
                 Planlegg og generer flerdelte innleggsserier
               </p>

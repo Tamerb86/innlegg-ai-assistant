@@ -24,6 +24,8 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 // Simulated trending topics for MVP
 const TRENDING_TOPICS = [
@@ -214,9 +216,7 @@ export default function Trends() {
               <Flame className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-                Trend og Inspirasjon
-              </h1>
+              <PageHeader title="Trend og Inspirasjon" description={PAGE_DESCRIPTIONS.trends} />
               <p className="text-muted-foreground">
                 Oppdag hva som trender akkurat nå og skap engasjerende innhold
               </p>

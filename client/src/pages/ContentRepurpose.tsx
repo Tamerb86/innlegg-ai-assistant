@@ -7,6 +7,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
+import { PageHeader } from "@/components/PageHeader";
+import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
 
 export default function ContentRepurpose() {
   const [, setLocation] = useLocation();
@@ -159,9 +161,7 @@ export default function ContentRepurpose() {
               <Recycle className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent">
-                Gjenbruk-Maskin
-              </h1>
+              <PageHeader title="Gjenbruk-Maskin" description={PAGE_DESCRIPTIONS.repurpose} />
               <p className="text-muted-foreground">
                 Få mer ut av eksisterende innhold - tilpass og gjenbruk smart
               </p>
