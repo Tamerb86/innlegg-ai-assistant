@@ -1702,6 +1702,89 @@ Skriv et ${input.responseType} svar.`
 
         return { success: true };
       }),
+
+    // Bulk delete posts
+    bulkDeletePosts: protectedProcedure
+      .input(z.object({ postIds: z.array(z.number()) }))
+      .mutation(async ({ ctx, input }) => {
+        const { getDb } = await import("./db");
+        const { posts } = await import("../drizzle/schema");
+        const { inArray, and, eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        await db.delete(posts)
+          .where(and(
+            inArray(posts.id, input.postIds),
+            eq(posts.userId, ctx.user.id)
+          ));
+
+        return { success: true, count: input.postIds.length };
+      }),
+
+    // Bulk move to idea bank
+    bulkMoveToIdeaBank: protectedProcedure
+      .input(z.object({ 
+        items: z.array(z.object({ 
+          postId: z.number(), 
+          rawInput: z.string() 
+        })) 
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { getDb } = await import("./db");
+        const { ideas, posts } = await import("../drizzle/schema");
+        const { inArray, and, eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        // Add all ideas to idea bank
+        const ideaValues = input.items.map(item => ({
+          userId: ctx.user.id,
+          ideaText: item.rawInput,
+          source: "manual" as const,
+          status: "new" as const,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }));
+        
+        await db.insert(ideas).values(ideaValues);
+
+        // Delete all posts
+        const postIds = input.items.map(item => item.postId);
+        await db.delete(posts)
+          .where(and(
+            inArray(posts.id, postIds),
+            eq(posts.userId, ctx.user.id)
+          ));
+
+        return { success: true, count: input.items.length };
+      }),
+
+    // Edit post content
+    editPost: protectedProcedure
+      .input(z.object({ 
+        postId: z.number(), 
+        newContent: z.string() 
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { getDb } = await import("./db");
+        const { posts } = await import("../drizzle/schema");
+        const { eq, and } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        await db.update(posts)
+          .set({ 
+            generatedContent: input.newContent,
+            updatedAt: new Date(),
+          })
+          .where(and(
+            eq(posts.id, input.postId),
+            eq(posts.userId, ctx.user.id)
+          ));
+
+        return { success: true };
+      }),
   }),
 });
 

@@ -1236,4 +1236,18 @@
 - [x] Add confirmation dialog for delete action
 - [x] Write vitest tests for new procedures (4 tests passing)
 - [ ] Test all actions end-to-end
+- [x] Save checkpoint
+
+
+## Telegram Innlegg Advanced Features
+- [x] Add backend procedure for bulk delete posts
+- [x] Add backend procedure for bulk move to Idea Bank
+- [x] Add backend procedure for edit post content
+- [x] Add checkbox selection UI for bulk actions
+- [x] Add "Slett valgte" and "Flytt valgte til Idé-Bank" buttons
+- [x] Add platform filter dropdown (Alle, LinkedIn, Twitter, Instagram, Facebook)
+- [x] Add "Rediger" button with edit dialog
+- [x] Add "Select All" / "Deselect All" functionality
+- [x] Write vitest tests for new procedures (6 tests passing)
+- [ ] Test all features end-to-end
 - [ ] Save checkpoint
