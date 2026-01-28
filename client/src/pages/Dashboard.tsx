@@ -51,18 +51,18 @@ export default function Dashboard() {
         </div>
 
         {/* Enhanced Stats Cards */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-10">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
           <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-200 dark:border-blue-900 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle className="text-sm font-medium truncate">
                 {t("postsGenerated")}
               </CardTitle>
-              <div className="p-2.5 bg-blue-500/15 rounded-xl">
-                <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <div className="p-2 bg-blue-500/15 rounded-lg">
+                <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-5xl sm:text-6xl font-bold text-blue-600 dark:text-blue-400">
+              <div className="text-4xl sm:text-5xl font-bold text-blue-600 dark:text-blue-400">
                 {subLoading ? "..." : subscription?.postsGenerated || 0}
               </div>
               <p className="text-xs text-muted-foreground mt-2 truncate">
@@ -76,12 +76,12 @@ export default function Dashboard() {
               <CardTitle className="text-sm font-medium truncate">
                 {t("postsRemaining")}
               </CardTitle>
-              <div className="p-2.5 bg-purple-500/15 rounded-xl">
-                <Zap className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              <div className="p-2 bg-purple-500/15 rounded-lg">
+                <Zap className="h-4 w-4 text-purple-600 dark:text-purple-400" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-5xl sm:text-6xl font-bold text-purple-600 dark:text-purple-400">
+              <div className="text-4xl sm:text-5xl font-bold text-purple-600 dark:text-purple-400">
                 {subLoading ? "..." : postsRemaining}
               </div>
               <p className="text-xs text-muted-foreground mt-2 truncate">
@@ -95,12 +95,12 @@ export default function Dashboard() {
               <CardTitle className="text-sm font-medium truncate">
                 {language === "no" ? "Tid spart" : "Time Saved"}
               </CardTitle>
-              <div className="p-2.5 bg-green-500/15 rounded-xl">
-                <Clock className="h-5 w-5 text-green-600 dark:text-green-400" />
+              <div className="p-2 bg-green-500/15 rounded-lg">
+                <Clock className="h-4 w-4 text-green-600 dark:text-green-400" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-5xl sm:text-6xl font-bold text-green-600 dark:text-green-400">
+              <div className="text-4xl sm:text-5xl font-bold text-green-600 dark:text-green-400">
                 {subLoading ? "..." : Math.round((subscription?.postsGenerated || 0) * 15)} <span className="text-2xl sm:text-3xl">min</span>
               </div>
               <p className="text-xs text-muted-foreground mt-2 truncate">
@@ -114,8 +114,8 @@ export default function Dashboard() {
               <CardTitle className="text-sm font-medium truncate">
                 {t("subscriptionTitle")}
               </CardTitle>
-              <div className="p-2.5 bg-orange-500/15 rounded-xl">
-                <Target className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+              <div className="p-2 bg-orange-500/15 rounded-lg">
+                <Target className="h-4 w-4 text-orange-600 dark:text-orange-400" />
               </div>
             </CardHeader>
             <CardContent>
@@ -178,7 +178,7 @@ export default function Dashboard() {
         )}
 
         {/* Quick Actions */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-10">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-8">
           <Card className="cursor-pointer hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] bg-gradient-to-br from-blue-600 to-purple-600 text-white border-0 h-full" onClick={() => setLocation("/generate")}>
             <CardHeader>
               <div className="flex items-center gap-3 mb-2">
