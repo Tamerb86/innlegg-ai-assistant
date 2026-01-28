@@ -88,10 +88,11 @@ export default function DashboardLayout({
       style={
         {
           "--sidebar-width": `${sidebarWidth}px`,
+          "--sidebar-width-icon": "3rem",
         } as CSSProperties
       }
     >
-      <DashboardLayoutContent setSidebarWidth={setSidebarWidth}>
+      <DashboardLayoutContent setSidebarWidth={setSidebarWidth} sidebarWidth={sidebarWidth}>
         {children}
       </DashboardLayoutContent>
     </SidebarProvider>
@@ -101,11 +102,13 @@ export default function DashboardLayout({
 type DashboardLayoutContentProps = {
   children: React.ReactNode;
   setSidebarWidth: (width: number) => void;
+  sidebarWidth: number;
 };
 
 function DashboardLayoutContent({
   children,
   setSidebarWidth,
+  sidebarWidth,
 }: DashboardLayoutContentProps) {
   const { user, logout } = useAuth();
   const [location, setLocation] = useLocation();
@@ -156,7 +159,7 @@ function DashboardLayoutContent({
     <>
       <div className="relative" ref={sidebarRef}>
         <Sidebar
-          collapsible="icon"
+          collapsible="offcanvas"
           className="border-r-0"
           disableTransition={isResizing}
         >
