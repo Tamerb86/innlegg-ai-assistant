@@ -1323,3 +1323,31 @@
 - [x] Reduce card padding
 - [x] Reduce icon sizes slightly
 - [x] Test and save checkpoint
+
+
+## Dashboard Progress Bars & Activity Chart
+- [x] Add Progress component to Dashboard cards
+- [x] Show usage percentage (postsGenerated / postsLimit)
+- [x] Add color coding (green < 50%, yellow 50-80%, red > 80%)
+- [x] Create tRPC procedure to get last 7 days activity data
+- [x] Connect Activity Chart to real posts data from database
+- [x] Test progress bars and chart with real data
+
+## Ayrshare Auto-Publishing Integration (Phase 2 - Postponed)
+- [x] Install ayrshare npm package (social-media-api)
+- [ ] Add Ayrshare API Key field in Settings page
+- [ ] Create ayrshare service wrapper
+- [ ] Add tRPC procedures for publishing to social media
+- [ ] Add "Publiser nå" button to Posts page (only show if API key exists)
+- [ ] Support LinkedIn, Twitter, Facebook, Instagram
+- [ ] Add publishing status tracking in database
+- [ ] Add error handling and user feedback
+- [ ] Write comprehensive vitest tests
+- [ ] Test publishing to all platforms
+
+## Settings Page - Ayrshare Integration
+- [x] Add database field for ayrshareApiKey in userPreferences table
+- [ ] Add Ayrshare API Key input field in Settings page (postponed for later)
+- [ ] Add save/update functionality for API key
+- [ ] Add validation and test connection button
+- [ ] Show connection status (connected/not connected)

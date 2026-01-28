@@ -23,6 +23,10 @@ export default function Dashboard() {
   const { data: posts, isLoading: postsLoading } = trpc.content.list.useQuery(undefined, {
     enabled: isAuthenticated,
   });
+  
+  const { data: activityData, isLoading: activityLoading } = trpc.content.getActivityData.useQuery(undefined, {
+    enabled: isAuthenticated,
+  });
 
   if (authLoading || !isAuthenticated) {
     if (!authLoading && !isAuthenticated) {
@@ -39,6 +43,16 @@ export default function Dashboard() {
   const postsRemaining = subscription?.status === "trial" 
     ? (subscription.trialPostsLimit - subscription.postsGenerated)
     : (100 - (subscription?.postsGenerated || 0));
+
+  const postsLimit = subscription?.status === "trial" ? subscription?.trialPostsLimit || 5 : 100;
+  const usagePercentage = ((subscription?.postsGenerated || 0) / postsLimit) * 100;
+  
+  // Color coding for progress bar
+  const getProgressColor = (percentage: number) => {
+    if (percentage < 50) return "bg-green-500";
+    if (percentage < 80) return "bg-yellow-500";
+    return "bg-red-500";
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -68,6 +82,17 @@ export default function Dashboard() {
               <p className="text-xs text-muted-foreground mt-2 truncate">
                 {language === "no" ? "Totalt generert" : "Total generated"}
               </p>
+              <div className="mt-3">
+                <div className="relative h-2 w-full overflow-hidden rounded-full bg-blue-500/20">
+                  <div 
+                    className={`h-full transition-all ${getProgressColor(usagePercentage)}`}
+                    style={{ width: `${usagePercentage}%` }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {subscription?.postsGenerated || 0} / {postsLimit} ({Math.round(usagePercentage)}%)
+                </p>
+              </div>
             </CardContent>
           </Card>
 
@@ -87,6 +112,17 @@ export default function Dashboard() {
               <p className="text-xs text-muted-foreground mt-2 truncate">
                 {language === "no" ? "Gjenstående denne måneden" : "Remaining this month"}
               </p>
+              <div className="mt-3">
+                <div className="relative h-2 w-full overflow-hidden rounded-full bg-purple-500/20">
+                  <div 
+                    className="h-full transition-all bg-purple-500"
+                    style={{ width: `${100 - usagePercentage}%` }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {postsRemaining} / {postsLimit} ({Math.round(100 - usagePercentage)}%)
+                </p>
+              </div>
             </CardContent>
           </Card>
 
@@ -142,16 +178,13 @@ export default function Dashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {activityLoading ? (
+                <div className="flex items-center justify-center h-[300px]">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : (
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={[
-                  { day: 'Man', posts: 0 },
-                  { day: 'Tir', posts: 0 },
-                  { day: 'Ons', posts: 0 },
-                  { day: 'Tor', posts: 0 },
-                  { day: 'Fre', posts: 0 },
-                  { day: 'Lør', posts: 0 },
-                  { day: 'Søn', posts: 0 },
-                ]}>
+                <LineChart data={activityData || []}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis dataKey="day" className="text-sm" />
                   <YAxis className="text-sm" />
@@ -172,6 +205,7 @@ export default function Dashboard() {
                   />
                 </LineChart>
               </ResponsiveContainer>
+              )}
             </CardContent>
           </Card>
         </section>

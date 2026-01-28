@@ -90,6 +90,7 @@ export const userPreferences = mysqlTable("user_preferences", {
   openaiConsent: int("openai_consent").default(0).notNull(), // boolean as int: 0 = not asked, 1 = accepted, 2 = declined
   consentDate: timestamp("consent_date"),
   usagePreferences: text("usage_preferences"), // User's custom description of how they want to use the platform
+  ayrshareApiKey: varchar("ayrshare_api_key", { length: 255 }), // Ayrshare API key for auto-publishing to social media
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });

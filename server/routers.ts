@@ -320,6 +320,54 @@ export const appRouter = router({
       return getUserPosts(ctx.user.id);
     }),
     
+    getActivityData: protectedProcedure.query(async ({ ctx }) => {
+      const { getDb } = await import("./db");
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      const { posts } = await import("../drizzle/schema");
+      const { eq, gte, sql } = await import("drizzle-orm");
+      
+      // Get posts from last 7 days
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      const recentPosts = await db
+        .select({
+          createdAt: posts.createdAt,
+        })
+        .from(posts)
+        .where(
+          sql`${posts.userId} = ${ctx.user.id} AND ${posts.createdAt} >= ${sevenDaysAgo.getTime()}`
+        );
+      
+      // Group by day
+      const activityMap = new Map<string, number>();
+      const dayNames = ['Søn', 'Man', 'Tir', 'Ons', 'Tor', 'Fre', 'Lør'];
+      
+      // Initialize last 7 days with 0
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dayName = dayNames[date.getDay()];
+        activityMap.set(dayName, 0);
+      }
+      
+      // Count posts per day
+      recentPosts.forEach(post => {
+        const date = new Date(post.createdAt);
+        const dayName = dayNames[date.getDay()];
+        activityMap.set(dayName, (activityMap.get(dayName) || 0) + 1);
+      });
+      
+      // Convert to array format for chart
+      const activityData = Array.from(activityMap.entries()).map(([day, posts]) => ({
+        day,
+        posts,
+      }));
+      
+      return activityData;
+    }),
+    
     delete: protectedProcedure
       .input(z.object({ postId: z.number() }))
       .mutation(async ({ ctx, input }) => {
