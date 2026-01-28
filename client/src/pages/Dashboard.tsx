@@ -65,9 +65,9 @@ export default function Dashboard() {
         </div>
 
         {/* Enhanced Stats Cards */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6 sm:mb-8">
           <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-200 dark:border-blue-900 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 sm:pb-3 p-4 sm:p-6">
               <CardTitle className="text-sm font-medium truncate">
                 {t("postsGenerated")}
               </CardTitle>
@@ -75,8 +75,8 @@ export default function Dashboard() {
                 <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-4xl sm:text-5xl font-bold text-blue-600 dark:text-blue-400">
+            <CardContent className="p-4 sm:p-6 pt-0">
+              <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-600 dark:text-blue-400">
                 {subLoading ? "..." : subscription?.postsGenerated || 0}
               </div>
               <p className="text-xs text-muted-foreground mt-2 truncate">
@@ -97,7 +97,7 @@ export default function Dashboard() {
           </Card>
 
           <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border-purple-200 dark:border-purple-900 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 sm:pb-3 p-4 sm:p-6">
               <CardTitle className="text-sm font-medium truncate">
                 {t("postsRemaining")}
               </CardTitle>
@@ -105,8 +105,8 @@ export default function Dashboard() {
                 <Zap className="h-4 w-4 text-purple-600 dark:text-purple-400" />
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-4xl sm:text-5xl font-bold text-purple-600 dark:text-purple-400">
+            <CardContent className="p-4 sm:p-6 pt-0">
+              <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-purple-600 dark:text-purple-400">
                 {subLoading ? "..." : postsRemaining}
               </div>
               <p className="text-xs text-muted-foreground mt-2 truncate">
@@ -127,7 +127,7 @@ export default function Dashboard() {
           </Card>
 
           <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-green-200 dark:border-green-900 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 sm:pb-3 p-4 sm:p-6">
               <CardTitle className="text-sm font-medium truncate">
                 {language === "no" ? "Tid spart" : "Time Saved"}
               </CardTitle>
@@ -135,8 +135,8 @@ export default function Dashboard() {
                 <Clock className="h-4 w-4 text-green-600 dark:text-green-400" />
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-4xl sm:text-5xl font-bold text-green-600 dark:text-green-400">
+            <CardContent className="p-4 sm:p-6 pt-0">
+              <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-green-600 dark:text-green-400">
                 {subLoading ? "..." : Math.round((subscription?.postsGenerated || 0) * 15)} <span className="text-2xl sm:text-3xl">min</span>
               </div>
               <p className="text-xs text-muted-foreground mt-2 truncate">
@@ -146,7 +146,7 @@ export default function Dashboard() {
           </Card>
 
           <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 border-orange-200 dark:border-orange-900 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 sm:pb-3 p-4 sm:p-6">
               <CardTitle className="text-sm font-medium truncate">
                 {t("subscriptionTitle")}
               </CardTitle>
@@ -154,7 +154,7 @@ export default function Dashboard() {
                 <Target className="h-4 w-4 text-orange-600 dark:text-orange-400" />
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6 pt-0">
               <div className="text-2xl sm:text-3xl font-bold text-orange-600 dark:text-orange-400">
                 {subscription?.status === "trial" ? t("trialStatus") : t("activeStatus")}
               </div>
@@ -177,7 +177,7 @@ export default function Dashboard() {
                 {language === "no" ? "Oversikt over dine genererte innlegg" : "Overview of your generated posts"}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6 pt-0">
               {activityLoading ? (
                 <div className="flex items-center justify-center h-[300px]">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -225,7 +225,7 @@ export default function Dashboard() {
                 {t("rawIdea")}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6 pt-0">
               <Button className="w-full bg-white text-blue-600 hover:bg-blue-50">{t("generateButton")}</Button>
             </CardContent>
           </Card>
@@ -242,7 +242,7 @@ export default function Dashboard() {
                 {postsLoading ? t("loading") : `${posts?.length || 0} ${t("postsGenerated").toLowerCase()}`}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6 pt-0">
               <Button variant="outline" className="w-full">{t("myPosts")}</Button>
             </CardContent>
           </Card>
@@ -259,7 +259,7 @@ export default function Dashboard() {
                 {language === "no" ? "Få personlig veiledning" : "Get personal guidance"}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6 pt-0">
               <Button variant="outline" className="w-full">{language === "no" ? "Start coaching" : "Start coaching"}</Button>
             </CardContent>
           </Card>
@@ -351,7 +351,7 @@ export default function Dashboard() {
                 {t("errorLimit")}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6 pt-0">
               <Button className="w-full" onClick={() => setLocation("/subscription")}>
                 {t("subscribe")} - 199 kr/måned
               </Button>
