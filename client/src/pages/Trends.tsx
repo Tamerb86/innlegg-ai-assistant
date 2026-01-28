@@ -76,35 +76,33 @@ export default function Trends() {
     if (!trendsData?.success || !trendsData.data) return [];
     
     try {
-      const trendingSearches = trendsData.data.default?.trendingSearchesDays?.[0]?.trendingSearches || [];
+      // New format: trendsData.data is an array of trends
+      const trends = Array.isArray(trendsData.data) ? trendsData.data : [];
       
-      return trendingSearches.map((trend: any, index: number) => {
-        const title = trend.title?.query || "Ukjent trend";
-        const traffic = trend.formattedTraffic || "N/A";
-        const articles = trend.articles || [];
-        const description = articles[0]?.snippet || "Ingen beskrivelse tilgjengelig";
+      return trends.map((trend: any, index: number) => {
+        const title = trend.keyword || "Ukjent trend";
+        const traffic = trend.traffic ? `${(trend.traffic / 1000).toFixed(0)}K+` : "N/A";
+        const description = trend.relatedKeywords?.slice(0, 3).join(", ") || "Ingen beskrivelse tilgjengelig";
         
-        // Estimate trend score based on traffic
+        // Calculate trend score from traffic and growth rate
         let trendScore = 70;
-        if (traffic.includes("M+")) trendScore = 95;
-        else if (traffic.includes("K+")) {
-          const num = parseInt(traffic.replace(/[^0-9]/g, ''));
-          if (num > 500) trendScore = 90;
-          else if (num > 100) trendScore = 85;
-          else trendScore = 80;
-        }
+        if (trend.trafficGrowthRate >= 200) trendScore = 95;
+        else if (trend.trafficGrowthRate >= 150) trendScore = 90;
+        else if (trend.trafficGrowthRate >= 100) trendScore = 85;
+        else if (trend.trafficGrowthRate >= 50) trendScore = 80;
         
         return {
           id: index + 1,
           title,
-          description,
-          category: "all", // Google Trends doesn't provide categories
+          description: `Relaterte emner: ${description}`,
+          category: "all",
           source: "Google Trends",
           trendScore,
           traffic,
+          growthRate: trend.trafficGrowthRate,
           suggestedPlatforms: ["linkedin", "twitter"],
-          tags: trend.relatedQueries?.map((q: any) => q.query).slice(0, 4) || [],
-          articles,
+          tags: trend.relatedKeywords || [],
+          activeTime: trend.activeTime,
         };
       });
     } catch (error) {

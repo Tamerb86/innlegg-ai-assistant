@@ -16,6 +16,9 @@ importers:
 
   .:
     dependencies:
+      '@alkalisummer/google-trends-js':
+        specifier: ^0.3.7
+        version: 0.3.7
       '@aws-sdk/client-s3':
         specifier: ^3.693.0
         version: 3.907.0
@@ -187,9 +190,6 @@ importers:
       framer-motion:
         specifier: ^12.23.22
         version: 12.23.22(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
-      google-trends-api:
-        specifier: ^4.9.2
-        version: 4.9.2
       helmet:
         specifier: ^8.1.0
         version: 8.1.0
@@ -346,6 +346,9 @@ importers:
         version: 2.1.9(@types/node@24.7.0)(lightningcss@1.30.1)
 
 packages:
+
+  '@alkalisummer/google-trends-js@0.3.7':
+    resolution: {integrity: sha512-r5ku6Af53HKKi8u9n2ILw4SLhc+l63Q+2EYfjn0Cl9LDbCy4QoywrsgyUlB+9S6EpcqZZNdYFZAhH+ie0osiPw==}
 
   '@antfu/install-pkg@1.1.0':
     resolution: {integrity: sha512-MGQsmw10ZyI+EJo45CdSER4zEb+p31LpDAFp2Z3gkSd1yqVZGi0Ebx++YTEMonJy4oChEMLsxZ64j8FH6sSqtQ==}
@@ -3639,9 +3642,6 @@ packages:
     resolution: {integrity: sha512-DpLKbNU4WylpxJykQujfCcwYWiV/Jhm50Goo0wrVILAv5jOr9d+H+UR3PhSCD2rCCEIg0uc+G+muBTwD54JhDQ==}
     engines: {node: '>= 0.4'}
 
-  google-trends-api@4.9.2:
-    resolution: {integrity: sha512-gjVSHCM8B7LyAAUpXb4B0/TfnmpwQ2z1w/mQ2bL0AKpr2j3gLS1j2YOnifpfsGJRxAGXB/NoC+nGwC5qSnZIiA==}
-
   gopd@1.2.0:
     resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
     engines: {node: '>= 0.4'}
@@ -5472,6 +5472,8 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
 snapshots:
+
+  '@alkalisummer/google-trends-js@0.3.7': {}
 
   '@antfu/install-pkg@1.1.0':
     dependencies:
@@ -9190,8 +9192,6 @@ snapshots:
     dependencies:
       define-properties: 1.2.1
       gopd: 1.2.0
-
-  google-trends-api@4.9.2: {}
 
   gopd@1.2.0: {}
 

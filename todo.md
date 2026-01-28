@@ -1671,3 +1671,17 @@ All libraries are 100% free and open source!
 - [x] Show post preview on click (title, content preview, platform, status)
 - [x] Add Edit/Delete buttons in dialog
 - [x] Test both features and save checkpoint
+
+## Google Trends Integration
+- [x] Research Google Trends API options (unofficial libraries)
+- [x] Install and configure @alkalisummer/google-trends-js npm package
+- [x] Create tRPC procedure to fetch daily trending topics
+- [x] Create tRPC procedure to fetch interest over time for keywords
+- [x] Update Trends page UI component to work with new data format
+- [x] Display trending topics with search volume indicators
+- [x] Add "Generate from Trend" button for each trend
+- [x] Integrate trend selection with Generate page
+- [x] Add trend filtering by platform
+- [x] Add mock data fallback for API failures
+- [x] Test Google Trends features
+- [x] Save checkpoint
