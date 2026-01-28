@@ -47,7 +47,7 @@ export default function DashboardNav() {
     {
       title: "Planlegging",
       items: [
-        { label: "Kalender", href: "/calendar", icon: Calendar },
+        { label: "Kalender", href: "/kalender", icon: Calendar },
         { label: "Beste Tid", href: "/best-time", icon: Clock },
         { label: "Gjenbruk", href: "/repurpose", icon: Recycle },
         { label: "Innholds-Serier", href: "/content-series", icon: List },

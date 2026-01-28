@@ -1651,3 +1651,11 @@ All libraries are 100% free and open source!
 - Click event → View/Edit post
 - Drag event → Reschedule
 - Right-click → Context menu (Edit, Delete, Publish Now)
+
+
+## Calendar 404 Error Fix
+- [x] Check Calendar route in App.tsx (correct: /kalender)
+- [x] Verify Calendar component import (correct)
+- [x] Fix PageLayout dashboardPages (/calendar → /kalender)
+- [x] Fix DashboardNav Kalender href (/calendar → /kalender)
+- [x] Test /kalender URL (working now)

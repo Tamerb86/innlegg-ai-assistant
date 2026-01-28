@@ -19,7 +19,7 @@ export default function PageLayout({ children }: PageLayoutProps) {
     "/account-settings",
     "/trends",
     "/voice-training",
-    "/calendar",
+    "/kalender",
     "/best-time",
     "/repurpose",
     "/telegram-bot",
