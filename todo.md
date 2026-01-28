@@ -1351,3 +1351,10 @@
 - [ ] Add save/update functionality for API key
 - [ ] Add validation and test connection button
 - [ ] Show connection status (connected/not connected)
+
+
+## Sidebar Layout Fix
+- [x] Fix DashboardLayout to push main content when sidebar is open
+- [x] Add margin-left or transform to main content area
+- [x] Ensure smooth transition animation
+- [ ] Test on different screen sizes
