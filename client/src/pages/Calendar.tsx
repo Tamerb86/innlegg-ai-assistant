@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -9,9 +9,16 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar as CalendarIcon, Plus } from "lucide-react";
 import nbLocale from "@fullcalendar/core/locales/nb";
+import { PostCreationDialog } from "@/components/PostCreationDialog";
+import { EventDetailsDialog } from "@/components/EventDetailsDialog";
 
 export default function Calendar() {
   const [view, setView] = useState<"dayGridMonth" | "timeGridWeek" | "timeGridDay" | "listWeek">("dayGridMonth");
+  const calendarRef = useRef<any>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [eventDialogOpen, setEventDialogOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
   
   // Fetch scheduled posts
   const { data: posts, isLoading, refetch } = trpc.content.getScheduledPosts.useQuery();
@@ -38,16 +45,35 @@ export default function Calendar() {
     },
   })) || [];
 
-  // Handle date click (create new post)
+  // Handle date click (double-click to create new post)
   const handleDateClick = (info: any) => {
-    console.log("Date clicked:", info.dateStr);
-    // TODO: Open create post dialog with pre-selected date
+    setSelectedDate(new Date(info.dateStr));
+    setDialogOpen(true);
   };
 
   // Handle event click (view/edit post)
   const handleEventClick = (info: any) => {
-    console.log("Event clicked:", info.event.id);
-    // TODO: Open edit post dialog
+    setSelectedEvent({
+      id: info.event.id,
+      title: info.event.title,
+      start: info.event.start,
+      extendedProps: info.event.extendedProps,
+    });
+    setEventDialogOpen(true);
+  };
+
+  // Handle edit event
+  const handleEditEvent = (eventId: string) => {
+    // Navigate to posts page with filter
+    window.location.href = `/posts?id=${eventId}`;
+  };
+
+  // Handle delete event
+  const handleDeleteEvent = (eventId: string) => {
+    if (confirm("Er du sikker på at du vil slette dette innlegget?")) {
+      // TODO: Implement delete mutation
+      console.log("Delete event:", eventId);
+    }
   };
 
   // Handle event drop (reschedule)
@@ -74,9 +100,24 @@ export default function Calendar() {
 
   // Jump to today
   const handleToday = () => {
-    const calendarApi = document.querySelector(".fc")?.closest("[data-calendar]") as any;
+    const calendarApi = calendarRef.current?.getApi();
     if (calendarApi) {
-      calendarApi.getApi().today();
+      calendarApi.today();
+    }
+  };
+
+  // Change view
+  const handleViewChange = (newView: "dayGridMonth" | "timeGridWeek" | "timeGridDay" | "listWeek") => {
+    console.log("[Calendar] Changing view to:", newView);
+    console.log("[Calendar] calendarRef.current:", calendarRef.current);
+    setView(newView);
+    const calendarApi = calendarRef.current?.getApi();
+    console.log("[Calendar] calendarApi:", calendarApi);
+    if (calendarApi) {
+      console.log("[Calendar] Calling changeView...");
+      calendarApi.changeView(newView);
+    } else {
+      console.error("[Calendar] calendarApi is null!");
     }
   };
 
@@ -117,28 +158,28 @@ export default function Calendar() {
           <Button
             variant={view === "dayGridMonth" ? "default" : "outline"}
             size="sm"
-            onClick={() => setView("dayGridMonth")}
+            onClick={() => handleViewChange("dayGridMonth")}
           >
             Måned
           </Button>
           <Button
             variant={view === "timeGridWeek" ? "default" : "outline"}
             size="sm"
-            onClick={() => setView("timeGridWeek")}
+            onClick={() => handleViewChange("timeGridWeek")}
           >
             Uke
           </Button>
           <Button
             variant={view === "timeGridDay" ? "default" : "outline"}
             size="sm"
-            onClick={() => setView("timeGridDay")}
+            onClick={() => handleViewChange("timeGridDay")}
           >
             Dag
           </Button>
           <Button
             variant={view === "listWeek" ? "default" : "outline"}
             size="sm"
-            onClick={() => setView("listWeek")}
+            onClick={() => handleViewChange("listWeek")}
           >
             Liste
           </Button>
@@ -148,6 +189,8 @@ export default function Calendar() {
       {/* Calendar */}
       <Card className="p-6">
         <FullCalendar
+          key={view}
+          ref={calendarRef}
           plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
           initialView={view}
           headerToolbar={{
@@ -193,6 +236,22 @@ export default function Calendar() {
           </div>
         </div>
       </Card>
+
+      {/* Post Creation Dialog */}
+      <PostCreationDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        selectedDate={selectedDate}
+      />
+
+      {/* Event Details Dialog */}
+      <EventDetailsDialog
+        open={eventDialogOpen}
+        onOpenChange={setEventDialogOpen}
+        event={selectedEvent}
+        onEdit={handleEditEvent}
+        onDelete={handleDeleteEvent}
+      />
     </div>
   );
 }

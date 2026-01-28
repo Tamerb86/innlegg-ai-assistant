@@ -1,0 +1,31 @@
+{
+  "query": "\n-- Check all users\nSELECT id, name, email FROM users;\n\n-- Check existing posts\nSELECT id, user_id, platform, scheduled_for FROM posts WHERE status = 'scheduled';\n\n-- Update test posts to use the correct user ID (assuming first user)\nUPDATE posts \nSET user_id = (SELECT MIN(id) FROM users)\nWHERE status = 'scheduled' AND raw_input LIKE '%Test%';\n\n-- Verify\nSELECT id, user_id, platform, scheduled_for, status FROM posts WHERE status = 'scheduled';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VZWkmDdVMGTAoV.bcd7d121ddff --database aUg4CGwS8nNj3ozbCiedm7 --execute \n-- Check all users\nSELECT id, name, email FROM users;\n\n-- Check existing posts\nSELECT id, user_id, platform, scheduled_for FROM posts WHERE status = 'scheduled';\n\n-- Update test posts to use the correct user ID (assuming first user)\nUPDATE posts \nSET user_id = (SELECT MIN(id) FROM users)\nWHERE status = 'scheduled' AND raw_input LIKE '%Test%';\n\n-- Verify\nSELECT id, user_id, platform, scheduled_for, status FROM posts WHERE status = 'scheduled';\n",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Easy Charge",
+      "email": "goeasychargeco@gmail.com"
+    },
+    {
+      "id": "150034",
+      "name": "Tamer",
+      "email": "tamer@example.com"
+    }
+  ],
+  "messages": [
+    "id\tuser_id\tplatform\tscheduled_for",
+    "120001\t1\tlinkedin\t2026-01-29 10:02:34",
+    "120002\t1\ttwitter\t2026-01-31 10:02:34",
+    "120003\t1\tinstagram\t2026-02-04 10:02:34",
+    "120004\t1\tfacebook\t2026-02-02 10:02:34",
+    "id\tuser_id\tplatform\tscheduled_for\tstatus",
+    "120001\t1\tlinkedin\t2026-01-29 10:02:34\tscheduled",
+    "120002\t1\ttwitter\t2026-01-31 10:02:34\tscheduled",
+    "120003\t1\tinstagram\t2026-02-04 10:02:34\tscheduled",
+    "120004\t1\tfacebook\t2026-02-02 10:02:34\tscheduled"
+  ],
+  "stdout": "id\tname\temail\n1\tEasy Charge\tgoeasychargeco@gmail.com\n150034\tTamer\ttamer@example.com\nid\tuser_id\tplatform\tscheduled_for\n120001\t1\tlinkedin\t2026-01-29 10:02:34\n120002\t1\ttwitter\t2026-01-31 10:02:34\n120003\t1\tinstagram\t2026-02-04 10:02:34\n120004\t1\tfacebook\t2026-02-02 10:02:34\nid\tuser_id\tplatform\tscheduled_for\tstatus\n120001\t1\tlinkedin\t2026-01-29 10:02:34\tscheduled\n120002\t1\ttwitter\t2026-01-31 10:02:34\tscheduled\n120003\t1\tinstagram\t2026-02-04 10:02:34\tscheduled\n120004\t1\tfacebook\t2026-02-02 10:02:34\tscheduled\n",
+  "stderr": "",
+  "execution_time_ms": 67
+}

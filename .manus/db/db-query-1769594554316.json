@@ -1,0 +1,34 @@
+{
+  "query": "\n-- Insert test scheduled posts for calendar\nINSERT INTO posts (user_id, platform, tone, raw_input, generated_content, scheduled_for, status, created_at, updated_at)\nVALUES \n  (1, 'linkedin', 'professional', 'Test post for calendar', 'This is a test LinkedIn post scheduled for tomorrow 🚀', DATE_ADD(NOW(), INTERVAL 1 DAY), 'scheduled', NOW(), NOW()),\n  (1, 'twitter', 'casual', 'Test tweet', 'This is a test Twitter post scheduled for 3 days from now 🐦', DATE_ADD(NOW(), INTERVAL 3 DAY), 'scheduled', NOW(), NOW()),\n  (1, 'instagram', 'friendly', 'Test Instagram post', 'This is a test Instagram post scheduled for next week 📸', DATE_ADD(NOW(), INTERVAL 7 DAY), 'scheduled', NOW(), NOW()),\n  (1, 'facebook', 'professional', 'Test Facebook post', 'This is a test Facebook post scheduled for 5 days from now 👍', DATE_ADD(NOW(), INTERVAL 5 DAY), 'scheduled', NOW(), NOW());\n\n-- Verify inserted posts\nSELECT id, platform, scheduled_for, status FROM posts WHERE status = 'scheduled' ORDER BY scheduled_for;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VZWkmDdVMGTAoV.bcd7d121ddff --database aUg4CGwS8nNj3ozbCiedm7 --execute \n-- Insert test scheduled posts for calendar\nINSERT INTO posts (user_id, platform, tone, raw_input, generated_content, scheduled_for, status, created_at, updated_at)\nVALUES \n  (1, 'linkedin', 'professional', 'Test post for calendar', 'This is a test LinkedIn post scheduled for tomorrow 🚀', DATE_ADD(NOW(), INTERVAL 1 DAY), 'scheduled', NOW(), NOW()),\n  (1, 'twitter', 'casual', 'Test tweet', 'This is a test Twitter post scheduled for 3 days from now 🐦', DATE_ADD(NOW(), INTERVAL 3 DAY), 'scheduled', NOW(), NOW()),\n  (1, 'instagram', 'friendly', 'Test Instagram post', 'This is a test Instagram post scheduled for next week 📸', DATE_ADD(NOW(), INTERVAL 7 DAY), 'scheduled', NOW(), NOW()),\n  (1, 'facebook', 'professional', 'Test Facebook post', 'This is a test Facebook post scheduled for 5 days from now 👍', DATE_ADD(NOW(), INTERVAL 5 DAY), 'scheduled', NOW(), NOW());\n\n-- Verify inserted posts\nSELECT id, platform, scheduled_for, status FROM posts WHERE status = 'scheduled' ORDER BY scheduled_for;\n",
+  "rows": [
+    {
+      "id": "120001",
+      "platform": "linkedin",
+      "scheduled_for": "2026-01-29 10:02:34",
+      "status": "scheduled"
+    },
+    {
+      "id": "120002",
+      "platform": "twitter",
+      "scheduled_for": "2026-01-31 10:02:34",
+      "status": "scheduled"
+    },
+    {
+      "id": "120004",
+      "platform": "facebook",
+      "scheduled_for": "2026-02-02 10:02:34",
+      "status": "scheduled"
+    },
+    {
+      "id": "120003",
+      "platform": "instagram",
+      "scheduled_for": "2026-02-04 10:02:34",
+      "status": "scheduled"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tplatform\tscheduled_for\tstatus\n120001\tlinkedin\t2026-01-29 10:02:34\tscheduled\n120002\ttwitter\t2026-01-31 10:02:34\tscheduled\n120004\tfacebook\t2026-02-02 10:02:34\tscheduled\n120003\tinstagram\t2026-02-04 10:02:34\tscheduled\n",
+  "stderr": "",
+  "execution_time_ms": 77
+}

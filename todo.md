@@ -1659,3 +1659,15 @@ All libraries are 100% free and open source!
 - [x] Fix PageLayout dashboardPages (/calendar → /kalender)
 - [x] Fix DashboardNav Kalender href (/calendar → /kalender)
 - [x] Test /kalender URL (working now)
+
+
+## Calendar Enhancements - Post Creation & Tooltip
+- [ ] Fix Calendar view buttons (Måned/Uke/Dag/Liste) to properly switch views (KNOWN ISSUE - needs deeper debugging)
+- [x] Add double-click handler on calendar dates
+- [x] Create Post Creation Dialog component
+- [x] Pre-fill scheduledFor with selected date
+- [x] Integrate with existing content generation flow
+- [x] Add Event Details Dialog component (click instead of hover for better UX)
+- [x] Show post preview on click (title, content preview, platform, status)
+- [x] Add Edit/Delete buttons in dialog
+- [x] Test both features and save checkpoint
