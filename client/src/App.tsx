@@ -43,6 +43,7 @@ import ABTesting from "@/pages/ABTesting";
 import WeeklyReport from "@/pages/WeeklyReport";
 import EngagementHelper from "@/pages/EngagementHelper";
 import IdeaBank from "@/pages/IdeaBank";
+import Calendar from "@/pages/Calendar";
 
 
 function Router() {
@@ -74,7 +75,8 @@ function Router() {
       <Route path={"/subscription/cancel"} component={SubscriptionCancel} />
       <Route path={"/admin/analytics"} component={AdminAnalytics} />
       <Route path={"/examples"} component={Examples} />
-      <Route path={"/calendar"} component={ContentCalendar} />
+      <Route path="/kalender" component={Calendar} />
+      <Route path="/kalender-old" component={ContentCalendar} />
       <Route path={"/best-time"} component={BestTime} />
       <Route path={"/repurpose"} component={ContentRepurpose} />
       <Route path={"/telegram-bot"} component={TelegramBot} />

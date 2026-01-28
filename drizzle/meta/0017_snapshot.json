@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "cb50ac5c-cc36-4f5f-8192-a81ee87a7bb4",
-  "prevId": "f2da472f-ed14-4933-ab2b-38a14dd451bb",
+  "id": "8a4e4130-a310-47ef-9dbb-44acde3725c1",
+  "prevId": "cb50ac5c-cc36-4f5f-8192-a81ee87a7bb4",
   "tables": {
     "ab_tests": {
       "name": "ab_tests",
@@ -1231,6 +1231,28 @@
         "tags": {
           "name": "tags",
           "type": "json",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "enum('draft','scheduled','published','failed')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'draft'"
+        },
+        "scheduled_for": {
+          "name": "scheduled_for",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

@@ -438,14 +438,56 @@ export const appRouter = router({
       .input(z.object({ postId: z.number(), content: z.string() }))
       .mutation(async ({ ctx, input }) => {
         const { getPostById, updatePost } = await import("./db");
-        
-        // Verify ownership
         const post = await getPostById(input.postId);
         if (!post || post.userId !== ctx.user.id) {
           throw new Error("Post not found or unauthorized");
         }
-        
         await updatePost(input.postId, input.content);
+        return { success: true };
+      }),
+      
+    getScheduledPosts: protectedProcedure.query(async ({ ctx }) => {
+      const { getDb } = await import("./db");
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      const { posts } = await import("../drizzle/schema");
+      const { eq } = await import("drizzle-orm");
+      
+      // Get all posts for the user (including scheduled, draft, and published)
+      const userPosts = await db
+        .select()
+        .from(posts)
+        .where(eq(posts.userId, ctx.user.id));
+      
+      return userPosts;
+    }),
+    
+    reschedule: protectedProcedure
+      .input(z.object({ postId: z.number(), scheduledFor: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        const { posts } = await import("../drizzle/schema");
+        const { eq, and } = await import("drizzle-orm");
+        
+        // Verify ownership
+        const post = await db.select().from(posts).where(
+          and(
+            eq(posts.id, input.postId),
+            eq(posts.userId, ctx.user.id)
+          )
+        ).limit(1);
+        
+        if (!post || post.length === 0) {
+          throw new Error("Post not found or unauthorized");
+        }
+        
+        // Update scheduledFor (convert timestamp to Date)
+        await db.update(posts)
+          .set({ scheduledFor: new Date(input.scheduledFor) })
+          .where(eq(posts.id, input.postId));
+        
         return { success: true };
       }),
   }),

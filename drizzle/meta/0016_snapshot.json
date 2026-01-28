@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "f2da472f-ed14-4933-ab2b-38a14dd451bb",
-  "prevId": "88ae4988-d684-4da6-a757-4ca6709dd9d2",
+  "id": "d54325fc-f99e-4a8e-8af3-e9282072ea67",
+  "prevId": "cb50ac5c-cc36-4f5f-8192-a81ee87a7bb4",
   "tables": {
     "ab_tests": {
       "name": "ab_tests",
@@ -1235,6 +1235,28 @@
           "notNull": false,
           "autoincrement": false
         },
+        "status": {
+          "name": "status",
+          "type": "enum('draft','scheduled','published','failed')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'draft'"
+        },
+        "scheduled_for": {
+          "name": "scheduled_for",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -1963,6 +1985,13 @@
         "usage_preferences": {
           "name": "usage_preferences",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "ayrshare_api_key": {
+          "name": "ayrshare_api_key",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

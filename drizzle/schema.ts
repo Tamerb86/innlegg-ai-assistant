@@ -36,6 +36,9 @@ export const posts = mysqlTable("posts", {
   rawInput: text("raw_input").notNull(),
   generatedContent: text("generated_content").notNull(),
   tags: json("tags").$type<string[]>(),
+  status: mysqlEnum("status", ["draft", "scheduled", "published", "failed"]).default("draft").notNull(),
+  scheduledFor: timestamp("scheduled_for"),
+  publishedAt: timestamp("published_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });

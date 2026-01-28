@@ -1380,3 +1380,274 @@
 - [ ] Add swipe gesture to close sidebar on mobile (future enhancement)
 - [x] Optimize font sizes for mobile readability (responsive text sizes added)
 - [x] Test and save checkpoint
+
+
+## Free Social Media Integration (100% مجاني)
+### Phase 1: LinkedIn Integration (مجاني)
+- [ ] Create LinkedIn App in LinkedIn Developers Portal
+- [ ] Implement OAuth 2.0 authentication flow
+- [ ] Add linkedin_access_token field to social_accounts table
+- [ ] Create LinkedIn publishing service
+- [ ] Test posting to LinkedIn
+- [ ] Add error handling and token refresh
+
+### Phase 2: Twitter/X Integration (Free Tier: 1,500 tweets/month)
+- [ ] Create Twitter App in Twitter Developer Portal
+- [ ] Implement OAuth 2.0 authentication flow
+- [ ] Add twitter_access_token field to social_accounts table
+- [ ] Create Twitter publishing service (using twitter-api-v2)
+- [ ] Test posting to Twitter/X
+- [ ] Add rate limit handling (1,500/month)
+
+### Phase 3: Facebook + Instagram Integration (مجاني)
+- [ ] Create Facebook App in Meta Developers Portal
+- [ ] Implement OAuth for Facebook Pages
+- [ ] Add facebook_page_access_token to social_accounts table
+- [ ] Create Facebook publishing service
+- [ ] Create Instagram publishing service (via Facebook Graph API)
+- [ ] Test posting to both platforms
+- [ ] Add error handling
+
+### Phase 4: Telegram Bot Integration (100% مجاني - غير محدود)
+- [ ] Create Telegram Bot via @BotFather
+- [ ] Install node-telegram-bot-api package
+- [ ] Add telegram_chat_id to social_accounts table
+- [ ] Create Telegram bot service
+- [ ] Implement bot commands (/start, /help, /post)
+- [ ] Test sending posts via Telegram
+- [ ] Add inline keyboard buttons
+
+### Phase 5: Database Schema
+- [ ] Create social_accounts table (platform, access_token, refresh_token, expires_at, account_name, connected_at)
+- [ ] Create post_publications table (post_id, platform, published_at, status, platform_post_id, error_message)
+- [ ] Add indexes for performance
+- [ ] Run database migrations
+
+### Phase 6: Settings UI
+- [ ] Create "Social Media Accounts" section in Settings page
+- [ ] Add "Connect" buttons for each platform (LinkedIn, Twitter, Facebook, Instagram, Telegram)
+- [ ] Show connection status (Connected/Disconnected)
+- [ ] Add "Disconnect" functionality
+- [ ] Display account names/usernames
+- [ ] Add "Test Connection" button
+
+### Phase 7: Posts Publishing UI
+- [ ] Add "Publiser nå" button to Posts page
+- [ ] Create publishing dialog with platform checkboxes
+- [ ] Show publishing status (Publishing.../Success/Failed)
+- [ ] Display published post links
+- [ ] Add "View on [Platform]" buttons
+- [ ] Show publication history
+
+### Phase 8: Backend Services
+- [ ] Create server/services/linkedin.ts
+- [ ] Create server/services/twitter.ts
+- [ ] Create server/services/facebook.ts
+- [ ] Create server/services/instagram.ts
+- [ ] Create server/services/telegram.ts
+- [ ] Create unified publishing service (publishToAll)
+- [ ] Add retry logic for failed publications
+
+### Phase 9: tRPC Procedures
+- [ ] social.connectLinkedIn (OAuth callback handler)
+- [ ] social.connectTwitter (OAuth callback handler)
+- [ ] social.connectFacebook (OAuth callback handler)
+- [ ] social.connectTelegram (save chat_id)
+- [ ] social.getConnectedAccounts (list all connected accounts)
+- [ ] social.disconnectAccount (remove access tokens)
+- [ ] social.publishPost (publish to selected platforms)
+- [ ] social.getPublicationHistory (get past publications)
+
+### Phase 10: Testing & Deployment
+- [ ] Write vitest tests for each service
+- [ ] Test OAuth flows for all platforms
+- [ ] Test publishing to all platforms
+- [ ] Test error handling (expired tokens, rate limits)
+- [ ] Test token refresh logic
+- [ ] Document setup process for each platform
+- [ ] Save checkpoint and deliver
+
+### API Limits Summary (مجاني 100%):
+- **LinkedIn**: مجاني - لا حدود على النشر
+- **Twitter/X**: مجاني - 1,500 tweets/month (Free Tier)
+- **Facebook**: مجاني - لا حدود على النشر
+- **Instagram**: مجاني - لا حدود على النشر (via Facebook)
+- **Telegram**: مجاني 100% - غير محدود تماماً
+
+
+## 🎯 Free GitHub Libraries Integration Plan (100% مجاني)
+
+### Phase 1: Google Trends Integration (الأسهل - 2-3 ساعات)
+- [ ] Install `google-trends-api` npm package
+- [ ] Create `server/googleTrends.ts` service
+- [ ] Add tRPC procedure `getTrendingTopics(geo: 'NO')`
+- [ ] Add "Trending Topics" card to Dashboard
+- [ ] Add content suggestions based on trends
+- [ ] Write vitest tests
+- [ ] Save checkpoint
+
+### Phase 2: Agenda Job Scheduling (3-4 ساعات)
+- [ ] Install `agenda` npm package
+- [ ] Setup MongoDB connection for Agenda
+- [ ] Create job definitions in `server/jobs/`
+- [ ] Add `scheduledAt` field to posts table
+- [ ] Implement auto-publishing job
+- [ ] Add "Schedule for later" UI in Posts page
+- [ ] Write vitest tests
+- [ ] Save checkpoint
+
+### Phase 3: NoTram Norwegian Enhancement (4-6 ساعات)
+- [ ] Install `@huggingface/inference` package
+- [ ] Add HUGGINGFACE_API_KEY to environment
+- [ ] Create `server/notram.ts` service
+- [ ] Add tRPC procedure `enhanceNorwegianContent(text)`
+- [ ] Add "Improve with NoTram" button in Content Generator
+- [ ] A/B testing: OpenAI vs NoTram comparison
+- [ ] Write vitest tests
+- [ ] Save checkpoint
+
+### Phase 4: LinkedIn API Integration (8-12 ساعة)
+- [ ] Create LinkedIn App at https://www.linkedin.com/developers/
+- [ ] Add LINKEDIN_CLIENT_ID and LINKEDIN_CLIENT_SECRET
+- [ ] Create `social_accounts` table in database
+- [ ] Implement OAuth 2.0 flow for LinkedIn
+- [ ] Create `/api/social/connect/linkedin` endpoint
+- [ ] Create `/api/social/callback/linkedin` endpoint
+- [ ] Add tRPC procedure `publishToLinkedIn(postId)`
+- [ ] Add "Connect LinkedIn" in Settings page
+- [ ] Add "Publish to LinkedIn" button in Posts page
+- [ ] Write vitest tests
+- [ ] Save checkpoint
+
+### Phase 5: Postiz Code Study & Integration (مستمر)
+- [ ] Clone Postiz repository locally
+- [ ] Study Calendar View component
+- [ ] Study Analytics Dashboard component
+- [ ] Study OAuth implementation patterns
+- [ ] Extract reusable components
+- [ ] Adapt to Innlegg's tech stack
+- [ ] Document learnings
+
+---
+
+## 📊 Expected Benefits
+
+**Google Trends:**
+- Smart content suggestions
+- SEO optimization
+- Trending topics discovery
+
+**Agenda:**
+- Auto-publishing at scheduled times
+- Automated analytics refresh
+- Email notifications
+
+**NoTram:**
+- Better Norwegian content quality
+- Professional tone
+- Grammar improvements
+
+**LinkedIn API:**
+- Direct publishing to LinkedIn
+- Multi-account support
+- Analytics integration
+
+**Postiz Study:**
+- Best practices
+- UI/UX improvements
+- Feature ideas
+
+---
+
+## 💰 Cost Savings: $2,843/year
+
+All libraries are 100% free and open source!
+
+
+## 📅 Custom Calendar View Feature
+
+### Phase 1: Research & Setup
+- [x] Research calendar libraries (react-big-calendar vs FullCalendar)
+- [x] Choose best library for Innlegg (FullCalendar - 990kB, more features, active development)
+- [x] Install calendar library and dependencies (FullCalendar 6.1.20)
+- [ ] Install react-dnd for drag-and-drop (not needed - FullCalendar has built-in drag & drop)
+- [ ] Install date-fns for date handling (not needed - FullCalendar handles dates)
+
+### Phase 2: Database Schema
+- [x] Add `scheduledFor` field to posts table (datetime)
+- [x] Add `publishedAt` field to posts table (datetime)
+- [x] Add `status` field: draft, scheduled, published, failed
+- [x] Run database migration (pnpm db:push - migration 0016 applied)
+
+### Phase 3: Calendar Component
+- [x] Create Calendar page component (/kalender)
+- [x] Add route to App.tsx
+- [ ] Add navigation link in DashboardLayout sidebar
+- [x] Implement month view with FullCalendar (not react-big-calendar)
+- [x] Style calendar to match Innlegg design
+- [x] Add Norwegian locale (days/months in Norwegian)
+
+### Phase 4: Post Display
+- [x] Fetch scheduled posts from database (getScheduledPosts procedure)
+- [x] Display posts as events on calendar
+- [ ] Color code by platform (LinkedIn blue, Twitter light blue, Facebook dark blue, Instagram gradient)
+- [ ] Show post preview on hover
+- [ ] Add platform icon to each event
+
+### Phase 5: Drag & Drop
+- [x] Implement drag-and-drop with FullCalendar (built-in, no react-dnd needed)
+- [x] Allow dragging posts to different dates
+- [x] Update `scheduledFor` in database on drop (reschedule procedure)
+- [x] Add visual feedback during drag (FullCalendar built-in)
+- [x] Revert on error (info.revert() on mutation failure)
+
+### Phase 6: Post Management
+- [ ] Add "Add Post" button (click on date to create)
+- [ ] Open Generate dialog with pre-selected date
+- [ ] Add "Edit" button on calendar events
+- [ ] Add "Delete" button on calendar events
+- [ ] Add "Publish Now" button for scheduled posts
+
+### Phase 7: Filters & Views
+- [ ] Add platform filter (show/hide LinkedIn, Twitter, etc.)
+- [ ] Add status filter (draft, scheduled, published)
+- [ ] Add month/week/day view toggle
+- [ ] Add "Today" button to jump to current date
+- [ ] Add search by post content
+
+### Phase 8: Auto-Publishing (Future)
+- [ ] Integrate with Agenda job scheduler
+- [ ] Create background job to publish scheduled posts
+- [ ] Update post status after publishing
+- [ ] Send notification on successful publish
+- [ ] Handle publishing errors
+
+### Phase 9: Testing & Polish
+- [ ] Write vitest tests for calendar logic
+- [ ] Test drag-and-drop functionality
+- [ ] Test on mobile (responsive design)
+- [ ] Add loading states
+- [ ] Add error handling
+- [ ] Save checkpoint
+
+---
+
+## 🎨 Calendar Design Specs
+
+**Colors:**
+- LinkedIn: `bg-blue-500`
+- Twitter/X: `bg-sky-400`
+- Facebook: `bg-blue-700`
+- Instagram: `bg-gradient-to-r from-purple-500 to-pink-500`
+
+**Layout:**
+- Full-width calendar
+- Sidebar with filters
+- Event cards with platform icon + truncated text
+- Hover shows full post preview
+
+**Interactions:**
+- Click date → Create post
+- Click event → View/Edit post
+- Drag event → Reschedule
+- Right-click → Context menu (Edit, Delete, Publish Now)
