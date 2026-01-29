@@ -13,6 +13,107 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
+import { Linkedin, CheckCircle2, AlertCircle, ExternalLink } from "lucide-react";
+import { Link } from "wouter";
+
+function PostToLinkedInButton({ content, platform }: { content: string; platform: string }) {
+  const { data: connectionStatus } = trpc.linkedin.getConnectionStatus.useQuery();
+  const postMutation = trpc.linkedin.createPost.useMutation({
+    onSuccess: () => {
+      toast.success("Publisert til LinkedIn!");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Kunne ikke publisere til LinkedIn");
+    },
+  });
+
+  if (!connectionStatus?.connected) {
+    return null; // Don't show button if not connected
+  }
+
+  const handlePost = () => {
+    if (!content.trim()) {
+      toast.error("Innholdet kan ikke være tomt");
+      return;
+    }
+
+    postMutation.mutate({ content });
+  };
+
+  return (
+    <div className="pt-4 border-t">
+      <Button
+        onClick={handlePost}
+        disabled={postMutation.isPending || !content.trim()}
+        className="w-full bg-blue-600 hover:bg-blue-700"
+      >
+        {postMutation.isPending ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            Publiserer...
+          </>
+        ) : (
+          <>
+            <Linkedin className="h-4 w-4 mr-2" />
+            Publiser til LinkedIn
+          </>
+        )}
+      </Button>
+    </div>
+  );
+}
+
+function LinkedInStatusBadge() {
+  const { data: connectionStatus, isLoading } = trpc.linkedin.getConnectionStatus.useQuery();
+
+  if (isLoading) {
+    return (
+      <div className="px-4 py-2 border-t">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Sjekker LinkedIn-tilkobling...
+        </div>
+      </div>
+    );
+  }
+
+  if (connectionStatus?.connected) {
+    return (
+      <div className="px-4 py-2 border-t bg-green-50 dark:bg-green-950/20">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm">
+            <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
+            <Linkedin className="h-4 w-4 text-blue-600" />
+            <span className="font-medium text-green-700 dark:text-green-400">
+              LinkedIn tilkoblet
+            </span>
+            <span className="text-muted-foreground">({connectionStatus.profileName})</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-4 py-2 border-t bg-blue-50 dark:bg-blue-950/20">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm">
+          <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          <Linkedin className="h-4 w-4 text-blue-600" />
+          <span className="font-medium text-blue-700 dark:text-blue-400">
+            LinkedIn ikke tilkoblet
+          </span>
+        </div>
+        <Link href="/innstillinger">
+          <Button variant="outline" size="sm" className="h-7 text-xs">
+            <ExternalLink className="h-3 w-3 mr-1" />
+            Koble til
+          </Button>
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 export default function Generate() {
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -393,6 +494,7 @@ export default function Generate() {
                   Konfigurer innholdet ditt for optimal engasjement
                 </CardDescription>
               </CardHeader>
+              <LinkedInStatusBadge />
               <CardContent className="space-y-4">
                 {/* Topic Input */}
                 <div className="space-y-2">
@@ -835,6 +937,12 @@ export default function Generate() {
                         </Button>
                       </div>
                     </div>
+
+                    {/* Post to LinkedIn Button */}
+                    <PostToLinkedInButton 
+                      content={generatedContent}
+                      platform={platform}
+                    />
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12 text-center">

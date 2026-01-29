@@ -1705,3 +1705,11 @@ All libraries are 100% free and open source!
 - [ ] Test OAuth flow and posting
 - [x] Add error handling for expired tokens
 - [ ] Save checkpoint
+
+## LinkedIn Generate Page Integration
+- [x] Add LinkedIn connection status indicator in Generate page
+- [x] Add "Post to LinkedIn" button (visible only when connected)
+- [x] Add link to Settings if not connected
+- [x] Implement post to LinkedIn functionality from Generate page
+- [ ] Test LinkedIn status display
+- [ ] Save checkpoint
