@@ -584,3 +584,22 @@ export const telegramLinks = mysqlTable("telegram_links", {
 
 export type TelegramLink = typeof telegramLinks.$inferSelect;
 export type InsertTelegramLink = typeof telegramLinks.$inferInsert;
+
+/**
+ * Vipps API credentials table - stores app-level Vipps Recurring API credentials
+ * Only one row should exist (owner's credentials)
+ * Used for subscription payments in the Norwegian market
+ */
+export const vippsCredentials = mysqlTable("vipps_credentials", {
+  id: int("id").autoincrement().primaryKey(),
+  clientId: varchar("client_id", { length: 255 }).notNull(),
+  clientSecret: varchar("client_secret", { length: 500 }).notNull(), // Encrypted in production
+  subscriptionKey: varchar("subscription_key", { length: 255 }).notNull(), // Ocp-Apim-Subscription-Key
+  merchantSerialNumber: varchar("merchant_serial_number", { length: 50 }).notNull(),
+  testMode: int("test_mode").default(1).notNull(), // 1 = test environment, 0 = production
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type VippsCredential = typeof vippsCredentials.$inferSelect;
+export type InsertVippsCredential = typeof vippsCredentials.$inferInsert;

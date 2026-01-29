@@ -1,0 +1,40 @@
+{
+  "query": "SHOW TABLES LIKE 'vipps%'; DESCRIBE vipps_credentials;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VZWkmDdVMGTAoV.bcd7d121ddff --database aUg4CGwS8nNj3ozbCiedm7 --execute SHOW TABLES LIKE 'vipps%'; DESCRIBE vipps_credentials;",
+  "rows": [
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7 (vipps%)": "vipps_credentials"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7 (vipps%)": "Field\tType\tNull\tKey\tDefault\tExtra"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7 (vipps%)": "id\tint(11)\tNO\tPRI\tNULL\tauto_increment"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7 (vipps%)": "client_id\tvarchar(255)\tNO\t\tNULL\t"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7 (vipps%)": "client_secret\tvarchar(500)\tNO\t\tNULL\t"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7 (vipps%)": "subscription_key\tvarchar(255)\tNO\t\tNULL\t"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7 (vipps%)": "merchant_serial_number\tvarchar(50)\tNO\t\tNULL\t"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7 (vipps%)": "test_mode\tint(11)\tNO\t\t1\t"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7 (vipps%)": "created_at\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7 (vipps%)": "updated_at\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_aUg4CGwS8nNj3ozbCiedm7 (vipps%)\nvipps_credentials\nField\tType\tNull\tKey\tDefault\tExtra\nid\tint(11)\tNO\tPRI\tNULL\tauto_increment\nclient_id\tvarchar(255)\tNO\t\tNULL\t\nclient_secret\tvarchar(500)\tNO\t\tNULL\t\nsubscription_key\tvarchar(255)\tNO\t\tNULL\t\nmerchant_serial_number\tvarchar(50)\tNO\t\tNULL\t\ntest_mode\tint(11)\tNO\t\t1\t\ncreated_at\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\nupdated_at\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

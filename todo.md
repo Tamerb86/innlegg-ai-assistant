@@ -1723,7 +1723,33 @@ All libraries are 100% free and open source!
 - [x] Update post status from 'scheduled' to 'published' after posting
 - [x] Add error handling for failed posts (error status)
 - [x] Send notification to user when post is published
-- [ ] Add tRPC procedure to manually trigger scheduled posts (for testing)
+- [x] Add tRPC procedure to manually trigger scheduled posts (for testing)
 - [ ] Add UI indicator for auto-posting status in Calendar
 - [ ] Test auto-posting with real scheduled posts
+- [x] Save checkpoint
+
+## Vipps Payment Integration (Norway)
+- [x] Research Vipps API documentation and requirements
+- [ ] Add Vipps credentials section in Admin Settings page
+- [ ] Create database schema for Vipps credentials
+- [ ] Create tRPC procedures for saving/getting Vipps credentials
+- [ ] Test Vipps settings UI
 - [ ] Save checkpoint
+- [ ] (Future) Register Vipps merchant account when user has credentials
+- [ ] (Future) Create vippsService.ts with payment flow
+- [ ] (Future) Implement full Vipps Recurring API integration
+
+
+## Vipps Payment Settings Integration (Admin)
+- [x] Create vipps_credentials database table
+- [x] Add Vipps tRPC procedures (saveCredentials, getCredentials, deleteCredentials)
+- [x] Create VippsCredentialsCard component in Settings page
+- [x] Add input fields for Client ID, Client Secret, Subscription Key, MSN
+- [x] Add test mode toggle
+- [x] Add status indicator (configured/not configured)
+- [x] Add delete credentials functionality
+- [x] Add setup instructions with link to Vipps Developer Portal
+- [x] Write vitest tests for Vipps tRPC procedures (17 tests passing)
+- [ ] Implement Vipps Recurring API integration (future)
+- [ ] Create subscription checkout flow with Vipps (future)
+- [ ] Add webhook handling for Vipps payment events (future)

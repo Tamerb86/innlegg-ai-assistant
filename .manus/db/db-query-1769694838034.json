@@ -1,0 +1,118 @@
+{
+  "query": "SHOW TABLES; SELECT * FROM __drizzle_migrations ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VZWkmDdVMGTAoV.bcd7d121ddff --database aUg4CGwS8nNj3ozbCiedm7 --execute SHOW TABLES; SELECT * FROM __drizzle_migrations ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "__drizzle_migrations"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "ab_tests"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "blog_posts"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "calendar_events"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "competitor_posts"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "competitors"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "content_analysis"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "content_schedule"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "content_series"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "drafts"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "ideas"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "invoices"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "linkedin_app_credentials"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "linkedin_connections"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "onboarding_status"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "post_analytics"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "posts"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "repurposed_content"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "saved_examples"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "series_posts"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "subscriptions"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "telegram_links"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "trending_topics"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "user_interests"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "user_preferences"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "users"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "voice_profiles"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "voice_samples"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "weekly_report_settings"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "weekly_reports"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "id\thash\tcreated_at"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "1212512\tadb00a3095dd3562385211b46d17ca46002bf26d4223bd435ba2cdd17f76e728\t1769590939637"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "1182512\t650dfbe1dcc2712bbd8b942f85ae420835e78441568c4607b610d5768b97f7ba\t1769559969164"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "1152514\t4f7fee78a57f4b742550cc1912881404fcfcfd461af334368db569b391ca5f9e\t1769525573314"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "1152513\t401d80df2cb0ec74af0a4dae50dea7ec039c7c1ca932f1556796e1f24544f8cb\t1769523874764"
+    },
+    {
+      "Tables_in_aUg4CGwS8nNj3ozbCiedm7": "1152512\tdb91970d466b8d20da64f364b4e0ccf90d8721730a097c1f457021b1cac1e2d0\t1769519908404"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_aUg4CGwS8nNj3ozbCiedm7\n__drizzle_migrations\nab_tests\nblog_posts\ncalendar_events\ncompetitor_posts\ncompetitors\ncontent_analysis\ncontent_schedule\ncontent_series\ndrafts\nideas\ninvoices\nlinkedin_app_credentials\nlinkedin_connections\nonboarding_status\npost_analytics\nposts\nrepurposed_content\nsaved_examples\nseries_posts\nsubscriptions\ntelegram_links\ntrending_topics\nuser_interests\nuser_preferences\nusers\nvoice_profiles\nvoice_samples\nweekly_report_settings\nweekly_reports\nid\thash\tcreated_at\n1212512\tadb00a3095dd3562385211b46d17ca46002bf26d4223bd435ba2cdd17f76e728\t1769590939637\n1182512\t650dfbe1dcc2712bbd8b942f85ae420835e78441568c4607b610d5768b97f7ba\t1769559969164\n1152514\t4f7fee78a57f4b742550cc1912881404fcfcfd461af334368db569b391ca5f9e\t1769525573314\n1152513\t401d80df2cb0ec74af0a4dae50dea7ec039c7c1ca932f1556796e1f24544f8cb\t1769523874764\n1152512\tdb91970d466b8d20da64f364b4e0ccf90d8721730a097c1f457021b1cac1e2d0\t1769519908404\n",
+  "stderr": "",
+  "execution_time_ms": 87
+}

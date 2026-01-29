@@ -352,6 +352,233 @@ function LinkedInSaveButton({ clientId, clientSecret, language }: { clientId: st
   );
 }
 
+// Vipps Credentials Card Component
+function VippsCredentialsCard({ language }: { language: "no" | "en" }) {
+  const [clientId, setClientId] = useState("");
+  const [clientSecret, setClientSecret] = useState("");
+  const [subscriptionKey, setSubscriptionKey] = useState("");
+  const [merchantSerialNumber, setMerchantSerialNumber] = useState("");
+  const [testMode, setTestMode] = useState(true);
+  const [showSecrets, setShowSecrets] = useState(false);
+  
+  const { data: credentials, isLoading } = trpc.vipps.getCredentials.useQuery();
+  const utils = trpc.useUtils();
+  
+  const saveCredentialsMutation = trpc.vipps.saveCredentials.useMutation({
+    onSuccess: () => {
+      toast.success(language === "no" ? "Vipps-legitimasjon lagret!" : "Vipps credentials saved!");
+      utils.vipps.getCredentials.invalidate();
+      // Clear form after save
+      setClientId("");
+      setClientSecret("");
+      setSubscriptionKey("");
+      setMerchantSerialNumber("");
+    },
+    onError: (error) => {
+      toast.error(error.message || (language === "no" ? "Kunne ikke lagre legitimasjon" : "Could not save credentials"));
+    },
+  });
+  
+  const deleteCredentialsMutation = trpc.vipps.deleteCredentials.useMutation({
+    onSuccess: () => {
+      toast.success(language === "no" ? "Vipps-legitimasjon slettet" : "Vipps credentials deleted");
+      utils.vipps.getCredentials.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message || (language === "no" ? "Kunne ikke slette legitimasjon" : "Could not delete credentials"));
+    },
+  });
+
+  const handleSave = () => {
+    if (!clientId || !clientSecret || !subscriptionKey || !merchantSerialNumber) {
+      toast.error(language === "no" ? "Fyll inn alle feltene" : "Fill in all fields");
+      return;
+    }
+    saveCredentialsMutation.mutate({
+      clientId,
+      clientSecret,
+      subscriptionKey,
+      merchantSerialNumber,
+      testMode,
+    });
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="#FF5B24"/>
+            <path d="M8 12l2.5 2.5L16 9" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          {language === "no" ? "Vipps Betaling" : "Vipps Payment"}
+        </CardTitle>
+        <CardDescription>
+          {language === "no"
+            ? "Konfigurer Vipps Recurring API for abonnementsbetalinger."
+            : "Configure Vipps Recurring API for subscription payments."}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Status indicator */}
+        {isLoading ? (
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            {language === "no" ? "Laster..." : "Loading..."}
+          </div>
+        ) : credentials?.configured ? (
+          <div className="p-3 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
+            <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
+              <CheckCircle2 className="h-4 w-4" />
+              <span className="font-medium">
+                {language === "no" ? "Vipps er konfigurert" : "Vipps is configured"}
+              </span>
+            </div>
+            <div className="mt-2 text-sm text-green-600 dark:text-green-400">
+              <p>Client ID: {credentials.clientId.substring(0, 8)}...</p>
+              <p>MSN: {credentials.merchantSerialNumber}</p>
+              <p>{language === "no" ? "Modus" : "Mode"}: {credentials.testMode ? (language === "no" ? "Test" : "Test") : (language === "no" ? "Produksjon" : "Production")}</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-3 text-red-600 hover:text-red-700"
+              onClick={() => deleteCredentialsMutation.mutate()}
+              disabled={deleteCredentialsMutation.isPending}
+            >
+              {deleteCredentialsMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
+              {language === "no" ? "Fjern Vipps" : "Remove Vipps"}
+            </Button>
+          </div>
+        ) : (
+          <div className="p-3 bg-amber-50 dark:bg-amber-950 rounded-lg border border-amber-200 dark:border-amber-800">
+            <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300">
+              <AlertCircle className="h-4 w-4" />
+              <span className="font-medium">
+                {language === "no" ? "Vipps er ikke konfigurert" : "Vipps is not configured"}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Input fields */}
+        <div className="space-y-3">
+          <div className="space-y-2">
+            <Label htmlFor="vipps-client-id">Client ID</Label>
+            <Input
+              id="vipps-client-id"
+              type="text"
+              placeholder={language === "no" ? "Din Vipps Client ID" : "Your Vipps Client ID"}
+              value={clientId}
+              onChange={(e) => setClientId(e.target.value)}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="vipps-client-secret">Client Secret</Label>
+            <Input
+              id="vipps-client-secret"
+              type={showSecrets ? "text" : "password"}
+              placeholder={language === "no" ? "Din Vipps Client Secret" : "Your Vipps Client Secret"}
+              value={clientSecret}
+              onChange={(e) => setClientSecret(e.target.value)}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="vipps-subscription-key">Ocp-Apim-Subscription-Key</Label>
+            <Input
+              id="vipps-subscription-key"
+              type={showSecrets ? "text" : "password"}
+              placeholder={language === "no" ? "Din Subscription Key" : "Your Subscription Key"}
+              value={subscriptionKey}
+              onChange={(e) => setSubscriptionKey(e.target.value)}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="vipps-msn">
+              {language === "no" ? "Merchant Serial Number (MSN)" : "Merchant Serial Number (MSN)"}
+            </Label>
+            <Input
+              id="vipps-msn"
+              type="text"
+              placeholder={language === "no" ? "F.eks. 123456" : "E.g. 123456"}
+              value={merchantSerialNumber}
+              onChange={(e) => setMerchantSerialNumber(e.target.value)}
+            />
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="vipps-test-mode"
+              checked={testMode}
+              onChange={(e) => setTestMode(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300"
+            />
+            <Label htmlFor="vipps-test-mode" className="text-sm font-normal">
+              {language === "no" ? "Bruk testmiljø (MT)" : "Use test environment (MT)"}
+            </Label>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="vipps-show-secrets"
+              checked={showSecrets}
+              onChange={(e) => setShowSecrets(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300"
+            />
+            <Label htmlFor="vipps-show-secrets" className="text-sm font-normal">
+              {language === "no" ? "Vis hemmeligheter" : "Show secrets"}
+            </Label>
+          </div>
+        </div>
+        
+        <Button 
+          variant="default" 
+          onClick={handleSave}
+          disabled={saveCredentialsMutation.isPending || !clientId || !clientSecret || !subscriptionKey || !merchantSerialNumber}
+        >
+          {saveCredentialsMutation.isPending ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              {language === "no" ? "Lagrer..." : "Saving..."}
+            </>
+          ) : (
+            language === "no" ? "Lagre Vipps-legitimasjon" : "Save Vipps Credentials"
+          )}
+        </Button>
+        
+        <div className="flex gap-2">
+          <Button variant="outline" asChild>
+            <a href="https://developer.vippsmobilepay.com/" target="_blank" rel="noopener noreferrer">
+              {language === "no" ? "Vipps Developer Portal" : "Vipps Developer Portal"}
+            </a>
+          </Button>
+        </div>
+        
+        <div className="text-sm text-muted-foreground">
+          <p className="font-medium mb-2">
+            {language === "no" ? "📝 Slik setter du opp:" : "📝 How to setup:"}
+          </p>
+          <ol className="list-decimal list-inside space-y-1">
+            <li>{language === "no" ? "Opprett bedriftskonto hos Vipps" : "Create a business account with Vipps"}</li>
+            <li>{language === "no" ? "Gå til Vipps Developer Portal" : "Go to Vipps Developer Portal"}</li>
+            <li>{language === "no" ? "Opprett en ny applikasjon" : "Create a new application"}</li>
+            <li>{language === "no" ? "Kopier Client ID, Client Secret og Subscription Key" : "Copy Client ID, Client Secret and Subscription Key"}</li>
+            <li>{language === "no" ? "Finn din Merchant Serial Number (MSN)" : "Find your Merchant Serial Number (MSN)"}</li>
+            <li>{language === "no" ? "Lim inn her og lagre" : "Paste here and save"}</li>
+          </ol>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 function DeleteAccountDialog({ language }: { language: "no" | "en" }) {
   const [open, setOpen] = useState(false);
   const [confirmation, setConfirmation] = useState("");
@@ -609,6 +836,9 @@ export default function Settings() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Vipps API Credentials */}
+          <VippsCredentialsCard language={language} />
 
           {/* Delete Account */}
           <Card className="border-red-200 dark:border-red-900">

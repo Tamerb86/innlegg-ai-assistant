@@ -2274,6 +2274,87 @@ Skriv et ${input.responseType} svar.`
       return { success: true, message: 'Scheduled posts processing triggered' };
     }),
   }),
+
+  // Vipps API credentials management
+  vipps: router({
+    // Save Vipps API credentials (owner only)
+    saveCredentials: protectedProcedure
+      .input(z.object({
+        clientId: z.string().min(1),
+        clientSecret: z.string().min(1),
+        subscriptionKey: z.string().min(1),
+        merchantSerialNumber: z.string().min(1),
+        testMode: z.boolean().optional().default(true),
+      }))
+      .mutation(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        const { vippsCredentials } = await import("../drizzle/schema");
+        
+        // Check if credentials already exist
+        const existing = await db.select().from(vippsCredentials).limit(1);
+        
+        if (existing.length > 0) {
+          // Update existing
+          const { eq } = await import("drizzle-orm");
+          await db.update(vippsCredentials)
+            .set({
+              clientId: input.clientId,
+              clientSecret: input.clientSecret,
+              subscriptionKey: input.subscriptionKey,
+              merchantSerialNumber: input.merchantSerialNumber,
+              testMode: input.testMode ? 1 : 0,
+            })
+            .where(eq(vippsCredentials.id, existing[0].id));
+        } else {
+          // Insert new
+          await db.insert(vippsCredentials).values({
+            clientId: input.clientId,
+            clientSecret: input.clientSecret,
+            subscriptionKey: input.subscriptionKey,
+            merchantSerialNumber: input.merchantSerialNumber,
+            testMode: input.testMode ? 1 : 0,
+          });
+        }
+        
+        return { success: true };
+      }),
+
+    // Get Vipps credentials status (owner only)
+    getCredentials: protectedProcedure.query(async () => {
+      const { getDb } = await import("./db");
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      const { vippsCredentials } = await import("../drizzle/schema");
+      
+      const credentials = await db.select().from(vippsCredentials).limit(1);
+      
+      if (credentials.length === 0) {
+        return null;
+      }
+      
+      // Return only non-sensitive info (hide secrets)
+      return {
+        clientId: credentials[0].clientId,
+        merchantSerialNumber: credentials[0].merchantSerialNumber,
+        testMode: credentials[0].testMode === 1,
+        configured: true,
+      };
+    }),
+
+    // Delete Vipps credentials
+    deleteCredentials: protectedProcedure.mutation(async () => {
+      const { getDb } = await import("./db");
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      const { vippsCredentials } = await import("../drizzle/schema");
+      
+      await db.delete(vippsCredentials);
+      
+      return { success: true };
+    }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
