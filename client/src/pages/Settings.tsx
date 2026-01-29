@@ -14,6 +14,7 @@ import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
+import { Linkedin } from "lucide-react";
 
 function RestartTourButton({ language }: { language: "no" | "en" }) {
   const restartMutation = trpc.user.restartOnboarding.useMutation({
@@ -407,6 +408,64 @@ export default function Settings() {
 
           {/* Subscription */}
           <SubscriptionCard language={language} />
+
+          {/* LinkedIn API Credentials */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Linkedin className="h-5 w-5 text-blue-600" />
+                {language === "no" ? "LinkedIn API" : "LinkedIn API"}
+              </CardTitle>
+              <CardDescription>
+                {language === "no"
+                  ? "Konfigurer LinkedIn API for å publisere innlegg automatisk."
+                  : "Configure LinkedIn API to publish posts automatically."}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="linkedin-client-id">
+                  {language === "no" ? "Client ID" : "Client ID"}
+                </Label>
+                <Input
+                  id="linkedin-client-id"
+                  placeholder="77xxxxxxxxxx"
+                  type="text"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="linkedin-client-secret">
+                  {language === "no" ? "Client Secret" : "Client Secret"}
+                </Label>
+                <Input
+                  id="linkedin-client-secret"
+                  placeholder="WPL_AP1.xxxxxxxxxxxx"
+                  type="password"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button variant="default">
+                  {language === "no" ? "Lagre" : "Save"}
+                </Button>
+                <Button variant="outline" asChild>
+                  <a href="https://www.linkedin.com/developers/" target="_blank" rel="noopener noreferrer">
+                    {language === "no" ? "Opprett LinkedIn App" : "Create LinkedIn App"}
+                  </a>
+                </Button>
+              </div>
+              <div className="text-sm text-muted-foreground">
+                <p className="font-medium mb-2">
+                  {language === "no" ? "📝 Slik setter du opp:" : "📝 How to setup:"}
+                </p>
+                <ol className="list-decimal list-inside space-y-1">
+                  <li>{language === "no" ? "Gå til LinkedIn Developer Portal" : "Go to LinkedIn Developer Portal"}</li>
+                  <li>{language === "no" ? "Opprett ny app" : "Create new app"}</li>
+                  <li>{language === "no" ? "Kopier Client ID og Client Secret" : "Copy Client ID and Client Secret"}</li>
+                  <li>{language === "no" ? "Lim inn her og lagre" : "Paste here and save"}</li>
+                </ol>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Delete Account */}
           <Card className="border-red-200 dark:border-red-900">

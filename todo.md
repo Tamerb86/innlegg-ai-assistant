@@ -1685,3 +1685,20 @@ All libraries are 100% free and open source!
 - [x] Add mock data fallback for API failures
 - [x] Test Google Trends features
 - [x] Save checkpoint
+
+## LinkedIn API Integration
+- [x] Research LinkedIn API v2 documentation
+- [x] Add LinkedIn credentials section in Settings page (Client ID, Client Secret input fields)
+- [x] Add database schema for LinkedIn app credentials (client_id, client_secret)
+- [x] Add database schema for user LinkedIn connections (access_token, person_urn, expires_at)
+- [ ] Create linkedinService.ts with OAuth 2.0 flow
+- [ ] Add tRPC procedure: saveLinkedInCredentials (save app credentials)
+- [ ] Add tRPC procedure: getAuthorizationUrl (generate OAuth URL)
+- [ ] Add tRPC procedure: handleCallback (exchange code for token)
+- [ ] Add tRPC procedure: createPost (post to LinkedIn)
+- [ ] Add tRPC procedure: disconnectLinkedIn (revoke access)
+- [ ] Add "Connect LinkedIn" button in Settings
+- [ ] Add LinkedIn status indicator in Generate page
+- [ ] Test OAuth flow and posting
+- [ ] Add error handling for expired tokens
+- [ ] Save checkpoint

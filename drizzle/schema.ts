@@ -102,6 +102,39 @@ export type UserPreference = typeof userPreferences.$inferSelect;
 export type InsertUserPreference = typeof userPreferences.$inferInsert;
 
 /**
+ * LinkedIn app credentials table - stores app-level LinkedIn API credentials
+ * Only one row should exist (owner's credentials)
+ */
+export const linkedinAppCredentials = mysqlTable("linkedin_app_credentials", {
+  id: int("id").autoincrement().primaryKey(),
+  clientId: varchar("client_id", { length: 255 }).notNull(),
+  clientSecret: varchar("client_secret", { length: 255 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type LinkedInAppCredential = typeof linkedinAppCredentials.$inferSelect;
+export type InsertLinkedInAppCredential = typeof linkedinAppCredentials.$inferInsert;
+
+/**
+ * LinkedIn connections table - stores user-level LinkedIn OAuth tokens
+ */
+export const linkedinConnections = mysqlTable("linkedin_connections", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull().unique(),
+  accessToken: text("access_token").notNull(),
+  personUrn: varchar("person_urn", { length: 255 }).notNull(), // urn:li:person:xxx
+  profileName: varchar("profile_name", { length: 255 }),
+  profileEmail: varchar("profile_email", { length: 320 }),
+  expiresAt: timestamp("expires_at").notNull(), // Access token expiration (60 days)
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type LinkedInConnection = typeof linkedinConnections.$inferSelect;
+export type InsertLinkedInConnection = typeof linkedinConnections.$inferInsert;
+
+/**
  * Content Analysis table - AI Content Coach feature
  * Stores analysis and scoring for each generated post
  */
