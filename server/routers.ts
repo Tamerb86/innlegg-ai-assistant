@@ -2265,6 +2265,15 @@ Skriv et ${input.responseType} svar.`
         return result;
       }),
   }),
+
+  scheduler: router({
+    // Manually trigger scheduled posts processing (for testing)
+    triggerNow: protectedProcedure.mutation(async () => {
+      const { triggerScheduledPosts } = await import('./schedulerService');
+      await triggerScheduledPosts();
+      return { success: true, message: 'Scheduled posts processing triggered' };
+    }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

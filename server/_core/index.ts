@@ -8,6 +8,7 @@ import { registerOAuthRoutes } from "./oauth";
 import { registerTelegramWebhook } from "./telegramWebhookRoute";
 import { registerLinkedInCallback } from "./linkedinCallback";
 import { appRouter } from "../routers";
+import { startScheduler } from "../schedulerService";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 
@@ -192,6 +193,9 @@ async function startServer() {
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
+    
+    // Start auto-posting scheduler
+    startScheduler();
   });
 }
 

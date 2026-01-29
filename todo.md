@@ -1711,5 +1711,19 @@ All libraries are 100% free and open source!
 - [x] Add "Post to LinkedIn" button (visible only when connected)
 - [x] Add link to Settings if not connected
 - [x] Implement post to LinkedIn functionality from Generate page
-- [ ] Test LinkedIn status display
+- [x] Test LinkedIn status display
+- [x] Save checkpoint
+
+## Agenda Auto-posting System
+- [x] Design scheduled job system architecture (cron-based)
+- [x] Install node-cron scheduling library
+- [x] Create schedulerService.ts with background worker
+- [x] Add job to check scheduled posts every minute
+- [x] Implement auto-posting logic for LinkedIn
+- [x] Update post status from 'scheduled' to 'published' after posting
+- [x] Add error handling for failed posts (error status)
+- [x] Send notification to user when post is published
+- [ ] Add tRPC procedure to manually trigger scheduled posts (for testing)
+- [ ] Add UI indicator for auto-posting status in Calendar
+- [ ] Test auto-posting with real scheduled posts
 - [ ] Save checkpoint
