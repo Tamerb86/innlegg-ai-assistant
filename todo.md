@@ -1698,8 +1698,10 @@ All libraries are 100% free and open source!
 - [x] Add tRPC procedure: createPost (post to LinkedIn)
 - [x] Add tRPC procedure: disconnectLinkedIn (revoke access)
 - [x] Add LinkedIn callback route handler
-- [ ] Add "Connect LinkedIn" button in Settings
+- [x] Add "Connect LinkedIn" button in Settings
+- [x] Add LinkedIn connection status display with profile info
+- [x] Add Disconnect button
 - [ ] Add LinkedIn status indicator in Generate page
 - [ ] Test OAuth flow and posting
-- [ ] Add error handling for expired tokens
+- [x] Add error handling for expired tokens
 - [ ] Save checkpoint

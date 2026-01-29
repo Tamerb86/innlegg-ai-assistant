@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Zap, AlertTriangle, CreditCard, CheckCircle2, Crown, Loader2 } from "lucide-react";
+import { Zap, AlertTriangle, CreditCard, CheckCircle2, Crown, Loader2, AlertCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
@@ -217,6 +217,102 @@ function SubscriptionCard({ language }: { language: "no" | "en" }) {
         )}
       </CardContent>
     </Card>
+  );
+}
+
+function LinkedInConnectionStatus({ language }: { language: "no" | "en" }) {
+  const { data: connectionStatus, isLoading, refetch } = trpc.linkedin.getConnectionStatus.useQuery();
+  const { data: authUrl } = trpc.linkedin.getAuthUrl.useQuery(undefined, {
+    enabled: false, // Don't fetch automatically
+  });
+  const disconnectMutation = trpc.linkedin.disconnect.useMutation({
+    onSuccess: () => {
+      toast.success(language === "no" ? "LinkedIn frakoblet!" : "LinkedIn disconnected!");
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || (language === "no" ? "Kunne ikke koble fra" : "Could not disconnect"));
+    },
+  });
+
+  const utils = trpc.useUtils();
+  
+  const handleConnect = async () => {
+    try {
+      const result = await utils.linkedin.getAuthUrl.fetch();
+      if (result?.url) {
+        window.location.href = result.url;
+      }
+    } catch (error: any) {
+      toast.error(error.message || (language === "no" ? "Kunne ikke generere autorisasjons-URL" : "Could not generate authorization URL"));
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        {language === "no" ? "Sjekker tilkobling..." : "Checking connection..."}
+      </div>
+    );
+  }
+
+  if (connectionStatus?.connected) {
+    return (
+      <div className="space-y-3 p-4 border rounded-lg bg-green-50 dark:bg-green-950">
+        <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
+          <CheckCircle2 className="h-5 w-5" />
+          <span className="font-medium">
+            {language === "no" ? "LinkedIn tilkoblet" : "LinkedIn connected"}
+          </span>
+        </div>
+        <div className="text-sm text-muted-foreground space-y-1">
+          <p><strong>{language === "no" ? "Navn:" : "Name:"}</strong> {connectionStatus.profileName}</p>
+          <p><strong>{language === "no" ? "E-post:" : "Email:"}</strong> {connectionStatus.profileEmail}</p>
+          <p><strong>{language === "no" ? "Utløper:" : "Expires:"}</strong> {connectionStatus.expiresAt ? new Date(connectionStatus.expiresAt).toLocaleDateString() : "N/A"}</p>
+        </div>
+        <Button 
+          variant="destructive" 
+          size="sm"
+          onClick={() => disconnectMutation.mutate()}
+          disabled={disconnectMutation.isPending}
+        >
+          {disconnectMutation.isPending ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              {language === "no" ? "Kobler fra..." : "Disconnecting..."}
+            </>
+          ) : (
+            language === "no" ? "Koble fra LinkedIn" : "Disconnect LinkedIn"
+          )}
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3 p-4 border rounded-lg bg-blue-50 dark:bg-blue-950">
+      <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400">
+        <AlertCircle className="h-5 w-5" />
+        <span className="font-medium">
+          {language === "no" ? "LinkedIn ikke tilkoblet" : "LinkedIn not connected"}
+        </span>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        {language === "no"
+          ? "Koble til LinkedIn for å publisere innlegg automatisk."
+          : "Connect LinkedIn to publish posts automatically."}
+      </p>
+      <Button 
+        variant="default" 
+        size="sm"
+        onClick={handleConnect}
+        className="bg-blue-600 hover:bg-blue-700"
+      >
+        <Linkedin className="h-4 w-4 mr-2" />
+        {language === "no" ? "Koble til LinkedIn" : "Connect LinkedIn"}
+      </Button>
+    </div>
   );
 }
 
@@ -490,6 +586,9 @@ export default function Settings() {
                 clientSecret={linkedinClientSecret}
                 language={language}
               />
+              
+              <LinkedInConnectionStatus language={language} />
+              
               <div className="flex gap-2">
                 <Button variant="outline" asChild>
                   <a href="https://www.linkedin.com/developers/" target="_blank" rel="noopener noreferrer">
