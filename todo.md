@@ -1691,12 +1691,13 @@ All libraries are 100% free and open source!
 - [x] Add LinkedIn credentials section in Settings page (Client ID, Client Secret input fields)
 - [x] Add database schema for LinkedIn app credentials (client_id, client_secret)
 - [x] Add database schema for user LinkedIn connections (access_token, person_urn, expires_at)
-- [ ] Create linkedinService.ts with OAuth 2.0 flow
-- [ ] Add tRPC procedure: saveLinkedInCredentials (save app credentials)
-- [ ] Add tRPC procedure: getAuthorizationUrl (generate OAuth URL)
-- [ ] Add tRPC procedure: handleCallback (exchange code for token)
-- [ ] Add tRPC procedure: createPost (post to LinkedIn)
-- [ ] Add tRPC procedure: disconnectLinkedIn (revoke access)
+- [x] Create linkedinService.ts with OAuth 2.0 flow
+- [x] Add tRPC procedure: saveLinkedInCredentials (save app credentials)
+- [x] Add tRPC procedure: getAuthorizationUrl (generate OAuth URL)
+- [x] Add tRPC procedure: handleCallback (exchange code for token)
+- [x] Add tRPC procedure: createPost (post to LinkedIn)
+- [x] Add tRPC procedure: disconnectLinkedIn (revoke access)
+- [x] Add LinkedIn callback route handler
 - [ ] Add "Connect LinkedIn" button in Settings
 - [ ] Add LinkedIn status indicator in Generate page
 - [ ] Test OAuth flow and posting

@@ -220,6 +220,42 @@ function SubscriptionCard({ language }: { language: "no" | "en" }) {
   );
 }
 
+function LinkedInSaveButton({ clientId, clientSecret, language }: { clientId: string; clientSecret: string; language: "no" | "en" }) {
+  const saveCredentialsMutation = trpc.linkedin.saveCredentials.useMutation({
+    onSuccess: () => {
+      toast.success(language === "no" ? "LinkedIn API-legitimasjon lagret!" : "LinkedIn API credentials saved!");
+    },
+    onError: (error) => {
+      toast.error(error.message || (language === "no" ? "Kunne ikke lagre legitimasjon" : "Could not save credentials"));
+    },
+  });
+
+  const handleSave = () => {
+    if (!clientId || !clientSecret) {
+      toast.error(language === "no" ? "Fyll inn begge feltene" : "Fill in both fields");
+      return;
+    }
+    saveCredentialsMutation.mutate({ clientId, clientSecret });
+  };
+
+  return (
+    <Button 
+      variant="default" 
+      onClick={handleSave}
+      disabled={saveCredentialsMutation.isPending || !clientId || !clientSecret}
+    >
+      {saveCredentialsMutation.isPending ? (
+        <>
+          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+          {language === "no" ? "Lagrer..." : "Saving..."}
+        </>
+      ) : (
+        language === "no" ? "Lagre" : "Save"
+      )}
+    </Button>
+  );
+}
+
 function DeleteAccountDialog({ language }: { language: "no" | "en" }) {
   const [open, setOpen] = useState(false);
   const [confirmation, setConfirmation] = useState("");
@@ -309,6 +345,8 @@ export default function Settings() {
   const { user, isAuthenticated, loading: authLoading, logout } = useAuth();
   const { t, language, setLanguage } = useLanguage();
   const [, setLocation] = useLocation();
+  const [linkedinClientId, setLinkedinClientId] = useState("");
+  const [linkedinClientSecret, setLinkedinClientSecret] = useState("");
 
   const updateLanguageMutation = trpc.user.updateLanguage.useMutation({
     onSuccess: () => {
@@ -431,6 +469,8 @@ export default function Settings() {
                   id="linkedin-client-id"
                   placeholder="77xxxxxxxxxx"
                   type="text"
+                  value={linkedinClientId}
+                  onChange={(e) => setLinkedinClientId(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
@@ -441,12 +481,16 @@ export default function Settings() {
                   id="linkedin-client-secret"
                   placeholder="WPL_AP1.xxxxxxxxxxxx"
                   type="password"
+                  value={linkedinClientSecret}
+                  onChange={(e) => setLinkedinClientSecret(e.target.value)}
                 />
               </div>
+              <LinkedInSaveButton 
+                clientId={linkedinClientId}
+                clientSecret={linkedinClientSecret}
+                language={language}
+              />
               <div className="flex gap-2">
-                <Button variant="default">
-                  {language === "no" ? "Lagre" : "Save"}
-                </Button>
                 <Button variant="outline" asChild>
                   <a href="https://www.linkedin.com/developers/" target="_blank" rel="noopener noreferrer">
                     {language === "no" ? "Opprett LinkedIn App" : "Create LinkedIn App"}

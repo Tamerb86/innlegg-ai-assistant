@@ -6,6 +6,7 @@ import helmet from "helmet";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { registerTelegramWebhook } from "./telegramWebhookRoute";
+import { registerLinkedInCallback } from "./linkedinCallback";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
@@ -58,6 +59,9 @@ async function startServer() {
   
   // Telegram webhook
   registerTelegramWebhook(app);
+  
+  // LinkedIn OAuth callback
+  registerLinkedInCallback(app);
 
   // Stripe webhook - MUST be before express.json() middleware for signature verification
   // Note: We need raw body for Stripe signature verification
