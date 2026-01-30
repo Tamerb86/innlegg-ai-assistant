@@ -23,8 +23,11 @@
 - [x] Create statistics displayage statistics
 
 ## Phase 5: Subscription & Vipps Integration
-- [ ] Implement subscription tracking system
-- [ ] Integrate Vipps payment API
+- [x] Implement subscription tracking system (database schema complete)
+- [x] Design subscription database schema (subscription_plans, stripe_payment_intents, subscription_history)
+- [x] Create subscription tRPC procedures (getPlans, getSubscription, createCheckoutSession, cancelSubscription, getBillingHistory)
+- [x] Write vitest tests for payment system (23 tests passing)
+- [ ] Integrate Vipps payment API (awaiting business credentials)
 - [ ] Create free trial system (5 posts limit)
 - [x] Build subscription management UI
 - [ ] Add payment webhook handlers

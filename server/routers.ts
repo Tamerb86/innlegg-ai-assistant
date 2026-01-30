@@ -2355,6 +2355,197 @@ Skriv et ${input.responseType} svar.`
       return { success: true };
     }),
   }),
+
+  // Payment and subscription management
+  payment: router({
+    // Get all subscription plans
+    getPlans: publicProcedure.query(async () => {
+      const { getDb } = await import("./db");
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      const { subscriptionPlans } = await import("../drizzle/schema");
+      const { eq, desc } = await import("drizzle-orm");
+      
+      const plans = await db
+        .select()
+        .from(subscriptionPlans)
+        .where(eq(subscriptionPlans.isActive, 1))
+        .orderBy(desc(subscriptionPlans.displayOrder));
+      
+      return plans;
+    }),
+
+    // Get current user's subscription
+    getSubscription: protectedProcedure.query(async ({ ctx }) => {
+      const { getDb } = await import("./db");
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      const { subscriptions, subscriptionPlans } = await import("../drizzle/schema");
+      const { eq } = await import("drizzle-orm");
+      
+      const subscription = await db
+        .select()
+        .from(subscriptions)
+        .where(eq(subscriptions.userId, ctx.user.id))
+        .limit(1);
+      
+      if (!subscription || subscription.length === 0) {
+        return null;
+      }
+      
+      const sub = subscription[0];
+      
+      // Get plan details if stripePriceId exists
+      let planDetails = null;
+      if (sub.stripePriceId) {
+        const plans = await db
+          .select()
+          .from(subscriptionPlans)
+          .where(eq(subscriptionPlans.stripePriceIdMonthly, sub.stripePriceId))
+          .limit(1);
+        
+        if (plans.length > 0) {
+          planDetails = plans[0];
+        }
+      }
+      
+      return {
+        ...sub,
+        plan: planDetails,
+      };
+    }),
+
+    // Create Stripe checkout session
+    createCheckoutSession: protectedProcedure
+      .input(z.object({
+        planId: z.number(),
+        billingCycle: z.enum(["monthly", "yearly"]),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        const { subscriptionPlans } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        
+        // Get plan details
+        const plans = await db
+          .select()
+          .from(subscriptionPlans)
+          .where(eq(subscriptionPlans.id, input.planId))
+          .limit(1);
+        
+        if (!plans || plans.length === 0) {
+          throw new Error("Plan not found");
+        }
+        
+        const plan = plans[0];
+        const priceId = input.billingCycle === "monthly" 
+          ? plan.stripePriceIdMonthly 
+          : plan.stripePriceIdYearly;
+        
+        if (!priceId) {
+          throw new Error("Price not configured for this plan");
+        }
+        
+        // Create Stripe checkout session
+        const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+        
+        const session = await stripe.checkout.sessions.create({
+          customer_email: ctx.user.email,
+          client_reference_id: ctx.user.id.toString(),
+          line_items: [
+            {
+              price: priceId,
+              quantity: 1,
+            },
+          ],
+          mode: "subscription",
+          success_url: `${ctx.req.headers.origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${ctx.req.headers.origin}/subscription/cancel`,
+          metadata: {
+            user_id: ctx.user.id.toString(),
+            customer_email: ctx.user.email,
+            customer_name: ctx.user.name || "User",
+            plan_id: input.planId.toString(),
+          },
+        });
+        
+        return {
+          sessionId: session.id,
+          url: session.url,
+        };
+      }),
+
+    // Cancel subscription
+    cancelSubscription: protectedProcedure
+      .input(z.object({
+        reason: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        const { subscriptions, subscriptionHistory } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        
+        // Get current subscription
+        const subs = await db
+          .select()
+          .from(subscriptions)
+          .where(eq(subscriptions.userId, ctx.user.id))
+          .limit(1);
+        
+        if (!subs || subs.length === 0) {
+          throw new Error("No active subscription");
+        }
+        
+        const sub = subs[0];
+        
+        // If Stripe subscription exists, cancel it
+        if (sub.stripeSubscriptionId) {
+          const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+          await stripe.subscriptions.cancel(sub.stripeSubscriptionId);
+        }
+        
+        // Update subscription status
+        await db.update(subscriptions)
+          .set({
+            status: "cancelled",
+            subscriptionEndDate: new Date(),
+          })
+          .where(eq(subscriptions.userId, ctx.user.id));
+        
+        // Record in history
+        await db.insert(subscriptionHistory).values({
+          userId: ctx.user.id,
+          subscriptionId: sub.id,
+          planId: sub.stripePriceId ? 0 : 1, // Fallback to 0 if no price
+          action: "cancelled",
+          reason: input.reason,
+        });
+        
+        return { success: true };
+      }),
+
+    // Get billing history
+    getBillingHistory: protectedProcedure.query(async ({ ctx }) => {
+      const { getDb } = await import("./db");
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      const { invoices } = await import("../drizzle/schema");
+      const { eq, desc } = await import("drizzle-orm");
+      
+      const invoiceList = await db
+        .select()
+        .from(invoices)
+        .where(eq(invoices.userId, ctx.user.id))
+        .orderBy(desc(invoices.invoiceDate))
+        .limit(50);
+      
+      return invoiceList;
+    }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

@@ -603,3 +603,82 @@ export const vippsCredentials = mysqlTable("vipps_credentials", {
 
 export type VippsCredential = typeof vippsCredentials.$inferSelect;
 export type InsertVippsCredential = typeof vippsCredentials.$inferInsert;
+
+/**
+ * Subscription Plans - defines available subscription tiers
+ * Managed by admin, used for pricing and feature limits
+ */
+export const subscriptionPlans = mysqlTable("subscription_plans", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 100 }).notNull(), // "Free", "Pro", "Business"
+  description: text("description"),
+  priceMonthly: int("price_monthly"), // Price in øre (NOK cents) - null for free tier
+  priceYearly: int("price_yearly"), // Price in øre (NOK cents) - null for free tier
+  currency: varchar("currency", { length: 3 }).default("NOK").notNull(),
+  
+  // Feature limits
+  postsPerMonth: int("posts_per_month"), // null = unlimited
+  imagesPerMonth: int("images_per_month"), // null = unlimited
+  canUseDALLE: int("can_use_dalle").default(0).notNull(), // boolean as int
+  canUseVoiceTraining: int("can_use_voice_training").default(0).notNull(),
+  canUseContentCalendar: int("can_use_content_calendar").default(0).notNull(),
+  canUseCompetitorRadar: int("can_use_competitor_radar").default(0).notNull(),
+  canUseWeeklyReports: int("can_use_weekly_reports").default(0).notNull(),
+  
+  // Stripe integration
+  stripePriceIdMonthly: varchar("stripe_price_id_monthly", { length: 255 }),
+  stripePriceIdYearly: varchar("stripe_price_id_yearly", { length: 255 }),
+  stripeProductId: varchar("stripe_product_id", { length: 255 }),
+  
+  // Vipps integration
+  vippsPriceIdMonthly: varchar("vipps_price_id_monthly", { length: 255 }),
+  vippsPriceIdYearly: varchar("vipps_price_id_yearly", { length: 255 }),
+  
+  isActive: int("is_active").default(1).notNull(),
+  displayOrder: int("display_order").default(0).notNull(),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
+export type InsertSubscriptionPlan = typeof subscriptionPlans.$inferInsert;
+
+/**
+ * Stripe Payment Intents - track payment attempts
+ * Helps with reconciliation and error handling
+ */
+export const stripePaymentIntents = mysqlTable("stripe_payment_intents", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  stripePaymentIntentId: varchar("stripe_payment_intent_id", { length: 255 }).notNull().unique(),
+  amount: int("amount").notNull(), // Amount in øre (NOK cents)
+  currency: varchar("currency", { length: 3 }).default("NOK").notNull(),
+  status: mysqlEnum("status", ["requires_payment_method", "requires_confirmation", "requires_action", "processing", "requires_capture", "canceled", "succeeded"]).notNull(),
+  planId: int("plan_id"),
+  subscriptionId: int("subscription_id"),
+  metadata: text("metadata"), // JSON string with additional data
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type StripePaymentIntent = typeof stripePaymentIntents.$inferSelect;
+export type InsertStripePaymentIntent = typeof stripePaymentIntents.$inferInsert;
+
+/**
+ * Subscription History - audit trail of subscription changes
+ * Tracks upgrades, downgrades, cancellations, and renewals
+ */
+export const subscriptionHistory = mysqlTable("subscription_history", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  subscriptionId: int("subscription_id"),
+  planId: int("plan_id").notNull(),
+  action: mysqlEnum("action", ["created", "upgraded", "downgraded", "renewed", "cancelled", "resumed"]).notNull(),
+  previousPlanId: int("previous_plan_id"),
+  reason: text("reason"), // Why the change happened
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type SubscriptionHistoryRecord = typeof subscriptionHistory.$inferSelect;
+export type InsertSubscriptionHistoryRecord = typeof subscriptionHistory.$inferInsert;
