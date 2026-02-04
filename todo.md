@@ -27,10 +27,13 @@
 - [x] Design subscription database schema (subscription_plans, stripe_payment_intents, subscription_history)
 - [x] Create subscription tRPC procedures (getPlans, getSubscription, createCheckoutSession, cancelSubscription, getBillingHistory)
 - [x] Write vitest tests for payment system (23 tests passing)
+- [x] Integrate Stripe webhook handler (checkout.session.completed, payment notifications)
+- [x] Build Pricing page component with plan selection and monthly/yearly toggle
+- [x] Add Pricing route to App.tsx
 - [ ] Integrate Vipps payment API (awaiting business credentials)
 - [ ] Create free trial system (5 posts limit)
 - [x] Build subscription management UI
-- [ ] Add payment webhook handlers
+- [x] Add payment webhook handlers
 
 ## Phase 6: Norwegian Landing Page
 - [ ] Design attractive landing page

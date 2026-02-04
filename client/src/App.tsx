@@ -44,6 +44,7 @@ import WeeklyReport from "@/pages/WeeklyReport";
 import EngagementHelper from "@/pages/EngagementHelper";
 import IdeaBank from "@/pages/IdeaBank";
 import Calendar from "@/pages/Calendar";
+import { Pricing } from "@/pages/Pricing";
 
 
 function Router() {
@@ -77,7 +78,8 @@ function Router() {
       <Route path={"/examples"} component={Examples} />
       <Route path="/kalender" component={Calendar} />
       <Route path="/kalender-old" component={ContentCalendar} />
-      <Route path={"/best-time"} component={BestTime} />
+      <Route path={"/@/best-time"} component={BestTime} />
+      <Route path={"/pricing"} component={Pricing} />
       <Route path={"/repurpose"} component={ContentRepurpose} />
       <Route path={"/telegram-bot"} component={TelegramBot} />
       <Route path={"/telegram-posts"} component={TelegramPosts} />
