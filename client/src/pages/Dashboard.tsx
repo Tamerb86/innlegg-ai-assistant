@@ -4,17 +4,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { FileText, Zap, TrendingUp, Clock, Target, Sparkles } from "lucide-react";
+import { FileText, Zap, TrendingUp, Clock, Target, Sparkles, Search, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import OnboardingTour from "@/components/OnboardingTour";
 import { PageHeader } from "@/components/PageHeader";
 import { PAGE_DESCRIPTIONS } from "@/lib/pageDescriptions";
+import { useState, useMemo } from "react";
 
 export default function Dashboard() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const { t, language } = useLanguage();
   const [, setLocation] = useLocation();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedPlatform, setSelectedPlatform] = useState<string | "all">("all");
+  const [selectedStatus, setSelectedStatus] = useState<string | "all">("all");
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "platform">("newest");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const { data: subscription, isLoading: subLoading } = trpc.user.getSubscription.useQuery(undefined, {
     enabled: isAuthenticated,
@@ -27,6 +34,42 @@ export default function Dashboard() {
   const { data: activityData, isLoading: activityLoading } = trpc.content.getActivityData.useQuery(undefined, {
     enabled: isAuthenticated,
   });
+
+  // Filter and search logic
+  const filteredAndSortedPosts = useMemo(() => {
+    if (!posts) return [];
+    
+    let filtered = posts.filter((post) => {
+      const matchesSearch = post.generatedContent.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           post.rawInput?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesPlatform = selectedPlatform === "all" || post.platform === selectedPlatform;
+      const matchesStatus = selectedStatus === "all" || post.status === selectedStatus;
+      return matchesSearch && matchesPlatform && matchesStatus;
+    });
+
+    // Sort
+    filtered.sort((a, b) => {
+      if (sortBy === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      if (sortBy === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      if (sortBy === "platform") return a.platform.localeCompare(b.platform);
+      return 0;
+    });
+
+    return filtered;
+  }, [posts, searchQuery, selectedPlatform, selectedStatus, sortBy]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredAndSortedPosts.length / itemsPerPage);
+  const paginatedPosts = filteredAndSortedPosts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Reset to page 1 when filters change
+  const handleFilterChange = (callback: () => void) => {
+    setCurrentPage(1);
+    callback();
+  };
 
   if (authLoading || !isAuthenticated) {
     if (!authLoading && !isAuthenticated) {
@@ -265,17 +308,75 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Recent Posts */}
+        {/* Enhanced Posts Section */}
         <Card>
           <CardHeader>
-            <CardTitle>{t("recentPosts")}</CardTitle>
+            <div className="flex flex-col gap-4">
+              <CardTitle>{t("recentPosts")}</CardTitle>
+              
+              {/* Search and Filters */}
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search posts..."
+                    value={searchQuery}
+                    onChange={(e) => handleFilterChange(() => setSearchQuery(e.target.value))}
+                    className="w-full pl-10 pr-4 py-2 border rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+
+                {/* Platform Filter */}
+                <select
+                  value={selectedPlatform}
+                  onChange={(e) => handleFilterChange(() => setSelectedPlatform(e.target.value))}
+                  className="px-4 py-2 border rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="all">{language === "no" ? "Alle plattformer" : "All platforms"}</option>
+                  <option value="linkedin">LinkedIn</option>
+                  <option value="twitter">Twitter/X</option>
+                  <option value="instagram">Instagram</option>
+                  <option value="facebook">Facebook</option>
+                </select>
+
+                {/* Status Filter */}
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => handleFilterChange(() => setSelectedStatus(e.target.value))}
+                  className="px-4 py-2 border rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="all">{language === "no" ? "Alle statuser" : "All statuses"}</option>
+                  <option value="draft">{language === "no" ? "Utkast" : "Draft"}</option>
+                  <option value="scheduled">{language === "no" ? "Planlagt" : "Scheduled"}</option>
+                  <option value="published">{language === "no" ? "Publisert" : "Published"}</option>
+                </select>
+
+                {/* Sort */}
+                <select
+                  value={sortBy}
+                  onChange={(e) => handleFilterChange(() => setSortBy(e.target.value as any))}
+                  className="px-4 py-2 border rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="newest">{language === "no" ? "Nyeste først" : "Newest first"}</option>
+                  <option value="oldest">{language === "no" ? "Eldste først" : "Oldest first"}</option>
+                  <option value="platform">{language === "no" ? "Etter plattform" : "By platform"}</option>
+                </select>
+              </div>
+
+              {/* Results count */}
+              <p className="text-sm text-muted-foreground">
+                {filteredAndSortedPosts.length} {language === "no" ? "innlegg" : "posts"}
+              </p>
+            </div>
           </CardHeader>
           <CardContent>
             {postsLoading ? (
               <p className="text-muted-foreground">{t("loading")}</p>
-            ) : posts && posts.length > 0 ? (
+            ) : paginatedPosts && paginatedPosts.length > 0 ? (
               <div className="space-y-4">
-                {posts.slice(0, 5).map((post) => (
+                {paginatedPosts.map((post) => (
                   <div key={post.id} className="flex items-start gap-4 p-4 border rounded-lg">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
@@ -292,6 +393,33 @@ export default function Dashboard() {
                     </Button>
                   </div>
                 ))}
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-between mt-6 pt-4 border-t">
+                    <p className="text-sm text-muted-foreground">
+                      {language === "no" ? "Side" : "Page"} {currentPage} {language === "no" ? "av" : "of"} {totalPages}
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                        disabled={currentPage === 1}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                        disabled={currentPage === totalPages}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="text-center py-12">

@@ -165,13 +165,18 @@
 
 ## Dashboard Improvements
 - [x] Add statistics cards (total posts, remaining quota, time saved)
-- [ ] Add chart/graph for post activity over time
-- [ ] Add "Most used content types" section
+- [x] Add chart/graph for post activity over time
+- [x] Add "Most used content types" section
 - [x] Improve card design with gradients and icons
 - [x] Add quick actions section (Generate new, View history, Settings)
 - [x] Add welcome message for new users
 - [x] Add empty state for users with no posts
 - [x] Test dashboard with mock data
+- [x] Add advanced filtering (status, platform, date range)
+- [x] Implement search functionality for posts (real-time search)
+- [x] Add sorting options (date, status, platform)
+- [x] Implement pagination for post list (10 items per page with prev/next buttons)
+- [x] Redesign Dashboard layout with improved UI (search, filters, sorting, pagination)
 
 ## Blog System
 - [x] Design blog database schema (posts, categories, tags)
