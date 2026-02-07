@@ -1,6 +1,7 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
+import { voiceRouter } from "./voiceRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import { storagePut } from "./storage";
@@ -492,136 +493,7 @@ export const appRouter = router({
       }),
   }),
   
-  voice: router({
-    addSample: protectedProcedure
-      .input(z.object({ sampleText: z.string().min(50) }))
-      .mutation(async ({ ctx, input }) => {
-        const { createVoiceSample } = await import("./db");
-        
-        const sample = await createVoiceSample({
-          userId: ctx.user.id,
-          sampleText: input.sampleText,
-        });
-        
-        return sample;
-      }),
-      
-    list: protectedProcedure.query(async ({ ctx }) => {
-      const { getUserVoiceSamples } = await import("./db");
-      return getUserVoiceSamples(ctx.user.id);
-    }),
-    
-    delete: protectedProcedure
-      .input(z.object({ sampleId: z.number() }))
-      .mutation(async ({ ctx, input }) => {
-        const { deleteVoiceSample } = await import("./db");
-        await deleteVoiceSample(input.sampleId);
-        return { success: true };
-      }),
-    
-    getProfile: protectedProcedure.query(async ({ ctx }) => {
-      const { getVoiceProfile } = await import("./db");
-      return await getVoiceProfile(ctx.user.id);
-    }),
-    
-    getSamples: protectedProcedure.query(async ({ ctx }) => {
-      const { getUserVoiceSamples } = await import("./db");
-      return await getUserVoiceSamples(ctx.user.id);
-    }),
-    
-    deleteSample: protectedProcedure
-      .input(z.object({ id: z.number() }))
-      .mutation(async ({ ctx, input }) => {
-        const { deleteVoiceSample } = await import("./db");
-        await deleteVoiceSample(input.id);
-        return { success: true };
-      }),
-    
-    analyzeVoice: protectedProcedure.mutation(async ({ ctx }) => {
-      const { getUserSubscription, getUserVoiceSamples, createOrUpdateVoiceProfile } = await import("./db");
-      const { invokeLLM } = await import("./_core/llm");
-      
-      // Check if user has Pro subscription
-      const subscription = await getUserSubscription(ctx.user.id);
-      if (!subscription || subscription.status !== "active") {
-        throw new Error("Stemmetrening krever Pro-abonnement");
-      }
-      
-      // Get user's samples
-      const samples = await getUserVoiceSamples(ctx.user.id);
-      if (samples.length < 3) {
-        throw new Error("Du trenger minst 3 tekstprøver for å analysere");
-      }
-      
-      // Combine samples for analysis
-      const combinedText = samples.map((s: { sampleText: string }) => s.sampleText).join("\n\n---\n\n");
-      
-      // Use LLM to analyze writing style with deeper analysis
-      const response = await invokeLLM({
-        messages: [
-          {
-            role: "system",
-            content: `You are an expert writing style analyst specializing in Norwegian business communication. Analyze the following writing samples and extract the author's unique writing style characteristics with deep insights. Return a JSON object with the following structure:
-{
-  "vocabularyLevel": "simple" | "professional" | "technical",
-  "sentenceStyle": "short" | "medium" | "long" | "varied",
-  "usesEmojis": boolean,
-  "usesHashtags": boolean,
-  "usesQuestions": boolean,
-  "usesBulletPoints": boolean,
-  "favoriteWords": string[] (max 10 frequently used words/phrases),
-  "signaturePhrases": string[] (max 5 unique expressions),
-  "toneProfile": { "formal": number, "friendly": number, "professional": number, "casual": number } (values 0-1, should sum to 1),
-  "formalityLevel": number (0-10, where 0 is very casual and 10 is very formal),
-  "emojiUsagePattern": string (describe when and how emojis are used, e.g., "Uses emojis at end of sentences for emphasis"),
-  "paragraphStructure": "short_punchy" | "medium_balanced" | "long_detailed",
-  "openingStyle": string (how the author typically starts posts, e.g., "Direct question" or "Personal anecdote"),
-  "closingStyle": string (how the author typically ends posts, e.g., "Call to action" or "Reflective question"),
-  "uniqueTraits": string[] (max 3 distinctive characteristics that make this writing unique),
-  "profileSummary": string (3-4 sentences describing the writing style in Norwegian with specific examples)
-}
-Respond ONLY with valid JSON, no other text.`
-          },
-          {
-            role: "user",
-            content: `Analyze these writing samples in detail:\n\n${combinedText}`
-          }
-        ],
-        response_format: { type: "json_object" }
-      });
-      
-      const analysisText = response.choices[0]?.message?.content;
-      if (typeof analysisText !== 'string') {
-        throw new Error("Kunne ikke analysere skrivestilen");
-      }
-      
-      let analysis;
-      try {
-        analysis = JSON.parse(analysisText);
-      } catch {
-        throw new Error("Kunne ikke analysere skrivestilen");
-      }
-      
-      // Save voice profile
-      await createOrUpdateVoiceProfile(ctx.user.id, {
-        vocabularyLevel: analysis.vocabularyLevel || "professional",
-        sentenceStyle: analysis.sentenceStyle || "medium",
-        usesEmojis: analysis.usesEmojis ? 1 : 0,
-        usesHashtags: analysis.usesHashtags ? 1 : 0,
-        usesQuestions: analysis.usesQuestions ? 1 : 0,
-        usesBulletPoints: analysis.usesBulletPoints ? 1 : 0,
-        favoriteWords: JSON.stringify(analysis.favoriteWords || []),
-        signaturePhrases: JSON.stringify(analysis.signaturePhrases || []),
-        toneProfile: JSON.stringify(analysis.toneProfile || {}),
-        profileSummary: analysis.profileSummary || "",
-        samplesCount: samples.length,
-        trainingStatus: "trained",
-        lastTrainedAt: new Date(),
-      });
-      
-      return { success: true, profile: analysis };
-    }),
-  }),
+  // voice router moved to voiceRouter.ts
   
   examples: router({
     save: protectedProcedure
@@ -2546,6 +2418,8 @@ Skriv et ${input.responseType} svar.`
       return invoiceList;
     }),
   }),
+
+  voice: voiceRouter,
 });
 
 export type AppRouter = typeof appRouter;

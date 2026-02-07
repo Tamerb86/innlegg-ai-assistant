@@ -59,13 +59,13 @@ export default function VoiceTraining() {
     }
   });
 
-  const analyzeVoiceMutation = trpc.voice.analyzeVoice.useMutation({
+  const analyzeVoiceMutation = trpc.voice.trainProfile.useMutation({
     onSuccess: () => {
       refetchProfile();
       setIsAnalyzing(false);
       toast.success("Stemmeprofil oppdatert!");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       setIsAnalyzing(false);
       toast.error(error.message || "Kunne ikke analysere stemmen");
     }
@@ -101,8 +101,8 @@ export default function VoiceTraining() {
     addSampleMutation.mutate({ sampleText: newSample.trim() });
   };
 
-  const handleDeleteSample = (id: number) => {
-    deleteSampleMutation.mutate({ id });
+  const handleDeleteSample = (sampleId: number) => {
+    deleteSampleMutation.mutate({ sampleId });
   };
 
   const handleAnalyze = () => {

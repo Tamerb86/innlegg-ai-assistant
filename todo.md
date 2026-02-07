@@ -986,12 +986,12 @@
 - [ ] Filter trends by user's industry/interests
 
 ### Stemmetrening (Voice Training)
-- [ ] Create voice_profiles database table
-- [ ] Create Voice Training page UI
-- [ ] Implement writing sample submission form
-- [ ] Build AI analysis to extract writing style
-- [ ] Store user voice profile (tone, vocabulary, patterns)
-- [ ] Apply learned style to content generation
+- [x] Create voice_profiles database table (already in schema)
+- [x] Create Voice Training page UI (VoiceTraining.tsx component)
+- [x] Implement writing sample submission form (addSample mutation)
+- [x] Build AI analysis to extract writing style (analyzeWritingSamples function)
+- [x] Store user voice profile (tone, vocabulary, patterns, emoji usage, hashtags, etc.)
+- [ ] Apply learned style to content generation (integrate voice profile in post generation)
 - [ ] Add voice profile status indicator in dashboard
 
 
