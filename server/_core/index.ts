@@ -51,25 +51,14 @@ async function startServer() {
     crossOriginEmbedderPolicy: false,
     crossOriginResourcePolicy: { policy: "cross-origin" },
   }));
-  
-  // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
-  // OAuth callback under /api/oauth/callback
-  registerOAuthRoutes(app);
-  
-  // Telegram webhook
-  registerTelegramWebhook(app);
-  
-  // LinkedIn OAuth callback
-  registerLinkedInCallback(app);
 
-  // Stripe webhook - MUST be before express.json() middleware for signature verification
-  // Note: We need raw body for Stripe signature verification
+  // Stripe webhook - MUST be before body parsing middleware for signature verification
+  // Note: This route requires the unparsed raw body.
   app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async (req, res) => {
     try {
       const { constructWebhookEvent } = await import("../stripe/stripeService");
       const { updateSubscriptionFromStripe, updateSubscriptionStatus } = await import("../db");
+      const { shouldProcessStripeEvent } = await import("../stripe/webhookIdempotency");
       const { notifyNewSubscription, notifySubscriptionCancelled, notifyPaymentFailed } = await import("../subscriptionNotifications");
       
       const signature = req.headers["stripe-signature"] as string;
@@ -82,6 +71,10 @@ async function startServer() {
       
       const event = constructWebhookEvent(req.body, signature, webhookSecret);
       
+      if (!(await shouldProcessStripeEvent(event.id))) {
+        return res.status(200).json({ received: true });
+      }
+
       console.log(`[Stripe Webhook] Received event: ${event.type} (${event.id})`);
       
       // Handle test events
@@ -168,6 +161,18 @@ async function startServer() {
       res.status(400).json({ error: error.message });
     }
   });
+  
+  // Configure body parser with larger size limit for file uploads
+  app.use(express.json({ limit: "50mb" }));
+  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  // OAuth callback under /api/oauth/callback
+  registerOAuthRoutes(app);
+  
+  // Telegram webhook
+  registerTelegramWebhook(app);
+  
+  // LinkedIn OAuth callback
+  registerLinkedInCallback(app);
 
   // tRPC API
   app.use(

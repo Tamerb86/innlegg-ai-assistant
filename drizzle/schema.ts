@@ -666,6 +666,19 @@ export type StripePaymentIntent = typeof stripePaymentIntents.$inferSelect;
 export type InsertStripePaymentIntent = typeof stripePaymentIntents.$inferInsert;
 
 /**
+ * Stripe Webhook Events - idempotency guard for webhook deliveries
+ */
+
+export const stripeEvents = mysqlTable("stripe_events", {
+  id: int("id").autoincrement().primaryKey(),
+  eventId: varchar("event_id", { length: 255 }).notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type StripeEvent = typeof stripeEvents.$inferSelect;
+export type InsertStripeEvent = typeof stripeEvents.$inferInsert;
+
+/**
  * Subscription History - audit trail of subscription changes
  * Tracks upgrades, downgrades, cancellations, and renewals
  */
