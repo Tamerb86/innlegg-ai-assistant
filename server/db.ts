@@ -32,7 +32,8 @@ import {
   InsertUserInterest,
   trendingTopics,
   TrendingTopic,
-  InsertTrendingTopic
+  InsertTrendingTopic,
+  stripeEvents
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -784,5 +785,34 @@ export async function getAdminStats() {
       monthlyRevenue: 0,
       recentSubscriptions: [],
     };
+  }
+}
+
+
+export async function hasProcessedStripeEvent(eventId: string): Promise<boolean> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const [existingEvent] = await db
+    .select()
+    .from(stripeEvents)
+    .where(eq(stripeEvents.eventId, eventId))
+    .limit(1);
+
+  return Boolean(existingEvent);
+}
+
+export async function markStripeEventProcessed(eventId: string): Promise<boolean> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  try {
+    await db.insert(stripeEvents).values({ eventId });
+    return true;
+  } catch (error: any) {
+    if (error?.code === "ER_DUP_ENTRY") {
+      return false;
+    }
+    throw error;
   }
 }

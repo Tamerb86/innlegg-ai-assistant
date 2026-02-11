@@ -58,6 +58,7 @@ async function startServer() {
     try {
       const { constructWebhookEvent } = await import("../stripe/stripeService");
       const { updateSubscriptionFromStripe, updateSubscriptionStatus } = await import("../db");
+      const { shouldProcessStripeEvent } = await import("../stripe/webhookIdempotency");
       const { notifyNewSubscription, notifySubscriptionCancelled, notifyPaymentFailed } = await import("../subscriptionNotifications");
       
       const signature = req.headers["stripe-signature"] as string;
@@ -70,6 +71,10 @@ async function startServer() {
       
       const event = constructWebhookEvent(req.body, signature, webhookSecret);
       
+      if (!(await shouldProcessStripeEvent(event.id))) {
+        return res.status(200).json({ received: true });
+      }
+
       console.log(`[Stripe Webhook] Received event: ${event.type} (${event.id})`);
       
       // Handle test events
